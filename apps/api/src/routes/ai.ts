@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { z } from 'zod'
 import { requireAuth } from '../middleware/auth'
+import type { AuthRequest } from '../middleware/auth'
 
 export const aiRouter = Router()
 
@@ -11,7 +12,7 @@ const madlibSchema = z.object({
 })
 
 // POST /ai/madlibs — generate a note with Claude
-aiRouter.post('/madlibs', requireAuth, async (req, res) => {
+aiRouter.post('/madlibs', requireAuth, async (req: AuthRequest, res) => {
   const parsed = madlibSchema.safeParse(req.body)
   if (!parsed.success) {
     return res.status(400).json({ error: 'Missing tone.' })

@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { z } from 'zod'
 import { prisma } from '../lib/prisma'
 import { requireAuth } from '../middleware/auth'
+import type { AuthRequest } from '../middleware/auth'
 
 export const notesRouter = Router()
 
@@ -17,7 +18,7 @@ const createNoteSchema = z.object({
 })
 
 // POST /notes — save a new note
-notesRouter.post('/', requireAuth, async (req, res) => {
+notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
   const parsed = createNoteSchema.safeParse(req.body)
   if (!parsed.success) {
     return res.status(400).json({ error: 'Invalid note data. Please fill out all fields.' })
@@ -60,7 +61,7 @@ notesRouter.post('/', requireAuth, async (req, res) => {
 })
 
 // GET /notes/sent — notes the current user sent
-notesRouter.get('/sent', requireAuth, async (req, res) => {
+notesRouter.get('/sent', requireAuth, async (req: AuthRequest, res) => {
   const notes = await prisma.note.findMany({
     where: { senderId: req.userId! },
     include: { recipient: { select: { id: true, displayName: true, username: true } } },
@@ -71,7 +72,7 @@ notesRouter.get('/sent', requireAuth, async (req, res) => {
 })
 
 // GET /notes/received — notes the current user received
-notesRouter.get('/received', requireAuth, async (req, res) => {
+notesRouter.get('/received', requireAuth, async (req: AuthRequest, res) => {
   const notes = await prisma.note.findMany({
     where: { recipientId: req.userId! },
     include: { sender: { select: { id: true, displayName: true, username: true } } },
