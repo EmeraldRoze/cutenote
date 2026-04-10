@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { api } from '../../lib/api'
-import { NoteData } from './SendFlow'
+import type { NoteData } from './SendFlow'
 
 interface User {
   id: string

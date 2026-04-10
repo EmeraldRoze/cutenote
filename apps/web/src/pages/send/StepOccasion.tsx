@@ -1,4 +1,4 @@
-import { NoteData } from './SendFlow'
+import type { NoteData } from './SendFlow'
 
 const OCCASIONS = [
   { value: 'BIRTHDAY', emoji: '🎂', label: 'Birthday' },
@@ -13,7 +13,7 @@ const OCCASIONS = [
 
 export default function StepOccasion({
   onNext,
-  onBack,
+  onBack: _onBack,
 }: {
   onNext: (data: Partial<NoteData>) => void
   onBack: () => void

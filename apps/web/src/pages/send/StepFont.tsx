@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NoteData } from './SendFlow'
+import type { NoteData } from './SendFlow'
 
 const FONTS = [
   { value: 'CAVEAT', label: 'Caveat', family: "'Caveat', cursive", sample: 'The quick brown fox' },
@@ -11,7 +11,7 @@ const FONTS = [
 export default function StepFont({
   note,
   onNext,
-  onBack,
+  onBack: _onBack,
 }: {
   note: Partial<NoteData>
   onNext: (data: Partial<NoteData>) => void

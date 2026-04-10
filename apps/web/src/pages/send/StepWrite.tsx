@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { api } from '../../lib/api'
-import { NoteData } from './SendFlow'
+import type { NoteData } from './SendFlow'
 
 const TONES = [
   { value: 'HEARTFELT', label: 'Heartfelt' },
@@ -32,7 +32,7 @@ const MAX_CHARS = 300
 export default function StepWrite({
   note,
   onNext,
-  onBack,
+  onBack: _onBack,
 }: {
   note: Partial<NoteData>
   onNext: (data: Partial<NoteData>) => void

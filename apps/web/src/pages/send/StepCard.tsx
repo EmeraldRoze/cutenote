@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { NoteData } from './SendFlow'
+import type { NoteData } from './SendFlow'
 
 // Placeholder artist designs — will be replaced with real DB data in Phase 5
 const ARTIST_DESIGNS = [
@@ -10,11 +10,12 @@ const ARTIST_DESIGNS = [
 
 export default function StepCard({
   onNext,
-  onBack,
+  onBack: _onBack,
 }: {
   onNext: (data: Partial<NoteData>) => void
   onBack: () => void
 }) {
+  // onBack handled by SendFlow header arrow
   const fileRef = useRef<HTMLInputElement>(null)
 
   function selectArtist(design: typeof ARTIST_DESIGNS[0]) {
