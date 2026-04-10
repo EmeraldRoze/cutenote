@@ -1,0 +1,119 @@
+{
+  "branchName": "main",
+  "userStories": [
+    {
+      "id": "phase-1",
+      "title": "Foundation — Project setup, database, auth",
+      "description": "Set up the monorepo, connect to DigitalOcean PostgreSQL, and build user sign up and login so someone can create an account and stay logged in.",
+      "acceptanceCriteria": [
+        "A user can open the site and see a sign up page",
+        "A user can create an account with email and password",
+        "A user can log in and be taken to a home screen",
+        "A user can log out",
+        "The database is connected and storing users"
+      ],
+      "passes": false,
+      "priority": 1
+    },
+    {
+      "id": "phase-2",
+      "title": "Send Flow — 6-step note creation wizard",
+      "description": "Build the full flow for creating and sending a note: pick a recipient, choose an occasion, pick a card design, write the note (blank/prompt/madlib/astrology), choose a handwriting font, preview and send.",
+      "acceptanceCriteria": [
+        "User can select a recipient from their connections",
+        "User can choose an occasion type (birthday, congrats, etc.)",
+        "User can pick from artist card designs or upload their own photo",
+        "User can write a note using blank, prompt, madlib, or astrology mode",
+        "User can choose a handwriting font and see a live preview",
+        "User sees a full postcard preview before sending",
+        "Submitted note is saved to the database with all details"
+      ],
+      "passes": false,
+      "priority": 2
+    },
+    {
+      "id": "phase-3",
+      "title": "Payments — Stripe subscription and credits",
+      "description": "Connect Stripe so users can subscribe at $7.95/month for 2 notes. Charge $2 per extra note. Build the Pass It Forward feature to gift note credits.",
+      "acceptanceCriteria": [
+        "User can subscribe for $7.95/month",
+        "User sees how many notes they have left this month",
+        "Sending a note deducts from their allowance",
+        "Extra notes above the allowance are charged $2 each",
+        "User can gift a note credit to someone else (Pass It Forward)",
+        "Subscription cancellation works"
+      ],
+      "passes": false,
+      "priority": 3
+    },
+    {
+      "id": "phase-4",
+      "title": "Print Pipeline — Lob integration and admin dashboard",
+      "description": "Connect Lob to verify recipient addresses and submit postcards for printing and mailing. Build an admin dashboard where Emma can see the print queue and mark notes as sent.",
+      "acceptanceCriteria": [
+        "Recipient address is verified through Lob before note is submitted",
+        "Note is submitted to Lob for printing and mailing",
+        "Admin dashboard shows all pending notes in a queue",
+        "Admin can mark notes as Printed and Sent",
+        "Sender gets a notification when their note has been sent"
+      ],
+      "passes": false,
+      "priority": 4
+    },
+    {
+      "id": "phase-5",
+      "title": "Social — Profiles, connections, and activity feed",
+      "description": "Build user profiles, the ability to add friends/connections, and the home feed showing Recent Cuteness (who sent notes to whom).",
+      "acceptanceCriteria": [
+        "User has a profile page showing notes sent and received, CN Score, badges",
+        "User can search for and follow other users",
+        "User can see a feed of activity from people they follow",
+        "User can add important dates (birthdays) for connections",
+        "User can invite someone not on the platform via email"
+      ],
+      "passes": false,
+      "priority": 5
+    },
+    {
+      "id": "phase-6",
+      "title": "Gamification — Points, streaks, and badges",
+      "description": "Build the points system, monthly sending streaks, and badge awards that reward users for being thoughtful friends.",
+      "acceptanceCriteria": [
+        "User earns points for sending notes, adding connections, completing profile",
+        "User's streak increments each month they send at least one note",
+        "Streak resets to zero if user sends no notes in a month",
+        "Badges are awarded for milestones (first note, 3-month streak, etc.)",
+        "Points and badges are visible on the user's profile"
+      ],
+      "passes": false,
+      "priority": 6
+    },
+    {
+      "id": "phase-7",
+      "title": "Notifications — Email reminders and birthday nudges",
+      "description": "Set up SendGrid email notifications and a daily job that reminds users about upcoming birthdays and nudges them if their streak is at risk.",
+      "acceptanceCriteria": [
+        "User gets an email 7 days before a saved birthday",
+        "User gets a gentle nudge email if 20+ days into the month with no note sent",
+        "User gets a confirmation email when their note ships",
+        "User can turn notifications on/off in settings"
+      ],
+      "passes": false,
+      "priority": 7
+    },
+    {
+      "id": "phase-8",
+      "title": "Launch Polish — Onboarding, empty states, brand voice",
+      "description": "Add the onboarding flow for new users, fill in all empty states with CuteNote brand copy, and make sure every screen feels warm and fun before launch.",
+      "acceptanceCriteria": [
+        "New users see a friendly onboarding flow explaining how it works",
+        "Every empty state has warm on-brand copy (not generic placeholder text)",
+        "Error messages are human and helpful, never cold or technical",
+        "The app looks and feels great on mobile browsers (iPhone + Android)",
+        "App is ready for real users"
+      ],
+      "passes": false,
+      "priority": 8
+    }
+  ]
+}

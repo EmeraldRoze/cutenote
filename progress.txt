@@ -1,0 +1,21 @@
+## Codebase Patterns
+- Monorepo: apps/api (Node+Express+TS), apps/web (React+Vite+Tailwind), packages/shared
+- All API responses: { data: ... } on success, { error: "plain English message" } on failure
+- Auth: JWT in localStorage as 'cn_token', sent as Bearer token, 30-day expiry
+- Database: Prisma ORM, all IDs are UUIDs
+- Env vars loaded via dotenv in apps/api/src/index.ts
+- Frontend proxies /api/* to localhost:4000 via Vite config
+- Rate limiting on all /auth/* routes (10 req/min per IP)
+
+---
+
+## 2026-04-09 - phase-1
+- What was implemented: Project foundation — monorepo structure, full Prisma schema, Express API with auth routes (register/login/me), React frontend with sign up, login, and home pages, Tailwind styling, JWT auth flow, route protection
+- Files changed: package.json, apps/api/* (full setup), apps/web/src/* (full setup), prisma/schema.prisma, scripts/ralph/*, prd.json, MEMORY.md, progress.txt
+- Learnings for future iterations:
+  - Prisma schema lives at apps/api/prisma/schema.prisma — run `npm run db:migrate -w apps/api` to apply migrations
+  - Frontend runs on port 3000, API on port 4000 — Vite proxies /api/* to 4000
+  - To start dev: `npm run dev` from project root (runs both simultaneously)
+  - DATABASE_URL and JWT_SECRET must be set in .env before running
+  - Never expose passwordHash in API responses — all select clauses explicitly omit it
+---

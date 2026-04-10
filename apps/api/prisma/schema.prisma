@@ -1,0 +1,260 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── USERS ───────────────────────────────────────────────────────────────────
+
+model User {
+  id               String             @id @default(uuid())
+  email            String             @unique
+  username         String             @unique
+  displayName      String
+  passwordHash     String
+  avatarUrl        String?
+  bio              String?
+  isPrivate        Boolean            @default(false)
+  isAdmin          Boolean            @default(false)
+
+  // Subscription
+  stripeCustomerId   String?
+  subscriptionStatus SubscriptionStatus @default(FREE)
+  notesAllowance     Int                @default(2)
+  notesUsed          Int                @default(0)
+  giftedCredits      Int                @default(0)
+  billingAnchor      DateTime?
+
+  // Gamification
+  points         Int       @default(0)
+  currentStreak  Int       @default(0)
+  longestStreak  Int       @default(0)
+  lastNoteSentAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  address          Address?
+  notesSent        Note[]          @relation("NotesSent")
+  notesReceived    Note[]          @relation("NotesReceived")
+  badges           Badge[]
+  following        Connection[]    @relation("Follower")
+  followers        Connection[]    @relation("Following")
+  importantDates   ImportantDate[]
+  passItForwards   PassItForward[] @relation("Gifter")
+  passesReceived   PassItForward[] @relation("Recipient")
+  notifications    Notification[]
+}
+
+// ─── ADDRESSES (encrypted at app level) ─────────────────────────────────────
+
+model Address {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  line1       String   // store encrypted value
+  line2       String?
+  city        String
+  state       String
+  zip         String
+  country     String   @default("US")
+  lobAddressId String?
+  isVerified  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── CONNECTIONS ─────────────────────────────────────────────────────────────
+
+model Connection {
+  id          String           @id @default(uuid())
+  followerId  String
+  followingId String
+  status      ConnectionStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+
+  follower  User @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+}
+
+// ─── IMPORTANT DATES ─────────────────────────────────────────────────────────
+
+model ImportantDate {
+  id                String   @id @default(uuid())
+  userId            String
+  connectionName    String
+  label             String   // "Birthday", "Anniversary", etc.
+  month             Int
+  day               Int
+  year              Int?
+  reminderDaysBefore Int     @default(7)
+  createdAt         DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── CARD DESIGNS ────────────────────────────────────────────────────────────
+
+model CardDesign {
+  id          String         @id @default(uuid())
+  artistName  String
+  title       String
+  imageUrl    String
+  isActive    Boolean        @default(true)
+  isFeatured  Boolean        @default(false)
+  featuredMonth Int?
+  featuredYear  Int?
+  createdAt   DateTime       @default(now())
+
+  notes Note[]
+}
+
+// ─── NOTES ───────────────────────────────────────────────────────────────────
+
+model Note {
+  id              String         @id @default(uuid())
+  senderId        String
+  recipientId     String
+  noteText        String
+  toneUsed        Tone?
+  occasionType    OccasionType
+  fontChoice      FontChoice
+  cardDesignType  CardDesignType
+  cardDesignId    String?
+  cardImageUrl    String?        // for user-uploaded photos
+  status          NoteStatus     @default(PENDING)
+  scheduledFor    DateTime?
+  sentAt          DateTime?
+  isPassItForward Boolean        @default(false)
+  giftedByUserId  String?
+  stripeChargeId  String?
+  lobNoteId       String?
+  createdAt       DateTime       @default(now())
+
+  sender     User        @relation("NotesSent", fields: [senderId], references: [id])
+  recipient  User        @relation("NotesReceived", fields: [recipientId], references: [id])
+  cardDesign CardDesign? @relation(fields: [cardDesignId], references: [id])
+}
+
+// ─── BADGES ──────────────────────────────────────────────────────────────────
+
+model Badge {
+  id        String    @id @default(uuid())
+  userId    String
+  badgeType BadgeType
+  earnedAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeType])
+}
+
+// ─── PASS IT FORWARD ─────────────────────────────────────────────────────────
+
+model PassItForward {
+  id             String    @id @default(uuid())
+  gifterId       String
+  recipientId    String?
+  recipientEmail String?
+  stripeChargeId String
+  isRedeemed     Boolean   @default(false)
+  redeemedAt     DateTime?
+  createdAt      DateTime  @default(now())
+
+  gifter    User  @relation("Gifter", fields: [gifterId], references: [id])
+  recipient User? @relation("Recipient", fields: [recipientId], references: [id])
+}
+
+// ─── NOTIFICATIONS ───────────────────────────────────────────────────────────
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── ENUMS ───────────────────────────────────────────────────────────────────
+
+enum SubscriptionStatus {
+  FREE
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+
+enum NoteStatus {
+  PENDING
+  PRINTED
+  SENT
+  FAILED
+}
+
+enum CardDesignType {
+  ARTIST
+  USER_UPLOAD
+}
+
+enum Tone {
+  HEARTFELT
+  FUNNY
+  FORMAL
+  QUIRKY
+}
+
+enum OccasionType {
+  BIRTHDAY
+  ANNIVERSARY
+  CONGRATULATIONS
+  HOLIDAY
+  CONSOLATION
+  JUST_BECAUSE
+  INVITATION
+  CUSTOM
+}
+
+enum FontChoice {
+  CAVEAT
+  DANCING_SCRIPT
+  REENIE_BEANIE
+  PATRICK_HAND
+}
+
+enum BadgeType {
+  FIRST_NOTE
+  BIRTHDAY_HERO
+  ON_A_ROLL
+  KINDNESS_MACHINE
+  PASS_IT_FORWARD
+  CONNECTED
+  THOUGHTFUL_FRIEND
+  HOLIDAY_SPIRIT
+}
+
+enum NotificationType {
+  NOTE_SENT
+  NOTE_INCOMING
+  OCCASION_REMINDER
+  STREAK_NUDGE
+  BADGE_EARNED
+  PASS_IT_FORWARD_RECEIVED
+  NEW_FOLLOWER
+}

@@ -1,0 +1,89 @@
+import { Router, Response } from 'express'
+import { z } from 'zod'
+import { prisma } from '../lib/prisma'
+import { requireAuth, AuthRequest } from '../middleware/auth'
+
+export const usersRouter = Router()
+
+// ─── Get user profile by username ────────────────────────────────────────────
+
+usersRouter.get('/:username', requireAuth, async (req: AuthRequest, res: Response) => {
+  const user = await prisma.user.findUnique({
+    where: { username: req.params.username },
+    select: {
+      id: true,
+      username: true,
+      displayName: true,
+      avatarUrl: true,
+      bio: true,
+      points: true,
+      currentStreak: true,
+      longestStreak: true,
+      isPrivate: true,
+      badges: { select: { badgeType: true, earnedAt: true } },
+      _count: {
+        select: {
+          notesSent: true,
+          followers: true,
+          following: true,
+        },
+      },
+    },
+  })
+  if (!user) return res.status(404).json({ error: 'User not found.' })
+  return res.json({ data: user })
+})
+
+// ─── Search users ─────────────────────────────────────────────────────────────
+
+usersRouter.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
+  const q = String(req.query.q ?? '').trim()
+  if (!q) return res.json({ data: [] })
+
+  const users = await prisma.user.findMany({
+    where: {
+      OR: [
+        { username: { contains: q, mode: 'insensitive' } },
+        { displayName: { contains: q, mode: 'insensitive' } },
+      ],
+      NOT: { id: req.userId },
+    },
+    select: {
+      id: true,
+      username: true,
+      displayName: true,
+      avatarUrl: true,
+    },
+    take: 20,
+  })
+  return res.json({ data: users })
+})
+
+// ─── Update my profile ────────────────────────────────────────────────────────
+
+const updateSchema = z.object({
+  displayName: z.string().min(1).max(50).optional(),
+  bio: z.string().max(160).optional(),
+  isPrivate: z.boolean().optional(),
+})
+
+usersRouter.put('/me', requireAuth, async (req: AuthRequest, res: Response) => {
+  const result = updateSchema.safeParse(req.body)
+  if (!result.success) {
+    return res.status(400).json({ error: result.error.errors[0].message })
+  }
+
+  const user = await prisma.user.update({
+    where: { id: req.userId },
+    data: result.data,
+    select: {
+      id: true,
+      username: true,
+      displayName: true,
+      avatarUrl: true,
+      bio: true,
+      isPrivate: true,
+    },
+  })
+  return res.json({ data: user })
+})
