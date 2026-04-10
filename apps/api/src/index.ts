@@ -1,4 +1,11 @@
-import 'dotenv/config'
+import dotenv from 'dotenv'
+import path from 'path'
+import fs from 'fs'
+
+// Find .env walking up from cwd
+let envPath = path.resolve(process.cwd(), '.env')
+if (!fs.existsSync(envPath)) envPath = path.resolve(process.cwd(), '../../.env')
+dotenv.config({ path: envPath })
 import express from 'express'
 import helmet from 'helmet'
 import cors from 'cors'
@@ -6,6 +13,8 @@ import compression from 'compression'
 
 import { authRouter } from './routes/auth'
 import { usersRouter } from './routes/users'
+import { notesRouter } from './routes/notes'
+import { aiRouter } from './routes/ai'
 
 const app = express()
 const PORT = process.env.PORT ?? 4000
@@ -22,6 +31,8 @@ app.use(express.json({ limit: '1mb' }))
 // ─── Routes ───────────────────────────────────────────────────────────────────
 app.use('/auth', authRouter)
 app.use('/users', usersRouter)
+app.use('/notes', notesRouter)
+app.use('/ai', aiRouter)
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {

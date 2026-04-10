@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import SignUpPage from './pages/SignUpPage'
 import LoginPage from './pages/LoginPage'
 import HomePage from './pages/HomePage'
+import SendFlow from './pages/send/SendFlow'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -27,6 +28,7 @@ function AppRoutes() {
       <Route path="/signup" element={<PublicRoute><SignUpPage /></PublicRoute>} />
       <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+      <Route path="/send" element={<ProtectedRoute><SendFlow /></ProtectedRoute>} />
     </Routes>
   )
 }

@@ -34,7 +34,10 @@ export default function HomePage() {
         </div>
 
         {/* Send CTA */}
-        <button className="w-full bg-rose-500 hover:bg-rose-600 text-white font-semibold rounded-2xl py-5 text-lg transition-colors shadow-sm mb-6">
+        <button
+          onClick={() => navigate('/send')}
+          className="w-full bg-rose-500 hover:bg-rose-600 text-white font-semibold rounded-2xl py-5 text-lg transition-colors shadow-sm mb-6"
+        >
           Send a Cute Note
         </button>
 
