@@ -1,13 +1,55 @@
 @import "tailwindcss";
 
-* {
-  box-sizing: border-box;
+@font-face {
+  font-family: 'Recoleta';
+  src: url('/Recoleta-Regular.otf') format('opentype');
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --lavender:       #9B8EC4;
+  --lavender-light: #C4BAE0;
+  --lavender-pale:  #EDE9F7;
+  --lavender-dark:  #6A5FA0;
+  --lavender-deep:  #3D3470;
+
+  --blush:          #F5C2C7;
+  --blush-pale:     #FDF0F1;
+
+  --ink:            #2C2540;
+  --ink-mid:        #5E5480;
+  --ink-muted:      #9590AA;
+
+  --cream:          #FBF8F4;
+  --cream-warm:     #F5EFE6;
+  --cream-ruled:    #E8E0D5;
+  --white:          #FFFFFF;
+
+  --error:          #E04E6B;
+  --error-pale:     #FDEDF1;
+
+  --border-default: #D9D3E8;
+  --border-focused: #9B8EC4;
+
+  --shadow-card:    0 2px 12px rgba(155,142,196,0.13), 0 1px 3px rgba(44,37,64,0.07);
+  --shadow-button:  0 2px 8px rgba(155,142,196,0.25);
+  --shadow-input:   0 0 0 3px rgba(155,142,196,0.20);
+
+  --font-display:     'Recoleta', Georgia, serif;
+  --font-body:        'DM Sans', system-ui, sans-serif;
+  --font-handwriting: 'Caveat', cursive;
 }
 
 body {
-  margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-body);
+  background: var(--cream);
+  color: var(--ink);
   -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
 }
 
 #root {

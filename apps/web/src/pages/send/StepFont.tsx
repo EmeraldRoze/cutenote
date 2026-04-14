@@ -23,42 +23,52 @@ export default function StepFont({
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-800 mb-1">Pick a handwriting style</h2>
-      <p className="text-sm text-gray-500 mb-6">This is how your words will appear on the card.</p>
+      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 500, color: 'var(--ink)', marginBottom: '4px' }}>
+        Pick a handwriting style
+      </h2>
+      <p style={{ fontSize: '14px', color: 'var(--ink-muted)', marginBottom: '24px' }}>
+        This is how your words will appear on the card.
+      </p>
 
-      <div className="space-y-3 mb-6">
+      {/* Load Google Fonts for handwriting options */}
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Caveat&family=Dancing+Script&family=Reenie+Beanie&family=Patrick+Hand&display=swap"
+      />
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
         {FONTS.map((font) => (
           <button
             key={font.value}
             onClick={() => setSelected(font.value)}
-            className={`w-full text-left rounded-2xl border-2 px-5 py-4 transition-all ${
-              selected === font.value
-                ? 'border-rose-400 bg-rose-50'
-                : 'border-gray-100 bg-white hover:border-rose-200'
-            }`}
+            style={{
+              width: '100%', textAlign: 'left', borderRadius: '16px', padding: '16px 20px',
+              border: selected === font.value ? '2px solid var(--lavender)' : '1.5px solid var(--border-default)',
+              background: selected === font.value ? 'var(--lavender-pale)' : 'var(--white)',
+              cursor: 'pointer', transition: 'all 0.15s', fontFamily: 'var(--font-body)',
+            }}
           >
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            <p style={{ fontSize: '11px', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-muted)', marginBottom: '6px' }}>
               {font.label}
             </p>
-            <p
-              className="text-xl text-gray-700 leading-snug"
-              style={{ fontFamily: font.family }}
-            >
+            <p style={{ fontSize: '20px', color: 'var(--ink)', lineHeight: 1.4, fontFamily: font.family }}>
               {preview.length > 60 ? preview.slice(0, 60) + '…' : preview}
             </p>
           </button>
         ))}
       </div>
 
-      {/* Load Google Fonts */}
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Caveat&family=Dancing+Script&family=Reenie+Beanie&family=Patrick+Hand&display=swap"
-      />
-
       <button
         onClick={() => onNext({ fontChoice: selected })}
-        className="w-full bg-rose-500 hover:bg-rose-600 text-white font-semibold rounded-xl py-3 transition-colors"
+        style={{
+          width: '100%', padding: '13px 24px', fontSize: '15px', fontWeight: 500,
+          borderRadius: '50px', border: 'none', cursor: 'pointer',
+          background: 'var(--lavender)', color: '#fff',
+          boxShadow: 'var(--shadow-button)', fontFamily: 'var(--font-body)',
+          transition: 'background 0.15s',
+        }}
+        onMouseEnter={e => (e.currentTarget.style.background = 'var(--lavender-dark)')}
+        onMouseLeave={e => (e.currentTarget.style.background = 'var(--lavender)')}
       >
         Next
       </button>

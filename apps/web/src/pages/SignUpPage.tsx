@@ -25,80 +25,117 @@ export default function SignUpPage() {
     }
   }
 
+  const inputStyle = {
+    width: '100%', padding: '11px 16px', fontSize: '14px',
+    borderRadius: '10px', border: '1.5px solid var(--border-default)',
+    background: 'var(--white)', color: 'var(--ink)',
+    outline: 'none', fontFamily: 'var(--font-body)',
+  }
+
   return (
-    <div className="min-h-screen bg-rose-50 flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4 py-10" style={{ background: 'var(--cream)' }}>
       <div className="w-full max-w-md">
+
+        {/* Logo */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-rose-500 mb-2">CuteNote</h1>
-          <p className="text-gray-500">Send something real.</p>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '42px', fontWeight: 600, color: 'var(--lavender-deep)', lineHeight: 1.1 }}>
+            QuteNote
+          </h1>
+          <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '20px', color: 'var(--lavender)', marginTop: '6px' }}>
+            Send something real.
+          </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm p-8">
-          <h2 className="text-xl font-semibold text-gray-800 mb-6">Create your account</h2>
+        {/* Card */}
+        <div style={{
+          background: 'var(--white)',
+          borderRadius: '28px',
+          border: '1px solid var(--border-default)',
+          boxShadow: 'var(--shadow-card)',
+          padding: '36px 32px',
+        }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 500, color: 'var(--ink)', marginBottom: '24px' }}>
+            Create your account
+          </h2>
 
           {error && (
-            <div className="bg-rose-50 border border-rose-200 text-rose-700 rounded-lg px-4 py-3 mb-4 text-sm">
+            <div style={{ background: 'var(--error-pale)', border: '1px solid rgba(224,78,107,0.3)', color: 'var(--error)', borderRadius: '10px', padding: '12px 16px', marginBottom: '16px', fontSize: '14px' }}>
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Your name</label>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: 'var(--ink)', marginBottom: '6px' }}>Your name</label>
               <input
                 type="text"
                 placeholder="Emma Rose"
                 value={form.displayName}
                 onChange={(e) => setForm({ ...form, displayName: e.target.value })}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
                 required
+                style={inputStyle}
+                onFocus={e => { e.target.style.borderColor = 'var(--lavender)'; e.target.style.boxShadow = 'var(--shadow-input)' }}
+                onBlur={e => { e.target.style.borderColor = 'var(--border-default)'; e.target.style.boxShadow = 'none' }}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: 'var(--ink)', marginBottom: '6px' }}>Username</label>
               <input
                 type="text"
                 placeholder="emmarose"
                 value={form.username}
                 onChange={(e) => setForm({ ...form, username: e.target.value.toLowerCase() })}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
                 required
+                style={inputStyle}
+                onFocus={e => { e.target.style.borderColor = 'var(--lavender)'; e.target.style.boxShadow = 'var(--shadow-input)' }}
+                onBlur={e => { e.target.style.borderColor = 'var(--border-default)'; e.target.style.boxShadow = 'none' }}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: 'var(--ink)', marginBottom: '6px' }}>Email</label>
               <input
                 type="email"
                 placeholder="you@email.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
                 required
+                style={inputStyle}
+                onFocus={e => { e.target.style.borderColor = 'var(--lavender)'; e.target.style.boxShadow = 'var(--shadow-input)' }}
+                onBlur={e => { e.target.style.borderColor = 'var(--border-default)'; e.target.style.boxShadow = 'none' }}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: 'var(--ink)', marginBottom: '6px' }}>Password</label>
               <input
                 type="password"
                 placeholder="8+ characters"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
                 required
+                style={inputStyle}
+                onFocus={e => { e.target.style.borderColor = 'var(--lavender)'; e.target.style.boxShadow = 'var(--shadow-input)' }}
+                onBlur={e => { e.target.style.borderColor = 'var(--border-default)'; e.target.style.boxShadow = 'none' }}
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-rose-500 hover:bg-rose-600 disabled:opacity-50 text-white font-semibold rounded-xl py-3 transition-colors"
+              style={{
+                width: '100%', padding: '13px 24px', fontSize: '15px', fontWeight: 500,
+                borderRadius: '50px', border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
+                background: loading ? 'var(--lavender-light)' : 'var(--lavender)',
+                color: '#fff', boxShadow: loading ? 'none' : 'var(--shadow-button)',
+                fontFamily: 'var(--font-body)', marginTop: '4px',
+                transition: 'background 0.15s',
+              }}
             >
               {loading ? 'Creating your account...' : 'Create account'}
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
+          <p style={{ textAlign: 'center', fontSize: '14px', color: 'var(--ink-muted)', marginTop: '24px' }}>
             Already have an account?{' '}
-            <Link to="/login" className="text-rose-500 font-medium hover:underline">
+            <Link to="/login" style={{ color: 'var(--lavender-dark)', fontWeight: 500 }}>
               Log in
             </Link>
           </p>

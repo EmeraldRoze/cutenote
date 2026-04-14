@@ -3,9 +3,9 @@ import type { NoteData } from './SendFlow'
 
 // Placeholder artist designs — will be replaced with real DB data in Phase 5
 const ARTIST_DESIGNS = [
-  { id: 'design-1', artist: 'Luna Park', title: 'Bloom', color: 'from-pink-200 to-rose-300', emoji: '🌸' },
-  { id: 'design-2', artist: 'Doodle Co.', title: 'Confetti', color: 'from-yellow-200 to-orange-300', emoji: '🎊' },
-  { id: 'design-3', artist: 'Inkwell', title: 'Stargazer', color: 'from-indigo-200 to-purple-300', emoji: '🌟' },
+  { id: 'design-1', artist: 'Luna Park', title: 'Bloom', gradient: 'linear-gradient(135deg, #C4BAE0, #F5C2C7)', emoji: '🌸' },
+  { id: 'design-2', artist: 'Doodle Co.', title: 'Confetti', gradient: 'linear-gradient(135deg, #fde68a, #fca5a5)', emoji: '🎊' },
+  { id: 'design-3', artist: 'Inkwell', title: 'Stargazer', gradient: 'linear-gradient(135deg, #9B8EC4, #3D3470)', emoji: '🌟' },
 ]
 
 export default function StepCard({
@@ -15,7 +15,6 @@ export default function StepCard({
   onNext: (data: Partial<NoteData>) => void
   onBack: () => void
 }) {
-  // onBack handled by SendFlow header arrow
   const fileRef = useRef<HTMLInputElement>(null)
 
   function selectArtist(design: typeof ARTIST_DESIGNS[0]) {
@@ -31,41 +30,64 @@ export default function StepCard({
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-800 mb-1">Pick your card</h2>
-      <p className="text-sm text-gray-500 mb-6">Choose an artist design or use your own photo.</p>
+      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 500, color: 'var(--ink)', marginBottom: '4px' }}>
+        Pick your card
+      </h2>
+      <p style={{ fontSize: '14px', color: 'var(--ink-muted)', marginBottom: '24px' }}>
+        Choose an artist design or use your own photo.
+      </p>
 
       {/* Artist designs */}
-      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Artist Picks</p>
-      <div className="grid grid-cols-3 gap-3 mb-6">
+      <p style={{ fontSize: '11px', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-muted)', marginBottom: '12px' }}>
+        Artist Picks
+      </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '28px' }}>
         {ARTIST_DESIGNS.map((d) => (
           <button
             key={d.id}
             onClick={() => selectArtist(d)}
-            className="aspect-[3/4] rounded-2xl overflow-hidden relative group"
+            style={{
+              aspectRatio: '3/4', borderRadius: '16px', overflow: 'hidden',
+              border: '2px solid transparent', cursor: 'pointer', padding: 0,
+              transition: 'border-color 0.15s, transform 0.15s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--lavender)'; e.currentTarget.style.transform = 'scale(1.02)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.transform = 'scale(1)' }}
           >
-            <div className={`w-full h-full bg-gradient-to-br ${d.color} flex flex-col items-center justify-center`}>
-              <span className="text-4xl">{d.emoji}</span>
-              <span className="text-xs font-medium text-white/80 mt-2">{d.title}</span>
+            <div style={{
+              width: '100%', height: '100%', background: d.gradient,
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px',
+            }}>
+              <span style={{ fontSize: '32px' }}>{d.emoji}</span>
+              <span style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(255,255,255,0.9)' }}>{d.title}</span>
             </div>
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-2xl" />
           </button>
         ))}
       </div>
 
       {/* Upload own photo */}
-      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Or use your photo</p>
+      <p style={{ fontSize: '11px', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-muted)', marginBottom: '12px' }}>
+        Or use your photo
+      </p>
       <button
         onClick={() => fileRef.current?.click()}
-        className="w-full border-2 border-dashed border-gray-200 hover:border-rose-300 rounded-2xl py-8 flex flex-col items-center gap-2 transition-colors"
+        style={{
+          width: '100%', border: '2px dashed var(--lavender-light)',
+          borderRadius: '20px', padding: '32px', display: 'flex', flexDirection: 'column',
+          alignItems: 'center', gap: '8px', cursor: 'pointer', background: 'none',
+          transition: 'border-color 0.15s, background 0.15s',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--lavender)'; e.currentTarget.style.background = 'var(--lavender-pale)' }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--lavender-light)'; e.currentTarget.style.background = 'none' }}
       >
-        <span className="text-3xl">📷</span>
-        <span className="text-sm text-gray-500">Tap to upload a photo</span>
+        <span style={{ fontSize: '28px' }}>📷</span>
+        <span style={{ fontSize: '13px', color: 'var(--ink-muted)' }}>Tap to upload a photo</span>
       </button>
       <input
         ref={fileRef}
         type="file"
         accept="image/*"
-        className="hidden"
+        style={{ display: 'none' }}
         onChange={handleUpload}
       />
     </div>

@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { prisma } from '../lib/prisma'
 import { signToken } from '../lib/jwt'
+import { requireAuth, AuthRequest } from '../middleware/auth'
 import rateLimit from 'express-rate-limit'
 
 export const authRouter = Router()
@@ -29,33 +30,35 @@ const signUpSchema = z.object({
 authRouter.post('/register', authLimiter, async (req: Request, res: Response) => {
   const result = signUpSchema.safeParse(req.body)
   if (!result.success) {
-    return res.status(400).json({ error: result.error.errors[0].message })
+    return res.status(400).json({ error: result.error.issues[0].message })
   }
 
   const { email, password, displayName, username } = result.data
 
-  const existingEmail = await prisma.user.findUnique({ where: { email } })
-  if (existingEmail) {
-    return res.status(400).json({ error: 'An account with that email already exists.' })
-  }
-
-  const existingUsername = await prisma.user.findUnique({ where: { username } })
-  if (existingUsername) {
-    return res.status(400).json({ error: 'That username is taken. Try another.' })
+  const existing = await prisma.user.findFirst({
+    where: { OR: [{ email }, { username }] },
+  })
+  if (existing) {
+    const field = existing.email === email ? 'email' : 'username'
+    return res.status(409).json({ error: `That ${field} is already taken.` })
   }
 
   const passwordHash = await bcrypt.hash(password, 12)
 
   const user = await prisma.user.create({
-    data: { email, passwordHash, displayName, username },
-    select: { id: true, email: true, username: true, displayName: true, avatarUrl: true, subscriptionStatus: true, points: true, currentStreak: true },
+    data: { email, username, displayName, passwordHash },
+    select: {
+      id: true, email: true, username: true, displayName: true,
+      avatarUrl: true, subscriptionStatus: true, points: true,
+      currentStreak: true, isAdmin: true,
+    },
   })
 
   const token = signToken(user.id)
-  return res.status(201).json({ data: { user, token } })
+  return res.status(201).json({ data: { token, user } })
 })
 
-// ─── Log In ───────────────────────────────────────────────────────────────────
+// ─── Login ────────────────────────────────────────────────────────────────────
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -65,63 +68,45 @@ const loginSchema = z.object({
 authRouter.post('/login', authLimiter, async (req: Request, res: Response) => {
   const result = loginSchema.safeParse(req.body)
   if (!result.success) {
-    return res.status(400).json({ error: 'Please enter your email and password.' })
+    return res.status(400).json({ error: 'Invalid email or password.' })
   }
 
   const { email, password } = result.data
 
-  const user = await prisma.user.findUnique({ where: { email } })
-  if (!user) {
-    return res.status(401).json({ error: 'Email or password is incorrect.' })
-  }
-
-  const valid = await bcrypt.compare(password, user.passwordHash)
-  if (!valid) {
-    return res.status(401).json({ error: 'Email or password is incorrect.' })
-  }
-
-  const token = signToken(user.id)
-  return res.json({
-    data: {
-      user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        displayName: user.displayName,
-        avatarUrl: user.avatarUrl,
-        subscriptionStatus: user.subscriptionStatus,
-        points: user.points,
-        currentStreak: user.currentStreak,
-      },
-      token,
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: {
+      id: true, email: true, username: true, displayName: true,
+      avatarUrl: true, subscriptionStatus: true, points: true,
+      currentStreak: true, isAdmin: true, passwordHash: true,
     },
   })
+
+  // Resist timing attacks — always compare even if user not found
+  const hash = user?.passwordHash ?? '$2b$12$invalidhashpadding000000000000000000000000000000000000'
+  const valid = await bcrypt.compare(password, hash)
+
+  if (!user || !valid) {
+    return res.status(401).json({ error: 'Invalid email or password.' })
+  }
+
+  const { passwordHash: _, ...safeUser } = user
+  const token = signToken(user.id)
+  return res.json({ data: { token, user: safeUser } })
 })
 
 // ─── Me ───────────────────────────────────────────────────────────────────────
-
-import { requireAuth, AuthRequest } from '../middleware/auth'
 
 authRouter.get('/me', requireAuth, async (req: AuthRequest, res: Response) => {
   const user = await prisma.user.findUnique({
     where: { id: req.userId },
     select: {
-      id: true,
-      email: true,
-      username: true,
-      displayName: true,
-      avatarUrl: true,
-      bio: true,
-      subscriptionStatus: true,
-      notesAllowance: true,
-      notesUsed: true,
-      giftedCredits: true,
-      points: true,
-      currentStreak: true,
-      longestStreak: true,
-      isAdmin: true,
+      id: true, email: true, username: true, displayName: true,
+      avatarUrl: true, subscriptionStatus: true, points: true,
+      currentStreak: true, isAdmin: true,
     },
   })
+
   if (!user) return res.status(404).json({ error: 'Account not found.' })
   return res.json({ data: user })
 })

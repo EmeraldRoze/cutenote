@@ -64,22 +64,26 @@ export default function StepWrite({
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-800 mb-1">Write your note</h2>
-      <p className="text-sm text-gray-500 mb-4">
+      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 500, color: 'var(--ink)', marginBottom: '4px' }}>
+        Write your note
+      </h2>
+      <p style={{ fontSize: '14px', color: 'var(--ink-muted)', marginBottom: '20px' }}>
         Sometimes we choke on our feelings. We got you.
       </p>
 
       {/* Tone selector */}
-      <div className="flex gap-2 mb-4 flex-wrap">
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
         {TONES.map((t) => (
           <button
             key={t.value}
             onClick={() => setTone(t.value)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-              tone === t.value
-                ? 'bg-rose-500 text-white border-rose-500'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-rose-300'
-            }`}
+            style={{
+              padding: '6px 14px', borderRadius: '50px', fontSize: '12px', fontWeight: 500,
+              border: tone === t.value ? '1.5px solid var(--lavender)' : '1.5px solid var(--border-default)',
+              background: tone === t.value ? 'var(--lavender)' : 'var(--white)',
+              color: tone === t.value ? '#fff' : 'var(--ink-mid)',
+              cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'all 0.15s',
+            }}
           >
             {t.label}
           </button>
@@ -87,14 +91,22 @@ export default function StepWrite({
       </div>
 
       {/* Mode tabs */}
-      <div className="flex bg-gray-100 rounded-xl p-1 mb-4 gap-1">
+      <div style={{
+        display: 'flex', background: 'var(--lavender-pale)',
+        borderRadius: '12px', padding: '4px', marginBottom: '16px', gap: '4px',
+      }}>
         {(['blank', 'prompt', 'madlib'] as const).map((m) => (
           <button
             key={m}
             onClick={() => setMode(m)}
-            className={`flex-1 py-2 rounded-lg text-xs font-medium capitalize transition-colors ${
-              mode === m ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-            }`}
+            style={{
+              flex: 1, padding: '8px', borderRadius: '9px', fontSize: '12px', fontWeight: 500,
+              border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)',
+              background: mode === m ? 'var(--white)' : 'transparent',
+              color: mode === m ? 'var(--ink)' : 'var(--ink-muted)',
+              boxShadow: mode === m ? 'var(--shadow-card)' : 'none',
+              transition: 'all 0.15s',
+            }}
           >
             {m === 'madlib' ? '✨ AI Help' : m.charAt(0).toUpperCase() + m.slice(1)}
           </button>
@@ -103,12 +115,19 @@ export default function StepWrite({
 
       {/* Prompt suggestions */}
       {mode === 'prompt' && (
-        <div className="mb-4 space-y-2">
+        <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {prompts.map((p, i) => (
             <button
               key={i}
               onClick={() => setText(p + ' ')}
-              className="w-full text-left text-sm bg-white border border-gray-100 hover:border-rose-200 rounded-xl px-4 py-3 text-gray-600 hover:text-gray-800 transition-colors"
+              style={{
+                width: '100%', textAlign: 'left', fontSize: '13px',
+                background: 'var(--white)', border: '1.5px solid var(--border-default)',
+                borderRadius: '12px', padding: '12px 16px', color: 'var(--ink-mid)',
+                cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--lavender)'; e.currentTarget.style.color = 'var(--ink)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.color = 'var(--ink-mid)' }}
             >
               {p}
             </button>
@@ -121,22 +140,38 @@ export default function StepWrite({
         <button
           onClick={generateMadlib}
           disabled={aiLoading}
-          className="w-full mb-4 bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 rounded-xl py-3 text-sm font-medium transition-colors disabled:opacity-50"
+          style={{
+            width: '100%', marginBottom: '16px', padding: '12px 24px', fontSize: '14px', fontWeight: 500,
+            borderRadius: '12px', border: '1.5px solid var(--lavender-light)', cursor: aiLoading ? 'not-allowed' : 'pointer',
+            background: 'var(--lavender-pale)', color: 'var(--lavender-dark)',
+            fontFamily: 'var(--font-body)', opacity: aiLoading ? 0.6 : 1, transition: 'opacity 0.15s',
+          }}
         >
           {aiLoading ? '✨ Writing something cute...' : '✨ Generate a note for me'}
         </button>
       )}
 
-      {/* Text area */}
-      <div className="relative">
+      {/* Textarea */}
+      <div style={{ position: 'relative' }}>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value.slice(0, MAX_CHARS))}
           placeholder={`Write your note to ${note.recipientName ?? 'them'}...`}
           rows={5}
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300 resize-none"
+          style={{
+            width: '100%', padding: '14px 16px', fontSize: '14px',
+            borderRadius: '14px', border: '1.5px solid var(--border-default)',
+            background: 'var(--white)', color: 'var(--ink)',
+            outline: 'none', fontFamily: 'var(--font-body)', resize: 'none',
+            lineHeight: 1.6,
+          }}
+          onFocus={e => { e.target.style.borderColor = 'var(--lavender)'; e.target.style.boxShadow = 'var(--shadow-input)' }}
+          onBlur={e => { e.target.style.borderColor = 'var(--border-default)'; e.target.style.boxShadow = 'none' }}
         />
-        <span className={`absolute bottom-3 right-3 text-xs ${remaining < 30 ? (remaining < 10 ? 'text-red-400' : 'text-rose-400') : 'text-gray-300'}`}>
+        <span style={{
+          position: 'absolute', bottom: '12px', right: '14px', fontSize: '11px',
+          color: remaining < 30 ? (remaining < 10 ? 'var(--error)' : 'var(--lavender)') : 'var(--ink-muted)',
+        }}>
           {remaining}
         </span>
       </div>
@@ -144,7 +179,14 @@ export default function StepWrite({
       <button
         disabled={text.trim().length < 5}
         onClick={() => onNext({ noteText: text.trim(), toneUsed: tone })}
-        className="w-full mt-4 bg-rose-500 hover:bg-rose-600 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold rounded-xl py-3 transition-colors"
+        style={{
+          width: '100%', marginTop: '16px', padding: '13px 24px', fontSize: '15px', fontWeight: 500,
+          borderRadius: '50px', border: 'none', cursor: text.trim().length < 5 ? 'not-allowed' : 'pointer',
+          background: text.trim().length < 5 ? 'var(--lavender-pale)' : 'var(--lavender)',
+          color: text.trim().length < 5 ? 'var(--ink-muted)' : '#fff',
+          boxShadow: text.trim().length < 5 ? 'none' : 'var(--shadow-button)',
+          fontFamily: 'var(--font-body)', transition: 'background 0.15s',
+        }}
       >
         Next
       </button>

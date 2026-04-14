@@ -21,10 +21,10 @@ const OCCASION_LABELS: Record<string, string> = {
   CUSTOM: '✏️ Custom',
 }
 
-const CARD_COLORS: Record<string, string> = {
-  'design-1': 'from-pink-200 to-rose-300',
-  'design-2': 'from-yellow-200 to-orange-300',
-  'design-3': 'from-indigo-200 to-purple-300',
+const CARD_GRADIENTS: Record<string, string> = {
+  'design-1': 'linear-gradient(135deg, #C4BAE0, #F5C2C7)',
+  'design-2': 'linear-gradient(135deg, #fde68a, #fca5a5)',
+  'design-3': 'linear-gradient(135deg, #9B8EC4, #3D3470)',
 }
 const CARD_EMOJI: Record<string, string> = {
   'design-1': '🌸',
@@ -44,7 +44,7 @@ export default function StepReview({
   const navigate = useNavigate()
 
   const fontFamily = FONT_FAMILIES[note.fontChoice] ?? FONT_FAMILIES['CAVEAT']
-  const cardColor = note.cardDesignId ? CARD_COLORS[note.cardDesignId] : 'from-pink-200 to-rose-300'
+  const cardGradient = note.cardDesignId ? CARD_GRADIENTS[note.cardDesignId] : 'linear-gradient(135deg, #C4BAE0, #F5C2C7)'
   const cardEmoji = note.cardDesignId ? CARD_EMOJI[note.cardDesignId] : '💌'
 
   async function handleSend() {
@@ -70,33 +70,49 @@ export default function StepReview({
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-800 mb-1">Looks good?</h2>
-      <p className="text-sm text-gray-500 mb-6">Here's what {note.recipientName} will receive.</p>
+      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 500, color: 'var(--ink)', marginBottom: '4px' }}>
+        Looks good?
+      </h2>
+      <p style={{ fontSize: '14px', color: 'var(--ink-muted)', marginBottom: '24px' }}>
+        Here's what {note.recipientName} will receive.
+      </p>
 
       {/* Card front preview */}
-      <div className={`w-full aspect-[3/2] rounded-2xl bg-gradient-to-br ${cardColor} flex flex-col items-center justify-center mb-4 shadow-sm`}>
-        <span className="text-5xl mb-2">{cardEmoji}</span>
+      <div style={{
+        width: '100%', aspectRatio: '3/2', borderRadius: '20px',
+        background: cardGradient, display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center', marginBottom: '16px',
+        boxShadow: 'var(--shadow-card)', position: 'relative', overflow: 'hidden',
+      }}>
+        <span style={{ fontSize: '48px', marginBottom: '8px' }}>{cardEmoji}</span>
         {note.cardImageUrl && (
           <img
             src={note.cardImageUrl}
             alt="Your photo"
-            className="w-full h-full object-cover rounded-2xl absolute inset-0 opacity-80"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8, borderRadius: '20px' }}
           />
         )}
       </div>
 
-      {/* Card back preview */}
-      <div className="bg-white border border-gray-100 rounded-2xl p-5 mb-6 shadow-sm">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+      {/* Card back / message preview */}
+      <div style={{
+        background: 'var(--white)', borderRadius: '20px',
+        border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card)',
+        padding: '20px', marginBottom: '24px',
+        backgroundImage: `repeating-linear-gradient(to bottom, transparent, transparent 27px, rgba(232,224,213,0.5) 27px, rgba(232,224,213,0.5) 28px)`,
+      }}>
+        <p style={{ fontSize: '11px', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-muted)', marginBottom: '12px' }}>
           The message they'll read
         </p>
-        <p
-          className="text-lg text-gray-700 leading-relaxed"
-          style={{ fontFamily }}
-        >
+        <p style={{ fontSize: '20px', color: 'var(--ink)', lineHeight: 1.6, fontFamily }}>
           {note.noteText}
         </p>
-        <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
+        <div style={{
+          marginTop: '16px', paddingTop: '16px',
+          borderTop: '1px solid var(--lavender-pale)',
+          display: 'flex', justifyContent: 'space-between',
+          fontSize: '12px', color: 'var(--ink-muted)',
+        }}>
           <span>{OCCASION_LABELS[note.occasionType] ?? note.occasionType}</span>
           <span>To: {note.recipientName}</span>
         </div>
@@ -109,18 +125,24 @@ export default function StepReview({
       />
 
       {error && (
-        <p className="text-sm text-red-500 mb-4 text-center">{error}</p>
+        <p style={{ fontSize: '13px', color: 'var(--error)', textAlign: 'center', marginBottom: '16px' }}>{error}</p>
       )}
 
       <button
         onClick={handleSend}
         disabled={sending}
-        className="w-full bg-rose-500 hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl py-3 transition-colors text-base"
+        style={{
+          width: '100%', padding: '15px 24px', fontSize: '16px', fontWeight: 500,
+          borderRadius: '50px', border: 'none', cursor: sending ? 'not-allowed' : 'pointer',
+          background: sending ? 'var(--lavender-light)' : 'var(--lavender)',
+          color: '#fff', boxShadow: sending ? 'none' : 'var(--shadow-button)',
+          fontFamily: 'var(--font-body)', transition: 'background 0.15s',
+        }}
       >
         {sending ? 'Sending...' : '💌 Send this note'}
       </button>
 
-      <p className="text-xs text-gray-400 text-center mt-3">
+      <p style={{ fontSize: '12px', color: 'var(--ink-muted)', textAlign: 'center', marginTop: '12px' }}>
         Your note will be printed and mailed within 2–3 business days.
       </p>
     </div>

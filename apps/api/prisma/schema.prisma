@@ -53,18 +53,18 @@ model User {
 // ─── ADDRESSES (encrypted at app level) ─────────────────────────────────────
 
 model Address {
-  id          String   @id @default(uuid())
-  userId      String   @unique
-  line1       String   // store encrypted value
-  line2       String?
-  city        String
-  state       String
-  zip         String
-  country     String   @default("US")
-  lobAddressId String?
-  isVerified  Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  encryptedLine1   String
+  encryptedLine2   String?
+  encryptedCity    String
+  encryptedState   String
+  encryptedZip     String
+  encryptedCountry String   @default("US")
+  lobAddressId     String?
+  isVerified       Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

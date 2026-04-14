@@ -35,35 +35,64 @@ export default function StepRecipient({ onNext }: { onNext: (data: Partial<NoteD
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-800 mb-1">Who's getting the love?</h2>
-      <p className="text-sm text-gray-500 mb-6">Search for someone on CuteNote.</p>
+      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 500, color: 'var(--ink)', marginBottom: '4px' }}>
+        Who's getting the love?
+      </h2>
+      <p style={{ fontSize: '14px', color: 'var(--ink-muted)', marginBottom: '24px' }}>
+        Search for someone on QuteNote.
+      </p>
 
-      <div className="relative">
+      <div style={{ position: 'relative' }}>
         <input
           type="text"
           value={query}
           onChange={(e) => { setSelected(null); search(e.target.value) }}
           placeholder="Search by name or username..."
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
+          style={{
+            width: '100%', padding: '11px 16px', fontSize: '14px',
+            borderRadius: '10px', border: '1.5px solid var(--border-default)',
+            background: 'var(--white)', color: 'var(--ink)',
+            outline: 'none', fontFamily: 'var(--font-body)',
+          }}
+          onFocus={e => { e.target.style.borderColor = 'var(--lavender)'; e.target.style.boxShadow = 'var(--shadow-input)' }}
+          onBlur={e => { e.target.style.borderColor = 'var(--border-default)'; e.target.style.boxShadow = 'none' }}
         />
         {searching && (
-          <p className="absolute right-4 top-3 text-xs text-gray-400">Searching...</p>
+          <p style={{ position: 'absolute', right: '16px', top: '13px', fontSize: '12px', color: 'var(--ink-muted)' }}>
+            Searching...
+          </p>
         )}
 
         {results.length > 0 && (
-          <div className="absolute top-full left-0 right-0 bg-white border border-gray-100 rounded-xl shadow-lg mt-1 z-10 overflow-hidden">
+          <div style={{
+            position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0,
+            background: 'var(--white)', border: '1px solid var(--border-default)',
+            borderRadius: '14px', boxShadow: 'var(--shadow-card)', zIndex: 10, overflow: 'hidden',
+          }}>
             {results.map((user) => (
               <button
                 key={user.id}
                 onClick={() => select(user)}
-                className="w-full px-4 py-3 text-left hover:bg-rose-50 flex items-center gap-3 transition-colors"
+                style={{
+                  width: '100%', padding: '12px 16px', textAlign: 'left',
+                  display: 'flex', alignItems: 'center', gap: '12px',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  borderBottom: '1px solid var(--lavender-pale)',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--lavender-pale)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
               >
-                <div className="w-9 h-9 rounded-full bg-rose-100 flex items-center justify-center text-rose-500 font-bold text-sm flex-shrink-0">
+                <div style={{
+                  width: 36, height: 36, borderRadius: '50%',
+                  background: 'var(--lavender-pale)', display: 'flex',
+                  alignItems: 'center', justifyContent: 'center',
+                  color: 'var(--lavender-dark)', fontWeight: 600, fontSize: '14px', flexShrink: 0,
+                }}>
                   {user.displayName[0].toUpperCase()}
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-800">{user.displayName}</p>
-                  <p className="text-xs text-gray-400">@{user.username}</p>
+                  <p style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}>{user.displayName}</p>
+                  <p style={{ fontSize: '12px', color: 'var(--ink-muted)' }}>@{user.username}</p>
                 </div>
               </button>
             ))}
@@ -72,22 +101,38 @@ export default function StepRecipient({ onNext }: { onNext: (data: Partial<NoteD
       </div>
 
       {selected && (
-        <div className="mt-4 bg-rose-50 border border-rose-100 rounded-xl px-4 py-3 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-rose-200 flex items-center justify-center text-rose-600 font-bold">
+        <div style={{
+          marginTop: '16px', background: 'var(--lavender-pale)',
+          border: '1px solid var(--lavender-light)', borderRadius: '14px',
+          padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px',
+        }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: '50%',
+            background: 'var(--lavender-light)', display: 'flex',
+            alignItems: 'center', justifyContent: 'center',
+            color: 'var(--lavender-deep)', fontWeight: 700, fontSize: '16px',
+          }}>
             {selected.displayName[0].toUpperCase()}
           </div>
           <div>
-            <p className="font-medium text-gray-800">{selected.displayName}</p>
-            <p className="text-xs text-gray-500">@{selected.username}</p>
+            <p style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}>{selected.displayName}</p>
+            <p style={{ fontSize: '12px', color: 'var(--ink-muted)' }}>@{selected.username}</p>
           </div>
-          <span className="ml-auto text-rose-400 text-lg">✓</span>
+          <span style={{ marginLeft: 'auto', color: 'var(--lavender)', fontSize: '18px' }}>✓</span>
         </div>
       )}
 
       <button
         disabled={!selected}
         onClick={() => selected && onNext({ recipientId: selected.id, recipientName: selected.displayName })}
-        className="w-full mt-6 bg-rose-500 hover:bg-rose-600 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold rounded-xl py-3 transition-colors"
+        style={{
+          width: '100%', marginTop: '24px', padding: '13px 24px', fontSize: '15px', fontWeight: 500,
+          borderRadius: '50px', border: 'none', cursor: selected ? 'pointer' : 'not-allowed',
+          background: selected ? 'var(--lavender)' : 'var(--lavender-pale)',
+          color: selected ? '#fff' : 'var(--ink-muted)',
+          boxShadow: selected ? 'var(--shadow-button)' : 'none',
+          fontFamily: 'var(--font-body)', transition: 'background 0.15s',
+        }}
       >
         Next
       </button>

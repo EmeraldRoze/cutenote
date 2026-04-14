@@ -36,35 +36,54 @@ export default function SendFlow() {
   }
 
   return (
-    <div className="min-h-screen bg-rose-50">
+    <div style={{ minHeight: '100vh', background: 'var(--cream)' }}>
+
       {/* Header */}
-      <div className="bg-white border-b border-gray-100 px-4 py-4 flex items-center gap-4">
+      <nav style={{
+        background: 'var(--white)',
+        borderBottom: '1px solid var(--lavender-pale)',
+        padding: '14px 20px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '14px',
+      }}>
         <button
           onClick={() => step === 1 ? navigate('/home') : back()}
-          className="text-gray-400 hover:text-gray-600 transition-colors text-xl leading-none"
+          style={{
+            width: '32px', height: '32px', borderRadius: '50%',
+            background: 'var(--lavender-pale)', border: 'none', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: 'var(--lavender-dark)', fontSize: '16px', flexShrink: 0,
+          }}
         >
           ←
         </button>
-        <h1 className="text-lg font-semibold text-gray-800">Send a Cute Note</h1>
-      </div>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 500, color: 'var(--ink)' }}>
+          Send a Qute Note
+        </h1>
+      </nav>
 
       {/* Progress bar */}
-      <div className="bg-white px-4 pb-4">
-        <div className="flex gap-1 mt-3">
+      <div style={{ background: 'var(--white)', padding: '12px 20px 16px', borderBottom: '1px solid var(--lavender-pale)' }}>
+        <div style={{ display: 'flex', gap: '4px' }}>
           {STEPS.map((_, i) => (
             <div
               key={i}
-              className={`h-1 flex-1 rounded-full transition-colors ${
-                i + 1 <= step ? 'bg-rose-400' : 'bg-gray-100'
-              }`}
+              style={{
+                flex: 1, height: '3px', borderRadius: '99px',
+                background: i + 1 <= step ? 'var(--lavender)' : 'var(--lavender-pale)',
+                transition: 'background 0.2s',
+              }}
             />
           ))}
         </div>
-        <p className="text-xs text-gray-400 mt-2">Step {step} of {STEPS.length} — {STEPS[step - 1]}</p>
+        <p style={{ fontSize: '11px', color: 'var(--ink-muted)', marginTop: '8px' }}>
+          Step {step} of {STEPS.length} — {STEPS[step - 1]}
+        </p>
       </div>
 
       {/* Step content */}
-      <div className="max-w-lg mx-auto px-4 py-6">
+      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 20px' }}>
         {step === 1 && <StepRecipient onNext={next} />}
         {step === 2 && <StepOccasion onNext={next} onBack={back} />}
         {step === 3 && <StepCard onNext={next} onBack={back} />}
