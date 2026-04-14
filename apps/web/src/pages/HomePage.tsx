@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
+import { api } from '../lib/api'
 
 const paperTexture = {
   backgroundImage: `repeating-linear-gradient(
@@ -14,6 +16,11 @@ const paperTexture = {
 export default function HomePage() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const [hasAddress, setHasAddress] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    api.get('/address/me').then((res) => setHasAddress(!!res.data.data)).catch(() => setHasAddress(false))
+  }, [])
 
   function handleLogout() {
     logout()
@@ -56,6 +63,26 @@ export default function HomePage() {
             {user?.displayName}
           </h2>
         </div>
+
+        {/* Address nudge */}
+        {hasAddress === false && (
+          <button
+            onClick={() => navigate('/address')}
+            style={{
+              width: '100%', marginBottom: '16px', padding: '14px 20px',
+              borderRadius: '16px', border: '1.5px solid var(--blush)',
+              background: 'var(--blush-pale)', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              fontFamily: 'var(--font-body)', textAlign: 'left',
+            }}
+          >
+            <div>
+              <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)', marginBottom: '2px' }}>Add your address</p>
+              <p style={{ fontSize: '12px', color: 'var(--ink-muted)' }}>So your Quties can send you notes too.</p>
+            </div>
+            <span style={{ fontSize: '18px', flexShrink: 0, marginLeft: '12px' }}>→</span>
+          </button>
+        )}
 
         {/* Send CTA */}
         <button

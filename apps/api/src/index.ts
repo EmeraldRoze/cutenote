@@ -16,6 +16,7 @@ import { usersRouter } from './routes/users'
 import { notesRouter } from './routes/notes'
 import { aiRouter } from './routes/ai'
 import { connectionsRouter } from './routes/connections'
+import { addressRouter } from './routes/address'
 
 const app = express()
 const PORT = process.env.PORT ?? 4000
@@ -35,6 +36,7 @@ app.use('/users', usersRouter)
 app.use('/notes', notesRouter)
 app.use('/ai', aiRouter)
 app.use('/connections', connectionsRouter)
+app.use('/address', addressRouter)
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {
