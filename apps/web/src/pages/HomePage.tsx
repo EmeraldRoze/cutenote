@@ -84,6 +84,26 @@ export default function HomePage() {
           </button>
         )}
 
+        {/* Subscribe nudge */}
+        {user?.subscriptionStatus !== 'ACTIVE' && (
+          <button
+            onClick={() => navigate('/subscribe')}
+            style={{
+              width: '100%', marginBottom: '16px', padding: '14px 20px',
+              borderRadius: '16px', border: '1.5px solid var(--lavender-light)',
+              background: 'var(--lavender-pale)', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              fontFamily: 'var(--font-body)', textAlign: 'left',
+            }}
+          >
+            <div>
+              <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--lavender-deep)', marginBottom: '2px' }}>Subscribe to send postcards</p>
+              <p style={{ fontSize: '12px', color: 'var(--ink-muted)' }}>2 notes/month for $7.95 — cancel anytime</p>
+            </div>
+            <span style={{ fontSize: '18px', flexShrink: 0, marginLeft: '12px' }}>→</span>
+          </button>
+        )}
+
         {/* Send CTA */}
         <button
           onClick={() => navigate('/send')}
@@ -149,7 +169,7 @@ export default function HomePage() {
           <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '16px', fontWeight: 500, color: 'var(--ink)', marginBottom: '12px' }}>
             Recent Cuteness
           </h3>
-          <p style={{ fontSize: '13px', color: 'var(--ink-muted)', textAlign: 'center', padding: '16px 0', fontFamily: 'var(--font-handwriting)', fontSize: '17px' }}>
+          <p style={{ color: 'var(--ink-muted)', textAlign: 'center', padding: '16px 0', fontFamily: 'var(--font-handwriting)', fontSize: '17px' }}>
             Your people are out there. Invite someone you love.
           </p>
         </div>

@@ -17,6 +17,7 @@ import { notesRouter } from './routes/notes'
 import { aiRouter } from './routes/ai'
 import { connectionsRouter } from './routes/connections'
 import { addressRouter } from './routes/address'
+import { stripeRouter, handleStripeWebhook } from './routes/stripe'
 
 const app = express()
 const PORT = process.env.PORT ?? 4000
@@ -28,6 +29,10 @@ app.use(cors({
   credentials: true,
 }))
 app.use(compression())
+
+// Stripe webhook needs raw body — must be registered BEFORE express.json()
+app.post('/stripe/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook)
+
 app.use(express.json({ limit: '1mb' }))
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
@@ -37,6 +42,7 @@ app.use('/notes', notesRouter)
 app.use('/ai', aiRouter)
 app.use('/connections', connectionsRouter)
 app.use('/address', addressRouter)
+app.use('/stripe', stripeRouter)
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {

@@ -176,7 +176,7 @@ export default function ConnectionsPage() {
           </p>
           {loading && <p style={{ fontSize: '13px', color: 'var(--ink-muted)', textAlign: 'center', padding: '16px 0' }}>Loading...</p>}
           {!loading && connections.length === 0 && (
-            <p style={{ fontSize: '13px', color: 'var(--ink-muted)', textAlign: 'center', padding: '16px 0', fontFamily: 'var(--font-handwriting)', fontSize: '17px' }}>
+            <p style={{ color: 'var(--ink-muted)', textAlign: 'center', padding: '16px 0', fontFamily: 'var(--font-handwriting)', fontSize: '17px' }}>
               No connections yet. Search above to find someone.
             </p>
           )}

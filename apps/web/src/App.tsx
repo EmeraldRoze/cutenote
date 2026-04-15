@@ -6,6 +6,8 @@ import HomePage from './pages/HomePage'
 import SendFlow from './pages/send/SendFlow'
 import ConnectionsPage from './pages/ConnectionsPage'
 import AddressPage from './pages/AddressPage'
+import SubscribePage from './pages/SubscribePage'
+import SubscribeSuccessPage from './pages/SubscribeSuccessPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -33,6 +35,8 @@ function AppRoutes() {
       <Route path="/send" element={<ProtectedRoute><SendFlow /></ProtectedRoute>} />
       <Route path="/connections" element={<ProtectedRoute><ConnectionsPage /></ProtectedRoute>} />
       <Route path="/address" element={<ProtectedRoute><AddressPage /></ProtectedRoute>} />
+      <Route path="/subscribe" element={<ProtectedRoute><SubscribePage /></ProtectedRoute>} />
+      <Route path="/subscribe/success" element={<ProtectedRoute><SubscribeSuccessPage /></ProtectedRoute>} />
     </Routes>
   )
 }
