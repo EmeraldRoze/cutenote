@@ -3,6 +3,10 @@ import { z } from 'zod'
 import { prisma } from '../lib/prisma'
 import { requireAuth } from '../middleware/auth'
 import type { AuthRequest } from '../middleware/auth'
+// @ts-ignore — lob package has no types
+import Lob from 'lob'
+
+const lob = new Lob(process.env.LOB_API_KEY)
 
 export const notesRouter = Router()
 
@@ -41,6 +45,19 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
     return res.status(404).json({ error: "We couldn't find that recipient." })
   }
 
+  // Get sender info
+  const sender = await prisma.user.findUnique({ where: { id: req.userId! } })
+  if (!sender) return res.status(404).json({ error: 'Sender not found.' })
+
+  // Get recipient address
+  const recipientAddress = await prisma.address.findUnique({ where: { userId: recipientId } })
+  if (!recipientAddress) {
+    return res.status(400).json({ error: `${recipient.displayName} hasn't added their address yet. Ask them to add it first!` })
+  }
+
+  // Get sender address (for return address on postcard)
+  const senderAddress = await prisma.address.findUnique({ where: { userId: req.userId! } })
+
   const note = await prisma.note.create({
     data: {
       senderId: req.userId!,
@@ -50,12 +67,63 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
       toneUsed: toneUsed as any,
       fontChoice: fontChoice as any,
       cardDesignType: cardDesignType as any,
-      // cardDesignId is a FK to CardDesign table — skip for now (placeholder designs not in DB yet)
       cardDesignId: null,
       cardImageUrl: cardImageUrl ?? null,
       status: 'PENDING',
     },
   })
+
+  // Send postcard via Lob
+  try {
+    const toAddress: any = {
+      name: recipient.displayName,
+      address_line1: recipientAddress.encryptedLine1,
+      address_city: recipientAddress.encryptedCity,
+      address_state: recipientAddress.encryptedState,
+      address_zip: recipientAddress.encryptedZip,
+      address_country: recipientAddress.encryptedCountry ?? 'US',
+    }
+    if (recipientAddress.encryptedLine2) toAddress.address_line2 = recipientAddress.encryptedLine2
+
+    const fromAddress: any = senderAddress ? {
+      name: sender.displayName,
+      address_line1: senderAddress.encryptedLine1,
+      address_city: senderAddress.encryptedCity,
+      address_state: senderAddress.encryptedState,
+      address_zip: senderAddress.encryptedZip,
+      address_country: senderAddress.encryptedCountry ?? 'US',
+    } : {
+      name: 'QuteNote',
+      address_line1: '123 Main St',
+      address_city: 'Austin',
+      address_state: 'TX',
+      address_zip: '78701',
+      address_country: 'US',
+    }
+    if (senderAddress?.encryptedLine2) fromAddress.address_line2 = senderAddress.encryptedLine2
+
+    // Simple postcard HTML — front is a colored card, back has the message
+    const frontHtml = `<html><body style="margin:0;background:linear-gradient(135deg,#9B8EC4,#C4BAE0);width:6in;height:4in;display:flex;align-items:center;justify-content:center;"><p style="font-family:Georgia,serif;font-size:48px;color:white;text-align:center;">💌</p></body></html>`
+    const backHtml = `<html><body style="margin:0;padding:40px;font-family:Georgia,serif;width:6in;height:4in;background:#fffef9;"><p style="font-size:22px;color:#2C2540;line-height:1.6;font-style:italic;">${noteText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p><p style="margin-top:20px;font-size:14px;color:#9590AA;">With love, ${sender.displayName}</p></body></html>`
+
+    const postcard = await lob.postcards.create({
+      description: `QuteNote from ${sender.displayName}`,
+      to: toAddress,
+      from: fromAddress,
+      front: frontHtml,
+      back: backHtml,
+      size: '6x4',
+    })
+
+    // Update note with Lob postcard ID and mark as sent
+    await prisma.note.update({
+      where: { id: note.id },
+      data: { status: 'SENT', lobNoteId: postcard.id },
+    })
+  } catch (lobErr: any) {
+    // Don't fail the whole request — note is saved, just log the Lob error
+    console.error('Lob postcard error:', lobErr?.message ?? lobErr)
+  }
 
   return res.status(201).json({ data: note })
 })
