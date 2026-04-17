@@ -97,10 +97,13 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
     await prisma.user.update({ where: { id: sender.id }, data: { notesUsed: { increment: 1 } } })
   }
 
-  // Get recipient address
+  // Get recipient address and check verification
   const recipientAddress = await prisma.address.findUnique({ where: { userId: recipientId } })
   if (!recipientAddress) {
     return res.status(400).json({ error: `${recipient.displayName} hasn't added their address yet. Ask them to add it first!` })
+  }
+  if (!recipientAddress.isVerified) {
+    return res.status(400).json({ error: `${recipient.displayName}'s address couldn't be verified. Ask them to double-check it!` })
   }
 
   // Get sender address (for return address on postcard)

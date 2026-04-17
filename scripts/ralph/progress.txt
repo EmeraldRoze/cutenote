@@ -1,0 +1,66 @@
+# Ralph Progress Log
+Started: Thu Apr 16 19:11:18 MDT 2026
+
+## Codebase Patterns
+- Auth endpoints (register/login/me) must return all user fields the frontend needs — update the `select` in all three when adding new user fields
+- Stripe webhook needs raw body — registered before express.json() in index.ts
+- TypeScript strict mode: use `import type { Foo }` for type-only imports
+- Lob package has no types — use `// @ts-ignore` before import
+- Lob address verification: `lob.usVerifications.verify()` returns deliverability status
+- Admin routes use `requireAdmin` middleware from auth.ts (checks `isAdmin` on User model)
+- When marking a note as SENT, create a Notification for the sender
+- Prisma `{ increment: 1 }` / `{ decrement: 1 }` for atomic counter updates
+- Stripe Invoice.charge is not typed — use `(paid as any).charge` with fallback to `paid.id`
+---
+
+## 2026-04-16 - phase-3
+- Completed Phase 3: Payments — Stripe subscription and credits
+- Added subscription gate to POST /notes (must be ACTIVE or have gifted credits)
+- Added monthly allowance deduction (notesUsed increments on each send)
+- Added $2 overage charge via Stripe invoice when over allowance
+- Added Pass It Forward API routes (POST /pass-it-forward, GET sent/received)
+- Added notes remaining display on home page for subscribers
+- Added invoice.payment_succeeded webhook handler to reset notesUsed monthly
+- Updated auth routes to return notesAllowance, notesUsed, giftedCredits
+- Updated AuthContext User interface with new subscription fields
+- Marked phases 1, 2, 3 as passes: true in prd.json
+- Files changed:
+  - apps/api/src/routes/auth.ts
+  - apps/api/src/routes/notes.ts
+  - apps/api/src/routes/stripe.ts
+  - apps/api/src/routes/pass-it-forward.ts (new)
+  - apps/api/src/index.ts
+  - apps/web/src/context/AuthContext.tsx
+  - apps/web/src/pages/HomePage.tsx
+  - prd.json
+- **Learnings for future iterations:**
+  - The auth/me, login, and register endpoints all have their own `select` blocks — add new fields to all three
+  - Stripe Invoice type doesn't expose `.charge` directly, cast via `any`
+  - notesUsed resets to 0 on invoice.payment_succeeded (subscription renewal)
+  - Pass It Forward charges $2 via invoice to the gifter's Stripe customer
+---
+
+## 2026-04-16 - phase-4
+- Completed Phase 4: Print Pipeline — Lob integration and admin dashboard
+- Added Lob address verification to POST /address (verifies via lob.usVerifications.verify, stores lobAddressId, sets isVerified)
+- Added address verification check in POST /notes — rejects if recipient address is not verified
+- Created admin routes: GET /admin/notes (all notes with sender/recipient), PATCH /admin/notes/:id/status (mark PRINTED/SENT/FAILED)
+- Created notification when admin marks note as SENT (NOTE_SENT type, notifies sender)
+- Built admin dashboard page at /admin with status filter tabs, note cards, action buttons
+- Added admin link on HomePage (only visible to admins)
+- Added /admin route to App.tsx
+- Files changed:
+  - apps/api/src/routes/address.ts (Lob verification)
+  - apps/api/src/routes/notes.ts (verification check)
+  - apps/api/src/routes/admin.ts (new)
+  - apps/api/src/index.ts (registered admin routes)
+  - apps/web/src/pages/AdminPage.tsx (new)
+  - apps/web/src/pages/HomePage.tsx (admin link)
+  - apps/web/src/App.tsx (admin route)
+  - prd.json (phase-4 passes: true)
+- **Learnings for future iterations:**
+  - Lob usVerifications returns deliverability: 'deliverable', 'deliverable_unnecessary_unit', etc.
+  - requireAdmin middleware already existed in auth.ts — no need to create new middleware
+  - isAdmin is already returned from all auth endpoints and in the frontend User interface
+  - Admin dashboard is at /admin, protected by both ProtectedRoute and isAdmin check in component
+---

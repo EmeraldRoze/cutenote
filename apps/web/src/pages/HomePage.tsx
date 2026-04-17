@@ -184,6 +184,21 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* Admin link */}
+        {user?.isAdmin && (
+          <button
+            onClick={() => navigate('/admin')}
+            style={{
+              width: '100%', padding: '14px 24px', fontSize: '14px', fontWeight: 500,
+              borderRadius: '50px', border: '1.5px solid var(--border-default)', cursor: 'pointer',
+              background: 'var(--white)', color: 'var(--ink-muted)',
+              fontFamily: 'var(--font-body)', marginBottom: '24px',
+            }}
+          >
+            Admin Dashboard
+          </button>
+        )}
+
         {/* Feed placeholder */}
         <div style={{
           background: 'var(--white)', borderRadius: '20px',

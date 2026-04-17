@@ -2,6 +2,10 @@ import { Router, Response } from 'express'
 import { z } from 'zod'
 import { prisma } from '../lib/prisma'
 import { requireAuth, AuthRequest } from '../middleware/auth'
+// @ts-ignore — lob package has no types
+import Lob from 'lob'
+
+const lob = new Lob(process.env.LOB_API_KEY)
 
 export const addressRouter = Router()
 addressRouter.use(requireAuth)
@@ -46,6 +50,23 @@ addressRouter.post('/', async (req: AuthRequest, res: Response) => {
 
   const { line1, line2, city, state, zip, country } = parsed.data
 
+  // Verify address through Lob
+  let lobAddressId: string | null = null
+  let isVerified = false
+  try {
+    const verification = await lob.usVerifications.verify({
+      primary_line: line1,
+      secondary_line: line2 ?? '',
+      city,
+      state,
+      zip_code: zip,
+    })
+    isVerified = verification.deliverability === 'deliverable' || verification.deliverability === 'deliverable_unnecessary_unit'
+    lobAddressId = verification.id ?? null
+  } catch (lobErr: any) {
+    console.error('Lob verification error:', lobErr?.message ?? lobErr)
+  }
+
   const address = await prisma.address.upsert({
     where: { userId: req.userId! },
     update: {
@@ -55,6 +76,8 @@ addressRouter.post('/', async (req: AuthRequest, res: Response) => {
       encryptedState:   state,
       encryptedZip:     zip,
       encryptedCountry: country,
+      lobAddressId,
+      isVerified,
     },
     create: {
       userId:           req.userId!,
@@ -64,6 +87,8 @@ addressRouter.post('/', async (req: AuthRequest, res: Response) => {
       encryptedState:   state,
       encryptedZip:     zip,
       encryptedCountry: country,
+      lobAddressId,
+      isVerified,
     },
   })
 

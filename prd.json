@@ -57,7 +57,7 @@
         "Admin can mark notes as Printed and Sent",
         "Sender gets a notification when their note has been sent"
       ],
-      "passes": false,
+      "passes": true,
       "priority": 4
     },
     {

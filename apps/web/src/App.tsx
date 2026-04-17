@@ -8,6 +8,7 @@ import ConnectionsPage from './pages/ConnectionsPage'
 import AddressPage from './pages/AddressPage'
 import SubscribePage from './pages/SubscribePage'
 import SubscribeSuccessPage from './pages/SubscribeSuccessPage'
+import AdminPage from './pages/AdminPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -37,6 +38,7 @@ function AppRoutes() {
       <Route path="/address" element={<ProtectedRoute><AddressPage /></ProtectedRoute>} />
       <Route path="/subscribe" element={<ProtectedRoute><SubscribePage /></ProtectedRoute>} />
       <Route path="/subscribe/success" element={<ProtectedRoute><SubscribeSuccessPage /></ProtectedRoute>} />
+      <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
     </Routes>
   )
 }
