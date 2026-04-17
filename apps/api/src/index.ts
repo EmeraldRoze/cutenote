@@ -18,6 +18,7 @@ import { aiRouter } from './routes/ai'
 import { connectionsRouter } from './routes/connections'
 import { addressRouter } from './routes/address'
 import { stripeRouter, handleStripeWebhook } from './routes/stripe'
+import { passItForwardRouter } from './routes/pass-it-forward'
 
 const app = express()
 const PORT = process.env.PORT ?? 4000
@@ -43,6 +44,7 @@ app.use('/ai', aiRouter)
 app.use('/connections', connectionsRouter)
 app.use('/address', addressRouter)
 app.use('/stripe', stripeRouter)
+app.use('/pass-it-forward', passItForwardRouter)
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {

@@ -136,6 +136,30 @@ export default function HomePage() {
           Quties
         </button>
 
+        {/* Notes remaining (subscribers only) */}
+        {user?.subscriptionStatus === 'ACTIVE' && (
+          <div style={{
+            background: 'var(--white)', borderRadius: '20px',
+            border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card)',
+            padding: '16px 20px', marginBottom: '16px',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}>
+            <div>
+              <p style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}>
+                Notes this month
+              </p>
+              <p style={{ fontSize: '12px', color: 'var(--ink-muted)', marginTop: '2px' }}>
+                {(user.notesAllowance - user.notesUsed + user.giftedCredits) > 0
+                  ? `${user.notesAllowance - user.notesUsed + user.giftedCredits} included — extras are $2 each`
+                  : 'All included notes used — extras are $2 each'}
+              </p>
+            </div>
+            <p style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: 600, color: 'var(--lavender)' }}>
+              {user.notesUsed}/{user.notesAllowance}
+            </p>
+          </div>
+        )}
+
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
           <div style={{

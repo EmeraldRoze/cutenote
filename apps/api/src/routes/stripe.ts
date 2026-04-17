@@ -105,6 +105,23 @@ export async function handleStripeWebhook(req: Request, res: Response) {
       break
     }
 
+    case 'invoice.payment_succeeded': {
+      // Reset monthly usage when subscription renews
+      if (session.subscription) {
+        const customer = await stripe.customers.retrieve(session.customer)
+        if (!customer.deleted) {
+          const userId = (customer as any).metadata?.userId
+          if (userId) {
+            await prisma.user.update({
+              where: { id: userId },
+              data: { notesUsed: 0, notesAllowance: 2, subscriptionStatus: 'ACTIVE' },
+            })
+          }
+        }
+      }
+      break
+    }
+
     case 'invoice.payment_failed': {
       const customer = await stripe.customers.retrieve(session.customer)
       if (!customer.deleted) {

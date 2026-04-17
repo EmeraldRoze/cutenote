@@ -51,6 +51,7 @@ authRouter.post('/register', authLimiter, async (req: Request, res: Response) =>
       id: true, email: true, username: true, displayName: true,
       avatarUrl: true, subscriptionStatus: true, points: true,
       currentStreak: true, isAdmin: true,
+      notesAllowance: true, notesUsed: true, giftedCredits: true,
     },
   })
 
@@ -79,6 +80,7 @@ authRouter.post('/login', authLimiter, async (req: Request, res: Response) => {
       id: true, email: true, username: true, displayName: true,
       avatarUrl: true, subscriptionStatus: true, points: true,
       currentStreak: true, isAdmin: true, passwordHash: true,
+      notesAllowance: true, notesUsed: true, giftedCredits: true,
     },
   })
 
@@ -104,6 +106,7 @@ authRouter.get('/me', requireAuth, async (req: AuthRequest, res: Response) => {
       id: true, email: true, username: true, displayName: true,
       avatarUrl: true, subscriptionStatus: true, points: true,
       currentStreak: true, isAdmin: true,
+      notesAllowance: true, notesUsed: true, giftedCredits: true,
     },
   })
 

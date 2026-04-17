@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { z } from 'zod'
+import Stripe from 'stripe'
 import { prisma } from '../lib/prisma'
 import { requireAuth } from '../middleware/auth'
 import type { AuthRequest } from '../middleware/auth'
@@ -7,6 +8,7 @@ import type { AuthRequest } from '../middleware/auth'
 import Lob from 'lob'
 
 const lob = new Lob(process.env.LOB_API_KEY)
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
 export const notesRouter = Router()
 
@@ -49,6 +51,52 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
   const sender = await prisma.user.findUnique({ where: { id: req.userId! } })
   if (!sender) return res.status(404).json({ error: 'Sender not found.' })
 
+  // Subscription gate: must be subscribed (or have gifted credits)
+  const hasGiftedCredits = sender.giftedCredits > 0
+  const isSubscribed = sender.subscriptionStatus === 'ACTIVE'
+  if (!isSubscribed && !hasGiftedCredits) {
+    return res.status(403).json({ error: 'You need an active subscription to send notes. Head to the Subscribe page to get started!' })
+  }
+
+  // Determine if this is an overage note (past monthly allowance, no gifted credits)
+  const withinAllowance = sender.notesUsed < sender.notesAllowance
+  const useGiftedCredit = !withinAllowance && hasGiftedCredits
+  const isOverage = isSubscribed && !withinAllowance && !hasGiftedCredits
+
+  // Charge $2 overage fee via Stripe
+  let overageChargeId: string | null = null
+  if (isOverage) {
+    if (!sender.stripeCustomerId) {
+      return res.status(400).json({ error: 'No payment method on file. Please update your billing info.' })
+    }
+    try {
+      const invoiceItem = await stripe.invoiceItems.create({
+        customer: sender.stripeCustomerId,
+        amount: 200,
+        currency: 'usd',
+        description: 'QuteNote — extra postcard ($2)',
+      })
+      const invoice = await stripe.invoices.create({
+        customer: sender.stripeCustomerId,
+        auto_advance: true,
+      })
+      const paid = await stripe.invoices.pay(invoice.id)
+      overageChargeId = (paid as any).charge as string ?? paid.id
+    } catch (stripeErr: any) {
+      console.error('Overage charge failed:', stripeErr?.message)
+      return res.status(402).json({ error: "We couldn't charge for the extra note. Please check your payment method." })
+    }
+  }
+
+  // Deduct from allowance or gifted credits
+  if (useGiftedCredit) {
+    await prisma.user.update({ where: { id: sender.id }, data: { giftedCredits: { decrement: 1 } } })
+  } else if (withinAllowance) {
+    await prisma.user.update({ where: { id: sender.id }, data: { notesUsed: { increment: 1 } } })
+  } else {
+    await prisma.user.update({ where: { id: sender.id }, data: { notesUsed: { increment: 1 } } })
+  }
+
   // Get recipient address
   const recipientAddress = await prisma.address.findUnique({ where: { userId: recipientId } })
   if (!recipientAddress) {
@@ -69,6 +117,7 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
       cardDesignType: cardDesignType as any,
       cardDesignId: null,
       cardImageUrl: cardImageUrl ?? null,
+      stripeChargeId: overageChargeId,
       status: 'PENDING',
     },
   })

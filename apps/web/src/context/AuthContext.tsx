@@ -9,6 +9,9 @@ interface User {
   displayName: string
   avatarUrl: string | null
   subscriptionStatus: string
+  notesAllowance: number
+  notesUsed: number
+  giftedCredits: number
   points: number
   currentStreak: number
   isAdmin?: boolean

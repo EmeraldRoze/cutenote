@@ -12,7 +12,7 @@
         "A user can log out",
         "The database is connected and storing users"
       ],
-      "passes": false,
+      "passes": true,
       "priority": 1
     },
     {
@@ -28,7 +28,7 @@
         "User sees a full postcard preview before sending",
         "Submitted note is saved to the database with all details"
       ],
-      "passes": false,
+      "passes": true,
       "priority": 2
     },
     {
@@ -43,7 +43,7 @@
         "User can gift a note credit to someone else (Pass It Forward)",
         "Subscription cancellation works"
       ],
-      "passes": false,
+      "passes": true,
       "priority": 3
     },
     {
