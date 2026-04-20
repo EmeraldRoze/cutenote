@@ -3,6 +3,16 @@ import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 
+interface FeedItem {
+  id: string
+  type: string
+  occasionType: string
+  status: string
+  sender: { id: string; username: string; displayName: string; avatarUrl: string | null }
+  recipient: { id: string; username: string; displayName: string; avatarUrl: string | null }
+  createdAt: string
+}
+
 const paperTexture = {
   backgroundImage: `repeating-linear-gradient(
     to bottom,
@@ -17,9 +27,12 @@ export default function HomePage() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [hasAddress, setHasAddress] = useState<boolean | null>(null)
+  const [feed, setFeed] = useState<FeedItem[]>([])
+  const [feedLoading, setFeedLoading] = useState(true)
 
   useEffect(() => {
     api.get('/address/me').then((res) => setHasAddress(!!res.data.data)).catch(() => setHasAddress(false))
+    api.get('/feed').then((res) => setFeed(res.data.data)).catch(() => {}).finally(() => setFeedLoading(false))
   }, [])
 
   function handleLogout() {
@@ -120,21 +133,61 @@ export default function HomePage() {
           Send a Qute Note
         </button>
 
-        {/* Quties button */}
-        <button
-          onClick={() => navigate('/connections')}
-          style={{
-            width: '100%', padding: '14px 24px', fontSize: '14px', fontWeight: 500,
-            borderRadius: '50px', border: '1.5px solid var(--lavender-light)', cursor: 'pointer',
-            background: 'var(--white)', color: 'var(--lavender-dark)',
-            fontFamily: 'var(--font-body)', marginBottom: '24px',
-            transition: 'background 0.15s',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--lavender-pale)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'var(--white)')}
-        >
-          Quties
-        </button>
+        {/* Quick links */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '24px' }}>
+          <button
+            onClick={() => navigate('/connections')}
+            style={{
+              padding: '14px', fontSize: '14px', fontWeight: 500,
+              borderRadius: '16px', border: '1.5px solid var(--lavender-light)', cursor: 'pointer',
+              background: 'var(--white)', color: 'var(--lavender-dark)',
+              fontFamily: 'var(--font-body)', transition: 'background 0.15s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--lavender-pale)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'var(--white)')}
+          >
+            Quties
+          </button>
+          <button
+            onClick={() => navigate(`/profile/${user?.username}`)}
+            style={{
+              padding: '14px', fontSize: '14px', fontWeight: 500,
+              borderRadius: '16px', border: '1.5px solid var(--lavender-light)', cursor: 'pointer',
+              background: 'var(--white)', color: 'var(--lavender-dark)',
+              fontFamily: 'var(--font-body)', transition: 'background 0.15s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--lavender-pale)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'var(--white)')}
+          >
+            My Profile
+          </button>
+          <button
+            onClick={() => navigate('/dates')}
+            style={{
+              padding: '14px', fontSize: '14px', fontWeight: 500,
+              borderRadius: '16px', border: '1.5px solid var(--lavender-light)', cursor: 'pointer',
+              background: 'var(--white)', color: 'var(--lavender-dark)',
+              fontFamily: 'var(--font-body)', transition: 'background 0.15s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--lavender-pale)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'var(--white)')}
+          >
+            Important Dates
+          </button>
+          <button
+            onClick={() => navigate('/invite')}
+            style={{
+              padding: '14px', fontSize: '14px', fontWeight: 500,
+              borderRadius: '16px', border: '1.5px solid var(--lavender-light)', cursor: 'pointer',
+              background: 'var(--white)', color: 'var(--lavender-dark)',
+              fontFamily: 'var(--font-body)', transition: 'background 0.15s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--lavender-pale)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'var(--white)')}
+          >
+            Invite a Friend
+          </button>
+        </div>
 
         {/* Notes remaining (subscribers only) */}
         {user?.subscriptionStatus === 'ACTIVE' && (
@@ -150,8 +203,8 @@ export default function HomePage() {
               </p>
               <p style={{ fontSize: '12px', color: 'var(--ink-muted)', marginTop: '2px' }}>
                 {(user.notesAllowance - user.notesUsed + user.giftedCredits) > 0
-                  ? `${user.notesAllowance - user.notesUsed + user.giftedCredits} included — extras are $2 each`
-                  : 'All included notes used — extras are $2 each'}
+                  ? `${user.notesAllowance - user.notesUsed + user.giftedCredits} included — extras are $3 each`
+                  : 'All included notes used — extras are $3 each'}
               </p>
             </div>
             <p style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: 600, color: 'var(--lavender)' }}>

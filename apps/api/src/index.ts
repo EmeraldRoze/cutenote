@@ -20,6 +20,9 @@ import { addressRouter } from './routes/address'
 import { stripeRouter, handleStripeWebhook } from './routes/stripe'
 import { passItForwardRouter } from './routes/pass-it-forward'
 import { adminRouter } from './routes/admin'
+import { feedRouter } from './routes/feed'
+import { importantDatesRouter } from './routes/important-dates'
+import { invitesRouter } from './routes/invites'
 
 const app = express()
 const PORT = process.env.PORT ?? 4000
@@ -47,10 +50,13 @@ app.use('/address', addressRouter)
 app.use('/stripe', stripeRouter)
 app.use('/pass-it-forward', passItForwardRouter)
 app.use('/admin', adminRouter)
+app.use('/feed', feedRouter)
+app.use('/important-dates', importantDatesRouter)
+app.use('/invites', invitesRouter)
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', service: 'cutenote-api' })
+  res.json({ status: 'ok', service: 'qutenote-api' })
 })
 
 // ─── 404 ──────────────────────────────────────────────────────────────────────
@@ -59,5 +65,5 @@ app.use((_req, res) => {
 })
 
 app.listen(PORT, () => {
-  console.log(`CuteNote API running on http://localhost:${PORT}`)
+  console.log(`QuteNote API running on http://localhost:${PORT}`)
 })

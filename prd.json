@@ -104,7 +104,7 @@
     {
       "id": "phase-8",
       "title": "Launch Polish — Onboarding, empty states, brand voice",
-      "description": "Add the onboarding flow for new users, fill in all empty states with CuteNote brand copy, and make sure every screen feels warm and fun before launch.",
+      "description": "Add the onboarding flow for new users, fill in all empty states with QuteNote brand copy, and make sure every screen feels warm and fun before launch.",
       "acceptanceCriteria": [
         "New users see a friendly onboarding flow explaining how it works",
         "Every empty state has warm on-brand copy (not generic placeholder text)",

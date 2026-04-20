@@ -1,5 +1,5 @@
 {
-  "name": "cutenote",
+  "name": "qutenote",
   "version": "1.0.0",
   "private": true,
   "workspaces": [
@@ -12,5 +12,8 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "lob": "^7.1.0"
   }
 }

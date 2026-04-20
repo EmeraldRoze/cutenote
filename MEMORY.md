@@ -52,8 +52,12 @@ Typecheck web:       cd apps/web && npx tsc --noEmit
 2026-04-16 — Phase 3: subscription gate, allowance deduction, $2 overage, Pass It Forward API, notes counter on home
 2026-04-16 — Phase 4: Lob address verification, admin dashboard, admin note status updates, sender notification on ship
 
+2026-04-20 — Rebranded CuteNote → QuteNote across all code and config files
+2026-04-20 — New landing page (warm editorial design) added at / for visitors
+2026-04-20 — Pricing updated: $7.95/month, $3.00 per extra card
+
 ## What I am working on right now
-Phase 4 complete. Phase 5 (Social — Profiles, connections, activity feed) is next.
+Landing page and rebrand complete. Phase 5 (Social — Profiles, connections, activity feed) is next.
 
 ## Next 3 things to do
 1. Phase 5: Build user profile page showing notes sent/received, CN Score, badges
@@ -70,12 +74,12 @@ Phase 4 complete. Phase 5 (Social — Profiles, connections, activity feed) is n
 - Auth endpoints (register/login/me) each have their own `select` — update all three when adding user fields
 - Stripe Invoice type doesn't expose .charge — cast via `any` with fallback
 
-## Files changed in most recent session (2026-04-16)
-- apps/api/src/routes/address.ts (Lob verification)
-- apps/api/src/routes/notes.ts (verification check)
-- apps/api/src/routes/admin.ts (new)
-- apps/api/src/index.ts (registered admin routes)
-- apps/web/src/pages/AdminPage.tsx (new)
-- apps/web/src/pages/HomePage.tsx (admin link)
-- apps/web/src/App.tsx (admin route)
+## Files changed in most recent session (2026-04-20)
+- apps/web/src/pages/LandingPage.tsx (new — full landing page)
+- apps/web/src/pages/HomePage.tsx (extra card price $2→$3)
+- apps/web/src/App.tsx (added LandingPage import + route)
+- apps/api/src/index.ts (CuteNote → QuteNote)
+- apps/api/package.json (@cutenote → @qutenote)
+- package.json (cutenote → qutenote)
+- prd.json (CuteNote → QuteNote)
 - prd.json (phase-4 passes: true)

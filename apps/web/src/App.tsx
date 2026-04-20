@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import SignUpPage from './pages/SignUpPage'
 import LoginPage from './pages/LoginPage'
 import HomePage from './pages/HomePage'
+import LandingPage from './pages/LandingPage'
 import SendFlow from './pages/send/SendFlow'
 import ConnectionsPage from './pages/ConnectionsPage'
 import AddressPage from './pages/AddressPage'
@@ -29,7 +30,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/home" replace />} />
+      <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
       <Route path="/signup" element={<PublicRoute><SignUpPage /></PublicRoute>} />
       <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
