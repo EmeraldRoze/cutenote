@@ -78,9 +78,6 @@ export default function ImportantDatesPage() {
     }
   }
 
-  function _formatDate(d: ImportantDate) {
-    return `${MONTHS[d.month - 1]} ${d.day}`
-  }
 
   function isUpcoming(d: ImportantDate) {
     const now = new Date()
