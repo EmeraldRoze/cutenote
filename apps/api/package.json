@@ -1,5 +1,5 @@
 {
-  "name": "@qutenote/api",
+  "name": "@cutenote/api",
   "version": "1.0.0",
   "private": true,
   "prisma": {
