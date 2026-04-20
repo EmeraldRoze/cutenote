@@ -50,7 +50,7 @@ const cardStyle = {
 
 export default function ProfilePage() {
   const { username } = useParams<{ username: string }>()
-  const { user: me } = useAuth()
+  const { user: _me } = useAuth()
   const navigate = useNavigate()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)

@@ -27,8 +27,8 @@ export default function HomePage() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [hasAddress, setHasAddress] = useState<boolean | null>(null)
-  const [feed, setFeed] = useState<FeedItem[]>([])
-  const [feedLoading, setFeedLoading] = useState(true)
+  const [_feed, setFeed] = useState<FeedItem[]>([])
+  const [_feedLoading, setFeedLoading] = useState(true)
 
   useEffect(() => {
     api.get('/address/me').then((res) => setHasAddress(!!res.data.data)).catch(() => setHasAddress(false))

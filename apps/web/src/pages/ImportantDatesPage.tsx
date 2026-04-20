@@ -78,7 +78,7 @@ export default function ImportantDatesPage() {
     }
   }
 
-  function formatDate(d: ImportantDate) {
+  function _formatDate(d: ImportantDate) {
     return `${MONTHS[d.month - 1]} ${d.day}`
   }
 
