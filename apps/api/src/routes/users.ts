@@ -24,6 +24,7 @@ usersRouter.get('/:username', requireAuth, async (req: AuthRequest, res: Respons
       _count: {
         select: {
           notesSent: true,
+          notesReceived: true,
           followers: true,
           following: true,
         },
@@ -31,7 +32,16 @@ usersRouter.get('/:username', requireAuth, async (req: AuthRequest, res: Respons
     },
   })
   if (!user) return res.status(404).json({ error: 'User not found.' })
-  return res.json({ data: user })
+
+  let connectionStatus: string | null = null
+  if (user.id !== req.userId) {
+    const conn = await prisma.connection.findUnique({
+      where: { followerId_followingId: { followerId: req.userId!, followingId: user.id } },
+    })
+    connectionStatus = conn?.status ?? null
+  }
+
+  return res.json({ data: { ...user, connectionStatus, isMe: user.id === req.userId } })
 })
 
 // ─── Search users ─────────────────────────────────────────────────────────────
