@@ -20,6 +20,7 @@ import { addressRouter } from './routes/address'
 import { stripeRouter, handleStripeWebhook } from './routes/stripe'
 import { passItForwardRouter } from './routes/pass-it-forward'
 import { adminRouter } from './routes/admin'
+import { adminPdfRouter } from './routes/admin-pdf'
 import { feedRouter } from './routes/feed'
 import { importantDatesRouter } from './routes/important-dates'
 import { invitesRouter } from './routes/invites'
@@ -56,6 +57,7 @@ app.use('/address', addressRouter)
 app.use('/stripe', stripeRouter)
 app.use('/pass-it-forward', passItForwardRouter)
 app.use('/admin', adminRouter)
+app.use('/admin', adminPdfRouter)
 app.use('/feed', feedRouter)
 app.use('/important-dates', importantDatesRouter)
 app.use('/invites', invitesRouter)

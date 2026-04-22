@@ -159,7 +159,20 @@ export default function AdminPage() {
             </div>
 
             {/* Actions */}
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => {
+                  const token = localStorage.getItem('cn_token')
+                  window.open(`/api/admin/notes/${note.id}/pdf?token=${token}`, '_blank')
+                }}
+                style={{
+                  padding: '8px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 500,
+                  border: '1px solid var(--lavender)', cursor: 'pointer', fontFamily: 'var(--font-body)',
+                  background: 'var(--white)', color: 'var(--lavender)',
+                }}
+              >
+                Download PDF
+              </button>
               {note.status === 'PENDING' && (
                 <button
                   onClick={() => updateStatus(note.id, 'PRINTED')}

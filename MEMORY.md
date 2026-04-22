@@ -55,6 +55,9 @@ Typecheck web:       cd apps/web && npx tsc --noEmit
 2026-04-20 — Rebranded CuteNote → QuteNote across all code and config files
 2026-04-20 — New landing page (warm editorial design) added at / for visitors
 2026-04-20 — Pricing updated: $7.95/month, $3.00 per extra card
+2026-04-20 — Removed Ralph loop (scripts/ralph/) — working directly with project owner from now on
+2026-04-20 — Fixed multiple deploy failures: missing Phase 5 files, unused TypeScript variables
+2026-04-22 — PDF download feature on admin dashboard — generates printable 6x4 postcard (front: card design, back: note text + address)
 
 ## What I am working on right now
 Landing page and rebrand complete. Phase 5 (Social — Profiles, connections, activity feed) is next.
