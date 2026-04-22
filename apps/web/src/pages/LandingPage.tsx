@@ -676,11 +676,11 @@ export default function LandingPage() {
       {/* HERO */}
       <section className="hero">
         <div className="hero-text">
-          <span className="hero-eyebrow">&#10022; Now accepting early access</span>
+          <span className="hero-eyebrow">&#10022; Join early access</span>
           <h1>Send something real.</h1>
           <div className="hero-underline"></div>
           <p className="hero-sub">Sometimes we choke on our feelings.<br/>QuteNote is your personal Heimlich.</p>
-          <p className="hero-body">A social platform where your message arrives as a real postcard — no address required, no post office, no excuses.</p>
+          <p className="hero-body">Connect with friends, get reminded of important dates, and send messages that arrive as physical postcards at the click of a button.</p>
           <form className="hero-form" onSubmit={e => { e.preventDefault(); handleJoin(heroEmail) }}>
             <input type="email" className="hero-input" placeholder="your@email.com" value={heroEmail} onChange={e => setHeroEmail(e.target.value)} />
             <button type="submit" className="btn-primary">Join now &#128140;</button>
@@ -717,25 +717,25 @@ export default function LandingPage() {
           <div className="section-label">How it works</div>
           <div className="accent-bar"></div>
           <h2 className="section-title">Thoughtful in 60 seconds.</h2>
-          <p className="section-sub">No address. No post office run. Just you, your people, and something real in the mail.</p>
+          <p className="section-sub">Everyone loves to get sweet messages in the mail, but sometimes it's hard to send them. Instead of doomscrolling on your phone, send a QuteNote. You write it on your phone, we send it in the mail.</p>
           <div className="steps-grid">
             <div className="step-card">
               <span className="step-emoji">&#129782;</span>
               <div className="step-num">01</div>
               <h3>Build your circle</h3>
-              <p>Create a profile, add important dates, and set up your personal registry so your people know how to show up for you.</p>
+              <p>Create a profile, add important dates, and start adding friends to your circle.</p>
             </div>
             <div className="step-card">
               <span className="step-emoji">&#128276;</span>
               <div className="step-num">02</div>
               <h3>Get the nudge</h3>
-              <p>Your feed surfaces birthdays, anniversaries, and hard days — so you always know who needs to hear from you.</p>
+              <p>Your feed shows your connections' birthdays, anniversaries, and hard days — so you always know who needs to hear from you.</p>
             </div>
             <div className="step-card">
               <span className="step-emoji">&#9997;&#65039;</span>
               <div className="step-num">03</div>
               <h3>Write &amp; send</h3>
-              <p>Pick a design, use a prompt or go freehand. Hit send. No address, no post office, no excuses.</p>
+              <p>Pick a QuteNote designed by an artist or upload a photo. Next, use one of our writing prompts or just go for it. Then hit send. No address, no post office, easy peasy.</p>
             </div>
             <div className="step-card">
               <span className="step-emoji">&#128236;</span>
@@ -753,34 +753,34 @@ export default function LandingPage() {
           <div className="section-label" style={{color:'var(--lav-light)'}}>Why QuteNote</div>
           <div className="accent-bar" style={{background:'var(--peach)'}}></div>
           <h2 className="section-title light">Card apps send cards.<br/>We build relationships.</h2>
-          <p className="section-sub light">Everything designed to remove friction and make showing up feel as good as it should.</p>
+          <p className="section-sub light">Everything is designed to remove friction and make showing up easy. When someone pops into your head, send a QuteNote. Think of something nice about someone? Tell them in a QuteNote.</p>
           <div className="features-grid">
             <div className="feature-card">
               <div className="feature-icon">&#128274;</div>
               <div>
                 <h3>No address needed. Ever.</h3>
-                <p>Encrypted address model means senders never see recipient addresses. Privacy baked in, friction taken out. Your friends get the postcard, not your home address floating around the internet.</p>
+                <p>An encrypted address model means senders never see recipient's addresses. Privacy is baked in, and friction is taken out. Your friends get the postcard, and your home address isn't floating around the internet.</p>
               </div>
             </div>
             <div className="feature-card">
               <div className="feature-icon">&#128197;</div>
               <div>
-                <h3>Date intelligence</h3>
-                <p>A Venmo-style feed that surfaces birthdays, anniversaries, loss, and milestones. We make sure you don't forget your people — and make it fast to do something about it.</p>
+                <h3>Never forget a birthday</h3>
+                <p>A Venmo-style feed that shows birthdays, anniversaries, and important milestones. We make sure you don't forget your people — and make it easy to do something about it.</p>
               </div>
             </div>
             <div className="feature-card">
-              <div className="feature-icon">&#128157;</div>
+              <div className="feature-icon">&#9997;&#65039;</div>
               <div>
-                <h3>Personal registries</h3>
-                <p>Profiles help demystify how people want to be cared for. Add your wishlist, love languages, and favorite things — so the people who love you actually know what to do with that love.</p>
+                <h3>Creative Prompts</h3>
+                <p>Do you ever feel like you want to express how much you care about someone but don't know where to start? QuteNote helps get those feelings unstuck with fun and sweet prompts to get the words flowing.</p>
               </div>
             </div>
             <div className="feature-card">
-              <div className="feature-icon">&#10024;</div>
+              <div className="feature-icon">&#127912;</div>
               <div>
-                <h3>AI-assisted writing</h3>
-                <p>Sometimes we choke on our feelings. Our prompts help you say exactly what you mean — in your voice, not a Hallmark script. Then we print it and mail it for you.</p>
+                <h3>Featured Artists</h3>
+                <p>The card aisle at Walgreens is so bleh! We carefully curate artists so you can send beautiful art to your friends while also supporting talented creators.</p>
               </div>
             </div>
           </div>
@@ -792,7 +792,7 @@ export default function LandingPage() {
         <div className="section-label">Pricing</div>
         <div className="accent-bar"></div>
         <h2 className="section-title">Simple, flat pricing.</h2>
-        <p className="section-sub">Going to the post office usually sucks. We're making it cute again.</p>
+        <p className="section-sub">Going to the post office sucks. We make mail qute again.</p>
         <div className="pricing-grid">
           <div className="price-card">
             <div className="price-tier">&#128140; Free Profile</div>
@@ -802,9 +802,8 @@ export default function LandingPage() {
             <ul className="price-list">
               <li>Connect with friends &amp; family</li>
               <li>Get notified of important dates</li>
-              <li>Draft Qute Notes</li>
+              <li>Draft QuteNotes</li>
               <li>See featured artists &amp; designs</li>
-              <li>Build your personal registry</li>
             </ul>
             <button className="btn-outline" onClick={() => navigate('/signup')}>Get started free</button>
           </div>
@@ -816,10 +815,9 @@ export default function LandingPage() {
             <div className="price-divider"></div>
             <ul className="price-list">
               <li>2 postcards included every month</li>
-              <li>$3.00 per additional send</li>
-              <li>Streaks, badges &amp; points</li>
+              <li>$3.49 per additional send</li>
+              <li>Badges &amp; points</li>
               <li>"Pass It Forward" gifted credits</li>
-              <li>Priority access to new designs</li>
             </ul>
             <button className="btn-filled" onClick={() => navigate('/signup')}>Join now</button>
           </div>
@@ -832,7 +830,7 @@ export default function LandingPage() {
         <div style={{position:'relative', zIndex:2}}>
           <div className="section-label">What people are saying</div>
           <div className="accent-bar"></div>
-          <h2 className="section-title">Real notes. Real feelings.</h2>
+          <h2 className="section-title">Don't save it for the eulogy. Say it now.</h2>
           <p className="section-sub">From people who finally stopped meaning to send a card and actually did it.</p>
           <div className="testimonials-grid">
             <div className="testimonial-card">
@@ -861,7 +859,7 @@ export default function LandingPage() {
                 <div className="t-avatar">&#128156;</div>
                 <div>
                   <div className="t-name">Dani R.</div>
-                  <div className="t-handle">@danireads</div>
+                  <div className="t-handle">@danitellsall</div>
                 </div>
               </div>
             </div>
@@ -874,27 +872,27 @@ export default function LandingPage() {
         <div className="section-label">FAQ</div>
         <div className="accent-bar"></div>
         <h2 className="section-title">Good questions.</h2>
-        <p className="section-sub">We know, it sounds like magic. Here's how the magic works.</p>
+        <p className="section-sub">We know, it sounds like magic. Here's how it works.</p>
         <div className="faq-grid">
           <div className="faq-item">
             <div className="faq-q">How do you send a postcard without knowing someone's address?</div>
-            <p className="faq-a">Recipients add their address once — it's stored encrypted and never shared with senders. You just tap send. We handle the rest. It's like Venmo but for showing up.</p>
+            <p className="faq-a">Recipients add their address once — it's encrypted and never shared with senders. You just tap send. We handle the rest. It's like Venmo but for showing up.</p>
           </div>
           <div className="faq-item">
             <div className="faq-q">How long does delivery take?</div>
-            <p className="faq-a">Typically 3–5 business days within the US. We print and ship every postcard with care — not a factory vibe, a real postcard vibe.</p>
+            <p className="faq-a">Typically 3–5 business days within the US. We print and ship every postcard with care — not a factory vibe, a real, beautiful postcard.</p>
           </div>
           <div className="faq-item">
             <div className="faq-q">Can I design my own cards?</div>
-            <p className="faq-a">Yes! You can choose from our curated artist designs or upload your own. We work with independent illustrators so every design feels intentional.</p>
+            <p className="faq-a">Yes! You can choose from our curated artist designs or upload your own photo. We work with independent artists so every design is intentional.</p>
           </div>
           <div className="faq-item">
             <div className="faq-q">What if the recipient isn't on QuteNote yet?</div>
-            <p className="faq-a">We send them a magic link to claim their postcard and join. The postcard still arrives in the mail — the app invite is just a bonus.</p>
+            <p className="faq-a">We send them a magic link to claim their postcard and join.</p>
           </div>
           <div className="faq-item">
             <div className="faq-q">Is my address actually private?</div>
-            <p className="faq-a">100%. Your address is encrypted and only used for fulfillment. Senders never see it. We will never sell your data — we're not that kind of platform.</p>
+            <p className="faq-a">100%. Your address is encrypted and only used for fulfillment. Senders never see it. We will never sell your data — we're not that kind of evil platform.</p>
           </div>
           <div className="faq-item">
             <div className="faq-q">When does the app launch?</div>
@@ -907,7 +905,7 @@ export default function LandingPage() {
       <section id="cta">
         <div className="cta-postcard">
           <h2>Ready to send something real?</h2>
-          <p>Join thousands of humans who are done forgetting their people and ready to show up — one postcard at a time.</p>
+          <p>Show up — one postcard at a time.</p>
           <form className="cta-form" onSubmit={e => { e.preventDefault(); handleJoin(ctaEmail) }}>
             <input type="email" className="cta-input" placeholder="your@email.com" value={ctaEmail} onChange={e => setCtaEmail(e.target.value)} />
             <button type="submit" className="btn-primary">I'm in &#128140;</button>
