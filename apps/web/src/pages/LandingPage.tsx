@@ -669,6 +669,7 @@ export default function LandingPage() {
           <a href="#how">How it works</a>
           <a href="#features">Features</a>
           <a href="#pricing">Pricing</a>
+          <a href="/login" onClick={e => { e.preventDefault(); navigate('/login') }} style={{cursor:'pointer'}}>Log in</a>
           <button className="nav-cta" onClick={() => navigate('/signup')}>Join now</button>
         </div>
       </nav>
