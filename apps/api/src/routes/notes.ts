@@ -63,7 +63,7 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
   const useGiftedCredit = !withinAllowance && hasGiftedCredits
   const isOverage = isSubscribed && !withinAllowance && !hasGiftedCredits
 
-  // Charge $2 overage fee via Stripe
+  // Charge $3.49 overage fee via Stripe
   let overageChargeId: string | null = null
   if (isOverage) {
     if (!sender.stripeCustomerId) {
@@ -72,9 +72,9 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
     try {
       const invoiceItem = await stripe.invoiceItems.create({
         customer: sender.stripeCustomerId,
-        amount: 200,
+        amount: 349,
         currency: 'usd',
-        description: 'QuteNote — extra postcard ($2)',
+        description: 'QuteNote — extra postcard ($3.49)',
       })
       const invoice = await stripe.invoices.create({
         customer: sender.stripeCustomerId,

@@ -203,8 +203,8 @@ export default function HomePage() {
               </p>
               <p style={{ fontSize: '12px', color: 'var(--ink-muted)', marginTop: '2px' }}>
                 {(user.notesAllowance - user.notesUsed + user.giftedCredits) > 0
-                  ? `${user.notesAllowance - user.notesUsed + user.giftedCredits} included — extras are $3 each`
-                  : 'All included notes used — extras are $3 each'}
+                  ? `${user.notesAllowance - user.notesUsed + user.giftedCredits} included — extras are $3.49 each`
+                  : 'All included notes used — extras are $3.49 each'}
               </p>
             </div>
             <p style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: 600, color: 'var(--lavender)' }}>

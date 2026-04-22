@@ -15,7 +15,7 @@ const giftSchema = z.object({
   message: 'Provide either a recipient user or email.',
 })
 
-// POST /pass-it-forward — gift a note credit ($2 charge to gifter)
+// POST /pass-it-forward — gift a note credit ($3.49 charge to gifter)
 passItForwardRouter.post('/', requireAuth, async (req: AuthRequest, res: Response) => {
   const parsed = giftSchema.safeParse(req.body)
   if (!parsed.success) {
@@ -36,14 +36,14 @@ passItForwardRouter.post('/', requireAuth, async (req: AuthRequest, res: Respons
     if (!exists) return res.status(404).json({ error: 'Recipient not found.' })
   }
 
-  // Charge $2 via Stripe
+  // Charge $3.49 via Stripe
   let chargeId: string
   try {
     const invoiceItem = await stripe.invoiceItems.create({
       customer: gifter.stripeCustomerId,
-      amount: 200,
+      amount: 349,
       currency: 'usd',
-      description: 'QuteNote — Pass It Forward gift ($2)',
+      description: 'QuteNote — Pass It Forward gift ($3.49)',
     })
     const invoice = await stripe.invoices.create({
       customer: gifter.stripeCustomerId,
