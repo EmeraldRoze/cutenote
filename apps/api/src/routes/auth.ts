@@ -34,6 +34,7 @@ const signUpSchema = z.object({
     .min(3, 'Username must be at least 3 characters.')
     .max(30)
     .regex(/^[a-z0-9_]+$/, 'Username can only contain lowercase letters, numbers, and underscores.'),
+  birthday: z.string().optional(),
 })
 
 authRouter.post('/register', authLimiter, async (req: Request, res: Response) => {
@@ -42,7 +43,7 @@ authRouter.post('/register', authLimiter, async (req: Request, res: Response) =>
     return res.status(400).json({ error: result.error.issues[0].message })
   }
 
-  const { email, password, displayName, username } = result.data
+  const { email, password, displayName, username, birthday } = result.data
 
   const existing = await prisma.user.findFirst({
     where: { OR: [{ email }, { username }] },
@@ -55,7 +56,10 @@ authRouter.post('/register', authLimiter, async (req: Request, res: Response) =>
   const passwordHash = await bcrypt.hash(password, 12)
 
   const user = await prisma.user.create({
-    data: { email, username, displayName, passwordHash },
+    data: {
+      email, username, displayName, passwordHash,
+      birthday: birthday ? new Date(birthday) : null,
+    },
     select: {
       id: true, email: true, username: true, displayName: true,
       avatarUrl: true, subscriptionStatus: true, points: true,

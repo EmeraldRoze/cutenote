@@ -17,6 +17,7 @@ model User {
   passwordHash     String
   avatarUrl        String?
   bio              String?
+  birthday         DateTime?
   isPrivate        Boolean            @default(false)
   isAdmin          Boolean            @default(false)
 

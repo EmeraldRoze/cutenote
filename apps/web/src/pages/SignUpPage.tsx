@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext'
 export default function SignUpPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
-  const [form, setForm] = useState({ email: '', password: '', displayName: '', username: '' })
+  const [form, setForm] = useState({ email: '', password: '', displayName: '', username: '', birthday: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -90,6 +90,18 @@ export default function SignUpPage() {
                 onFocus={e => { e.target.style.borderColor = 'var(--lavender)'; e.target.style.boxShadow = 'var(--shadow-input)' }}
                 onBlur={e => { e.target.style.borderColor = 'var(--border-default)'; e.target.style.boxShadow = 'none' }}
               />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: 'var(--ink)', marginBottom: '6px' }}>Birthday</label>
+              <input
+                type="date"
+                value={form.birthday}
+                onChange={(e) => setForm({ ...form, birthday: e.target.value })}
+                style={inputStyle}
+                onFocus={e => { e.target.style.borderColor = 'var(--lavender)'; e.target.style.boxShadow = 'var(--shadow-input)' }}
+                onBlur={e => { e.target.style.borderColor = 'var(--border-default)'; e.target.style.boxShadow = 'none' }}
+              />
+              <p style={{ fontSize: '11px', color: 'var(--ink-muted)', marginTop: '4px' }}>So your Quties know when to celebrate you!</p>
             </div>
             <div>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: 'var(--ink)', marginBottom: '6px' }}>Email</label>
