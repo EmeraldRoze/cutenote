@@ -48,6 +48,7 @@ model User {
   passItForwards   PassItForward[] @relation("Gifter")
   passesReceived   PassItForward[] @relation("Recipient")
   notifications    Notification[]
+  passwordResets   PasswordReset[]
 }
 
 // ─── ADDRESSES (encrypted at app level) ─────────────────────────────────────
@@ -182,6 +183,19 @@ model Notification {
   body      String
   isRead    Boolean          @default(false)
   createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── PASSWORD RESETS ─────────────────────────────────────────────────────────
+
+model PasswordReset {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

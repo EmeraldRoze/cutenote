@@ -93,6 +93,11 @@ export default function LoginPage() {
                 onBlur={e => { e.target.style.borderColor = 'var(--border-default)'; e.target.style.boxShadow = 'none' }}
               />
             </div>
+            <div style={{ textAlign: 'right' }}>
+              <Link to="/forgot-password" style={{ fontSize: '13px', color: 'var(--lavender-dark)', fontWeight: 500 }}>
+                Forgot password?
+              </Link>
+            </div>
             <button
               type="submit"
               disabled={loading}
