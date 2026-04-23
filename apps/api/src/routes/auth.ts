@@ -2,12 +2,18 @@ import { Router, Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import { z } from 'zod'
+import sgMail from '@sendgrid/mail'
 import { prisma } from '../lib/prisma'
 import { signToken } from '../lib/jwt'
 import { requireAuth, AuthRequest } from '../middleware/auth'
 import rateLimit from 'express-rate-limit'
 
 const WEB_URL = process.env.WEB_URL ?? 'http://localhost:3000'
+const SENDGRID_FROM = process.env.SENDGRID_FROM_EMAIL ?? 'hello@qutenote.com'
+
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+}
 
 export const authRouter = Router()
 
@@ -144,9 +150,35 @@ authRouter.post('/forgot-password', authLimiter, async (req: Request, res: Respo
   })
 
   const resetUrl = `${WEB_URL}/reset-password?token=${token}`
-  console.log(`[Password Reset] ${user.email} → ${resetUrl}`)
 
-  // TODO: send email via SendGrid when keys are configured
+  if (process.env.SENDGRID_API_KEY) {
+    try {
+      await sgMail.send({
+        to: user.email,
+        from: { email: SENDGRID_FROM, name: 'QuteNote' },
+        subject: 'Reset your QuteNote password',
+        html: `
+          <div style="font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:40px 20px;">
+            <h1 style="font-size:28px;color:#2C2540;margin-bottom:8px;">Reset your password</h1>
+            <p style="font-size:15px;color:#6B6480;line-height:1.7;margin-bottom:24px;">
+              Hi ${user.displayName}, someone requested a password reset for your QuteNote account.
+              Click the button below to choose a new password. This link expires in 1 hour.
+            </p>
+            <a href="${resetUrl}" style="display:inline-block;padding:14px 32px;background:#9B8EC4;color:#fff;text-decoration:none;border-radius:50px;font-size:15px;font-weight:500;">
+              Reset password
+            </a>
+            <p style="font-size:13px;color:#9590AA;margin-top:32px;line-height:1.6;">
+              If you didn't request this, you can safely ignore this email. Your password won't change.
+            </p>
+          </div>
+        `,
+      })
+    } catch (emailErr: any) {
+      console.error('SendGrid error:', emailErr?.message ?? emailErr)
+    }
+  } else {
+    console.log(`[Password Reset] ${user.email} → ${resetUrl}`)
+  }
 
   return res.json({ data: { message: 'If that email is in our system, we sent a reset link.' } })
 })
