@@ -13,35 +13,40 @@ const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!
 // ─── POST /stripe/checkout — create a Stripe Checkout session ────────────────
 
 stripeRouter.post('/checkout', requireAuth, async (req: AuthRequest, res: Response) => {
-  const user = await prisma.user.findUnique({ where: { id: req.userId! } })
-  if (!user) return res.status(404).json({ error: 'User not found.' })
+  try {
+    const user = await prisma.user.findUnique({ where: { id: req.userId! } })
+    if (!user) return res.status(404).json({ error: 'User not found.' })
 
-  if (user.subscriptionStatus === 'ACTIVE') {
-    return res.status(400).json({ error: 'You already have an active subscription.' })
-  }
+    if (user.subscriptionStatus === 'ACTIVE') {
+      return res.status(400).json({ error: 'You already have an active subscription.' })
+    }
 
-  // Create or reuse Stripe customer
-  let customerId = user.stripeCustomerId ?? undefined
-  if (!customerId) {
-    const customer = await stripe.customers.create({
-      email: user.email,
-      name: user.displayName,
+    let customerId = user.stripeCustomerId ?? undefined
+    if (!customerId) {
+      const customer = await stripe.customers.create({
+        email: user.email,
+        name: user.displayName,
+        metadata: { userId: user.id },
+      })
+      customerId = customer.id
+      await prisma.user.update({ where: { id: user.id }, data: { stripeCustomerId: customerId } })
+    }
+
+    console.log('Creating checkout session with PRICE_ID:', PRICE_ID)
+    const session = await stripe.checkout.sessions.create({
+      customer: customerId,
+      mode: 'subscription',
+      line_items: [{ price: PRICE_ID, quantity: 1 }],
+      success_url: `${WEB_URL}/subscribe/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${WEB_URL}/subscribe`,
       metadata: { userId: user.id },
     })
-    customerId = customer.id
-    await prisma.user.update({ where: { id: user.id }, data: { stripeCustomerId: customerId } })
+
+    return res.json({ data: { url: session.url } })
+  } catch (err: any) {
+    console.error('Stripe checkout error:', err?.message ?? err)
+    return res.status(500).json({ error: err?.message ?? 'Something went wrong creating checkout session.' })
   }
-
-  const session = await stripe.checkout.sessions.create({
-    customer: customerId,
-    mode: 'subscription',
-    line_items: [{ price: PRICE_ID, quantity: 1 }],
-    success_url: `${WEB_URL}/subscribe/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${WEB_URL}/subscribe`,
-    metadata: { userId: user.id },
-  })
-
-  return res.json({ data: { url: session.url } })
 })
 
 // ─── POST /stripe/portal — open billing portal ───────────────────────────────
