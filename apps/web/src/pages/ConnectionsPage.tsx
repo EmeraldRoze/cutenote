@@ -210,27 +210,31 @@ export default function ConnectionsPage() {
         <div style={{ ...cardStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ink)' }}>
-              {user?.isPrivate ? 'Private profile' : 'Public profile'}
+              Approve new connections
             </p>
             <p style={{ fontSize: '11px', color: 'var(--ink-muted)', marginTop: '2px' }}>
               {user?.isPrivate
-                ? 'People need your approval to connect'
-                : 'Anyone can connect with you automatically'}
+                ? 'On — people need your approval to connect'
+                : 'Off — anyone can connect with you automatically'}
             </p>
           </div>
-          <button
+          <div
             onClick={togglePrivacy}
             style={{
-              padding: '6px 14px', fontSize: '12px', fontWeight: 500,
-              borderRadius: '50px', border: '1.5px solid var(--lavender-light)',
-              background: user?.isPrivate ? 'var(--lavender)' : 'var(--white)',
-              color: user?.isPrivate ? '#fff' : 'var(--lavender-dark)',
-              cursor: 'pointer', fontFamily: 'var(--font-body)',
-              transition: 'all 0.15s', flexShrink: 0,
+              width: '44px', height: '24px', borderRadius: '12px',
+              background: user?.isPrivate ? 'var(--lavender)' : 'var(--lavender-pale)',
+              cursor: 'pointer', position: 'relative', flexShrink: 0,
+              transition: 'background 0.2s',
             }}
           >
-            {user?.isPrivate ? 'Private' : 'Public'}
-          </button>
+            <div style={{
+              width: '20px', height: '20px', borderRadius: '50%',
+              background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+              position: 'absolute', top: '2px',
+              left: user?.isPrivate ? '22px' : '2px',
+              transition: 'left 0.2s',
+            }} />
+          </div>
         </div>
 
         {/* Pending requests */}
