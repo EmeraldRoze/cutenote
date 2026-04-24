@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
+import { useAuth } from '../context/AuthContext'
 
 interface Connection {
   id: string
@@ -18,6 +19,14 @@ interface SearchResult {
   avatarUrl: string | null
 }
 
+interface PendingRequest {
+  id: string
+  username: string
+  displayName: string
+  avatarUrl: string | null
+  requestId: string
+}
+
 const paperTexture = {
   backgroundImage: `repeating-linear-gradient(
     to bottom,
@@ -30,7 +39,9 @@ const paperTexture = {
 
 export default function ConnectionsPage() {
   const navigate = useNavigate()
+  const { user, refreshUser } = useAuth()
   const [connections, setConnections] = useState<Connection[]>([])
+  const [pendingRequests, setPendingRequests] = useState<PendingRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
@@ -38,9 +49,10 @@ export default function ConnectionsPage() {
   const [requested, setRequested] = useState<Set<string>>(new Set())
 
   useEffect(() => {
-    api.get('/connections')
-      .then((res) => setConnections(res.data.data))
-      .finally(() => setLoading(false))
+    Promise.all([
+      api.get('/connections').then((res) => setConnections(res.data.data)),
+      api.get('/connections/requests').then((res) => setPendingRequests(res.data.data)),
+    ]).finally(() => setLoading(false))
   }, [])
 
   useEffect(() => {
@@ -64,6 +76,26 @@ export default function ConnectionsPage() {
     } catch {
       // already requested or other error — silently ignore
     }
+  }
+
+  async function acceptRequest(requestId: string) {
+    await api.post(`/connections/accept/${requestId}`)
+    const accepted = pendingRequests.find((r) => r.requestId === requestId)
+    setPendingRequests((prev) => prev.filter((r) => r.requestId !== requestId))
+    if (accepted) {
+      api.get('/connections').then((res) => setConnections(res.data.data))
+    }
+  }
+
+  async function declineRequest(requestId: string) {
+    await api.post(`/connections/decline/${requestId}`)
+    setPendingRequests((prev) => prev.filter((r) => r.requestId !== requestId))
+  }
+
+  async function togglePrivacy() {
+    const newVal = !user?.isPrivate
+    await api.post('/connections/privacy', { isPrivate: newVal })
+    refreshUser?.()
   }
 
   function getInitials(name: string) {
@@ -168,6 +200,83 @@ export default function ConnectionsPage() {
             <p style={{ fontSize: '12px', color: 'var(--ink-muted)', marginTop: '8px' }}>No one found. Maybe invite them?</p>
           )}
         </div>
+
+        {/* Privacy toggle */}
+        <div style={{ ...cardStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ink)' }}>
+              {user?.isPrivate ? 'Private profile' : 'Public profile'}
+            </p>
+            <p style={{ fontSize: '11px', color: 'var(--ink-muted)', marginTop: '2px' }}>
+              {user?.isPrivate
+                ? 'People need your approval to connect'
+                : 'Anyone can connect with you automatically'}
+            </p>
+          </div>
+          <button
+            onClick={togglePrivacy}
+            style={{
+              padding: '6px 14px', fontSize: '12px', fontWeight: 500,
+              borderRadius: '50px', border: '1.5px solid var(--lavender-light)',
+              background: user?.isPrivate ? 'var(--lavender)' : 'var(--white)',
+              color: user?.isPrivate ? '#fff' : 'var(--lavender-dark)',
+              cursor: 'pointer', fontFamily: 'var(--font-body)',
+              transition: 'all 0.15s', flexShrink: 0,
+            }}
+          >
+            {user?.isPrivate ? 'Private' : 'Public'}
+          </button>
+        </div>
+
+        {/* Pending requests */}
+        {pendingRequests.length > 0 && (
+          <div style={cardStyle}>
+            <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ink)', marginBottom: '12px' }}>
+              Pending requests ({pendingRequests.length})
+            </p>
+            <ul style={{ display: 'flex', flexDirection: 'column', gap: '12px', listStyle: 'none', padding: 0 }}>
+              {pendingRequests.map((r) => (
+                <li key={r.requestId} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={avatarStyle(36) as React.CSSProperties}>
+                      {r.avatarUrl
+                        ? <img src={r.avatarUrl} style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }} />
+                        : getInitials(r.displayName)}
+                    </div>
+                    <div>
+                      <p style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}>{r.displayName}</p>
+                      <p style={{ fontSize: '12px', color: 'var(--ink-muted)' }}>@{r.username}</p>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <button
+                      onClick={() => acceptRequest(r.requestId)}
+                      style={{
+                        fontSize: '12px', fontWeight: 500, padding: '6px 14px',
+                        borderRadius: '50px', border: 'none', cursor: 'pointer',
+                        background: 'var(--lavender)', color: '#fff',
+                        fontFamily: 'var(--font-body)',
+                      }}
+                    >
+                      Accept
+                    </button>
+                    <button
+                      onClick={() => declineRequest(r.requestId)}
+                      style={{
+                        fontSize: '12px', fontWeight: 500, padding: '6px 14px',
+                        borderRadius: '50px', border: '1.5px solid var(--border-default)',
+                        background: 'var(--white)', color: 'var(--ink-muted)',
+                        cursor: 'pointer', fontFamily: 'var(--font-body)',
+                      }}
+                    >
+                      Decline
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Connections list */}
         <div style={{ ...cardStyle, ...paperTexture }}>

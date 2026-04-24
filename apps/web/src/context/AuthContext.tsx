@@ -15,6 +15,7 @@ interface User {
   points: number
   currentStreak: number
   isAdmin?: boolean
+  isPrivate?: boolean
 }
 
 interface AuthContextType {

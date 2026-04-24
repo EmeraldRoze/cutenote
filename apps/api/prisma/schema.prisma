@@ -19,7 +19,7 @@ model User {
   avatarUrl        String?
   bio              String?
   birthday         DateTime?
-  isPrivate        Boolean            @default(false)
+  isPrivate        Boolean            @default(true)
   isAdmin          Boolean            @default(false)
 
   // Subscription

@@ -84,6 +84,32 @@ connectionsRouter.post('/accept/:requestId', async (req: AuthRequest, res: Respo
   return res.json({ data: updated })
 })
 
+// POST /connections/decline/:requestId
+connectionsRouter.post('/decline/:requestId', async (req: AuthRequest, res: Response) => {
+  const { requestId } = req.params
+  const request = await prisma.connection.findUnique({ where: { id: requestId } })
+  if (!request) return res.status(404).json({ error: 'Request not found.' })
+  if (request.followingId !== req.userId) return res.status(403).json({ error: 'Not yours to decline.' })
+  if (request.status !== 'PENDING') return res.status(400).json({ error: 'Already handled.' })
+
+  await prisma.connection.delete({ where: { id: requestId } })
+  return res.json({ data: { ok: true } })
+})
+
+// POST /connections/privacy — toggle public/private profile
+connectionsRouter.post('/privacy', async (req: AuthRequest, res: Response) => {
+  const { isPrivate } = req.body
+  if (typeof isPrivate !== 'boolean') {
+    return res.status(400).json({ error: 'Please provide isPrivate as true or false.' })
+  }
+  const user = await prisma.user.update({
+    where: { id: req.userId! },
+    data: { isPrivate },
+    select: { isPrivate: true },
+  })
+  return res.json({ data: user })
+})
+
 // DELETE /connections/:userId
 connectionsRouter.delete('/:userId', async (req: AuthRequest, res: Response) => {
   const { userId } = req.params
