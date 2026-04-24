@@ -92,6 +92,11 @@ export default function ConnectionsPage() {
     setPendingRequests((prev) => prev.filter((r) => r.requestId !== requestId))
   }
 
+  async function removeConnection(userId: string) {
+    await api.delete(`/connections/${userId}`)
+    setConnections((prev) => prev.filter((c) => c.id !== userId))
+  }
+
   async function togglePrivacy() {
     const newVal = !user?.isPrivate
     await api.post('/connections/privacy', { isPrivate: newVal })
@@ -304,7 +309,7 @@ export default function ConnectionsPage() {
                       <p style={{ fontSize: '12px', color: 'var(--ink-muted)' }}>@{c.username}</p>
                     </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     {!c.hasAddress && (
                       <span style={{ fontSize: '11px', color: '#C9868D', fontWeight: 500 }}>no address</span>
                     )}
@@ -321,6 +326,18 @@ export default function ConnectionsPage() {
                       }}
                     >
                       Send Qute
+                    </button>
+                    <button
+                      onClick={() => removeConnection(c.id)}
+                      style={{
+                        fontSize: '12px', fontWeight: 500, padding: '6px 10px',
+                        borderRadius: '50px', border: '1.5px solid var(--border-default)',
+                        background: 'var(--white)', color: 'var(--ink-muted)',
+                        cursor: 'pointer', fontFamily: 'var(--font-body)',
+                      }}
+                      title="Remove connection"
+                    >
+                      ✕
                     </button>
                   </div>
                 </li>
