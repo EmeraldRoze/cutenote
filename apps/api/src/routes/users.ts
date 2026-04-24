@@ -55,6 +55,7 @@ usersRouter.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
       OR: [
         { username: { contains: q, mode: 'insensitive' } },
         { displayName: { contains: q, mode: 'insensitive' } },
+        { email: { equals: q, mode: 'insensitive' } },
       ],
       NOT: { id: req.userId },
     },
