@@ -41,6 +41,7 @@ export default function StepReview({
 }) {
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
+  const [needsSub, setNeedsSub] = useState(false)
   const navigate = useNavigate()
 
   const fontFamily = FONT_FAMILIES[note.fontChoice] ?? FONT_FAMILIES['CAVEAT']
@@ -63,7 +64,12 @@ export default function StepReview({
       })
       navigate('/home?sent=1')
     } catch (err: any) {
-      setError(err?.response?.data?.error ?? 'Something went wrong. Try again.')
+      const status = err?.response?.status
+      if (status === 403) {
+        setNeedsSub(true)
+      } else {
+        setError(err?.response?.data?.error ?? 'Something went wrong. Try again.')
+      }
       setSending(false)
     }
   }
@@ -124,11 +130,37 @@ export default function StepReview({
         href="https://fonts.googleapis.com/css2?family=Caveat&family=Dancing+Script&family=Reenie+Beanie&family=Patrick+Hand&display=swap"
       />
 
+      {needsSub && (
+        <div style={{
+          background: 'var(--lavender-pale)', borderRadius: '20px',
+          border: '1.5px solid var(--lavender-light)', padding: '24px',
+          textAlign: 'center', marginBottom: '16px',
+        }}>
+          <p style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 500, color: 'var(--ink)', marginBottom: '8px' }}>
+            Subscribe to send this note
+          </p>
+          <p style={{ fontSize: '13px', color: 'var(--ink-muted)', lineHeight: 1.6, marginBottom: '16px' }}>
+            Your note is saved! Subscribe for $7.95/mo to send 2 postcards per month, then come back and hit send.
+          </p>
+          <button
+            onClick={() => navigate('/subscribe')}
+            style={{
+              width: '100%', padding: '14px 24px', fontSize: '15px', fontWeight: 500,
+              borderRadius: '50px', border: 'none', cursor: 'pointer',
+              background: 'var(--lavender)', color: '#fff',
+              boxShadow: 'var(--shadow-button)', fontFamily: 'var(--font-body)',
+            }}
+          >
+            Subscribe — $7.95/mo
+          </button>
+        </div>
+      )}
+
       {error && (
         <p style={{ fontSize: '13px', color: 'var(--error)', textAlign: 'center', marginBottom: '16px' }}>{error}</p>
       )}
 
-      <button
+      {!needsSub && <button
         onClick={handleSend}
         disabled={sending}
         style={{
@@ -140,11 +172,11 @@ export default function StepReview({
         }}
       >
         {sending ? 'Sending...' : '💌 Send this note'}
-      </button>
+      </button>}
 
-      <p style={{ fontSize: '12px', color: 'var(--ink-muted)', textAlign: 'center', marginTop: '12px' }}>
+      {!needsSub && <p style={{ fontSize: '12px', color: 'var(--ink-muted)', textAlign: 'center', marginTop: '12px' }}>
         Your note will be printed and mailed within 2–3 business days.
-      </p>
+      </p>}
     </div>
   )
 }
