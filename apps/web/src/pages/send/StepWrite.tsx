@@ -1,5 +1,4 @@
 import { useState, useMemo, useRef } from 'react'
-import { api } from '../../lib/api'
 import type { NoteData } from './SendFlow'
 
 const TONES = [
@@ -107,11 +106,9 @@ export default function StepWrite({
   onNext: (data: Partial<NoteData>) => void
   onBack: () => void
 }) {
-  const [mode, setMode] = useState<'blank' | 'prompt' | 'madlib'>('blank')
+  const [mode, setMode] = useState<'blank' | 'prompt'>('blank')
   const [tone, setTone] = useState('HEARTFELT')
   const [text, setText] = useState('')
-  const [aiLoading, setAiLoading] = useState(false)
-
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const allPrompts = PROMPTS[note.occasionType ?? ''] ?? PROMPTS['JUST_BECAUSE']
   const [shuffleKey, setShuffleKey] = useState(0)
@@ -124,21 +121,7 @@ export default function StepWrite({
     setTimeout(() => textareaRef.current?.focus(), 50)
   }
 
-  async function generateMadlib() {
-    setAiLoading(true)
-    try {
-      const res = await api.post('/ai/madlibs', {
-        tone,
-        occasion: note.occasionType,
-        recipientName: note.recipientName,
-      })
-      setText(res.data.data.text ?? '')
-    } catch {
-      setText(`Hey ${note.recipientName}, just thinking about you and wanted to say — you're one of the good ones. 💌`)
-    } finally {
-      setAiLoading(false)
-    }
-  }
+
 
   return (
     <div>
@@ -173,7 +156,7 @@ export default function StepWrite({
         display: 'flex', background: 'var(--lavender-pale)',
         borderRadius: '12px', padding: '4px', marginBottom: '16px', gap: '4px',
       }}>
-        {(['blank', 'prompt', 'madlib'] as const).map((m) => (
+        {(['blank', 'prompt'] as const).map((m) => (
           <button
             key={m}
             onClick={() => setMode(m)}
@@ -186,7 +169,7 @@ export default function StepWrite({
               transition: 'all 0.15s',
             }}
           >
-            {m === 'madlib' ? '✨ AI Help' : m.charAt(0).toUpperCase() + m.slice(1)}
+            {m === 'blank' ? 'Blank' : 'Starters'}
           </button>
         ))}
       </div>
@@ -230,22 +213,6 @@ export default function StepWrite({
             </button>
           )}
         </div>
-      )}
-
-      {/* AI madlib */}
-      {mode === 'madlib' && (
-        <button
-          onClick={generateMadlib}
-          disabled={aiLoading}
-          style={{
-            width: '100%', marginBottom: '16px', padding: '12px 24px', fontSize: '14px', fontWeight: 500,
-            borderRadius: '12px', border: '1.5px solid var(--lavender-light)', cursor: aiLoading ? 'not-allowed' : 'pointer',
-            background: 'var(--lavender-pale)', color: 'var(--lavender-dark)',
-            fontFamily: 'var(--font-body)', opacity: aiLoading ? 0.6 : 1, transition: 'opacity 0.15s',
-          }}
-        >
-          {aiLoading ? '✨ Writing something cute...' : '✨ Generate a note for me'}
-        </button>
       )}
 
       {/* Textarea */}
