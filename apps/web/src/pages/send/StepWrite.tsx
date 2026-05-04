@@ -116,7 +116,8 @@ export default function StepWrite({
   const remaining = MAX_CHARS - text.length
 
   function fillPrompt(p: string) {
-    setText(p + ' ')
+    const cleaned = p.replace(/[…]+$/, '').trimEnd()
+    setText(cleaned + ' ')
     setMode('blank')
     setTimeout(() => textareaRef.current?.focus(), 50)
   }
