@@ -115,7 +115,7 @@ export default function StepWrite({
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const allPrompts = PROMPTS[note.occasionType ?? ''] ?? PROMPTS['JUST_BECAUSE']
   const [shuffleKey, setShuffleKey] = useState(0)
-  const prompts = useMemo(() => [...allPrompts].sort(() => Math.random() - 0.5).slice(0, 6), [note.occasionType, shuffleKey])
+  const prompts = useMemo(() => [...allPrompts].sort(() => Math.random() - 0.5).slice(0, 3), [note.occasionType, shuffleKey])
   const remaining = MAX_CHARS - text.length
 
   function fillPrompt(p: string) {
@@ -215,16 +215,18 @@ export default function StepWrite({
               </button>
             ))}
           </div>
-          {allPrompts.length > 6 && (
+          {allPrompts.length > 3 && (
             <button
               onClick={() => setShuffleKey(k => k + 1)}
               style={{
-                marginTop: '10px', fontSize: '12px', fontWeight: 500,
+                marginTop: '12px', fontSize: '13px', fontWeight: 500,
                 color: 'var(--lavender-dark)', background: 'none', border: 'none',
                 cursor: 'pointer', fontFamily: 'var(--font-body)',
+                display: 'flex', alignItems: 'center', gap: '6px',
+                margin: '12px auto 0',
               }}
             >
-              Show different starters
+              ↻ Show more starters
             </button>
           )}
         </div>
