@@ -1,13 +1,6 @@
 import { useState, useMemo, useRef } from 'react'
 import type { NoteData } from './SendFlow'
 
-const TONES = [
-  { value: 'HEARTFELT', label: 'Heartfelt' },
-  { value: 'FUNNY', label: 'Funny' },
-  { value: 'FORMAL', label: 'Formal' },
-  { value: 'QUIRKY', label: 'Quirky' },
-]
-
 const PROMPTS: Record<string, string[]> = {
   BIRTHDAY: [
     "The world got lucky when it got you because…",
@@ -107,7 +100,6 @@ export default function StepWrite({
   onBack: () => void
 }) {
   const [mode, setMode] = useState<'blank' | 'prompt'>('blank')
-  const [tone, setTone] = useState('HEARTFELT')
   const [text, setText] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const allPrompts = PROMPTS[note.occasionType ?? ''] ?? PROMPTS['JUST_BECAUSE']
@@ -132,25 +124,6 @@ export default function StepWrite({
       <p style={{ fontSize: '14px', color: 'var(--ink-muted)', marginBottom: '20px' }}>
         Sometimes we choke on our feelings. We got you.
       </p>
-
-      {/* Tone selector */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
-        {TONES.map((t) => (
-          <button
-            key={t.value}
-            onClick={() => setTone(t.value)}
-            style={{
-              padding: '6px 14px', borderRadius: '50px', fontSize: '12px', fontWeight: 500,
-              border: tone === t.value ? '1.5px solid var(--lavender)' : '1.5px solid var(--border-default)',
-              background: tone === t.value ? 'var(--lavender)' : 'var(--white)',
-              color: tone === t.value ? '#fff' : 'var(--ink-mid)',
-              cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'all 0.15s',
-            }}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
 
       {/* Mode tabs */}
       <div style={{
@@ -244,7 +217,7 @@ export default function StepWrite({
 
       <button
         disabled={text.trim().length < 5}
-        onClick={() => onNext({ noteText: text.trim(), toneUsed: tone })}
+        onClick={() => onNext({ noteText: text.trim() })}
         style={{
           width: '100%', marginTop: '16px', padding: '13px 24px', fontSize: '15px', fontWeight: 500,
           borderRadius: '50px', border: 'none', cursor: text.trim().length < 5 ? 'not-allowed' : 'pointer',
