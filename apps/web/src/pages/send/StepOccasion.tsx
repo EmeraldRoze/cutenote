@@ -3,9 +3,9 @@ import type { NoteData } from './SendFlow'
 const OCCASIONS = [
   { value: 'BIRTHDAY', emoji: '🎂', label: 'Birthday' },
   { value: 'ANNIVERSARY', emoji: '💑', label: 'Anniversary' },
-  { value: 'CONGRATULATIONS', emoji: '🎉', label: 'Congrats' },
+  { value: 'CONGRATULATIONS', emoji: '🎉', label: 'Big Life Moments' },
   { value: 'HOLIDAY', emoji: '✨', label: 'Holiday' },
-  { value: 'CONSOLATION', emoji: '🤗', label: 'Thinking of you' },
+  { value: 'CONSOLATION', emoji: '🤗', label: 'Hard Times' },
   { value: 'JUST_BECAUSE', emoji: '💌', label: 'Just because' },
   { value: 'INVITATION', emoji: '📬', label: 'Invitation' },
   { value: 'CUSTOM', emoji: '✏️', label: 'Something else' },

@@ -13,6 +13,8 @@ import AdminPage from './pages/AdminPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import GoogleAuthSuccessPage from './pages/GoogleAuthSuccessPage'
+import InvitePage from './pages/InvitePage'
+import CollectAddressPage from './pages/CollectAddressPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -46,6 +48,8 @@ function AppRoutes() {
       <Route path="/subscribe" element={<ProtectedRoute><SubscribePage /></ProtectedRoute>} />
       <Route path="/subscribe/success" element={<ProtectedRoute><SubscribeSuccessPage /></ProtectedRoute>} />
       <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
+      <Route path="/invite" element={<ProtectedRoute><InvitePage /></ProtectedRoute>} />
+      <Route path="/collect-address/:token" element={<CollectAddressPage />} />
     </Routes>
   )
 }

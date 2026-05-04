@@ -51,6 +51,7 @@ model User {
   passesReceived   PassItForward[] @relation("Recipient")
   notifications    Notification[]
   passwordResets   PasswordReset[]
+  invitesSent      Invite[]
 }
 
 // ─── ADDRESSES (encrypted at app level) ─────────────────────────────────────
@@ -202,6 +203,31 @@ model PasswordReset {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+// ─── INVITES (SMS-based address collection) ─────────────────────────────────
+
+model Invite {
+  id              String       @id @default(uuid())
+  senderId        String
+  recipientName   String
+  recipientPhone  String
+  token           String       @unique
+  status          InviteStatus @default(PENDING)
+
+  // Address collected from recipient
+  addressLine1    String?
+  addressLine2    String?
+  addressCity     String?
+  addressState    String?
+  addressZip      String?
+  addressCountry  String?      @default("US")
+
+  smsSentAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime     @default(now())
+
+  sender User @relation(fields: [senderId], references: [id], onDelete: Cascade)
+}
+
 // ─── ENUMS ───────────────────────────────────────────────────────────────────
 
 enum SubscriptionStatus {
@@ -263,6 +289,13 @@ enum BadgeType {
   CONNECTED
   THOUGHTFUL_FRIEND
   HOLIDAY_SPIRIT
+}
+
+enum InviteStatus {
+  PENDING
+  SENT
+  COMPLETED
+  EXPIRED
 }
 
 enum NotificationType {
