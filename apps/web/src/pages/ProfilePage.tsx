@@ -29,6 +29,13 @@ interface Profile {
   }
 }
 
+interface Qutie {
+  id: string
+  username: string
+  displayName: string
+  avatarUrl: string | null
+}
+
 const BADGE_LABELS: Record<string, { label: string; icon: string }> = {
   FIRST_NOTE: { label: 'First Note', icon: '✉' },
   BIRTHDAY_HERO: { label: 'Birthday Hero', icon: '🎂' },
@@ -53,13 +60,18 @@ export default function ProfilePage() {
   const { user: _me } = useAuth()
   const navigate = useNavigate()
   const [profile, setProfile] = useState<Profile | null>(null)
+  const [quties, setQuties] = useState<Qutie[]>([])
   const [loading, setLoading] = useState(true)
   const [connecting, setConnecting] = useState(false)
 
   useEffect(() => {
     if (!username) return
     api.get(`/users/${username}`)
-      .then((res) => setProfile(res.data.data))
+      .then((res) => {
+        setProfile(res.data.data)
+        return api.get(`/connections/user/${res.data.data.id}`)
+      })
+      .then((res) => setQuties(res.data.data))
       .catch(() => setProfile(null))
       .finally(() => setLoading(false))
   }, [username])
@@ -217,12 +229,11 @@ export default function ProfilePage() {
         </div>
 
         {/* Stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
           {[
             { value: profile._count.notesSent, label: 'Sent' },
             { value: profile._count.notesReceived, label: 'Received' },
-            { value: profile._count.followers, label: 'Followers' },
-            { value: profile._count.following, label: 'Following' },
+            { value: profile._count.following, label: 'Quties' },
           ].map((stat) => (
             <div key={stat.label} style={{
               ...cardStyle, padding: '14px 8px', textAlign: 'center',
@@ -251,6 +262,61 @@ export default function ProfilePage() {
               Month streak {profile.longestStreak > profile.currentStreak && `(best: ${profile.longestStreak})`}
             </p>
           </div>
+        </div>
+
+        {/* Quties list */}
+        <div style={cardStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+            <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ink)' }}>
+              Quties ({quties.length})
+            </p>
+            {profile.isMe && (
+              <button
+                onClick={() => navigate('/connections')}
+                style={{
+                  fontSize: '12px', fontWeight: 500, color: 'var(--lavender-dark)',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  fontFamily: 'var(--font-body)',
+                }}
+              >
+                Manage →
+              </button>
+            )}
+          </div>
+          {quties.length === 0 && (
+            <p style={{ color: 'var(--ink-muted)', textAlign: 'center', padding: '12px 0', fontFamily: 'var(--font-handwriting)', fontSize: '16px' }}>
+              {profile.isMe ? 'No Quties yet. Find someone to connect with!' : 'No connections yet.'}
+            </p>
+          )}
+          {quties.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+              {quties.map((q) => (
+                <div
+                  key={q.id}
+                  onClick={() => navigate(`/profile/${q.username}`)}
+                  style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center',
+                    gap: '4px', cursor: 'pointer', width: '64px',
+                  }}
+                >
+                  <div style={{
+                    width: 44, height: 44, borderRadius: '50%',
+                    background: 'var(--lavender-pale)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'var(--lavender-dark)', fontSize: '14px', fontWeight: 600,
+                    overflow: 'hidden',
+                  }}>
+                    {q.avatarUrl
+                      ? <img src={q.avatarUrl} style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover' }} />
+                      : getInitials(q.displayName)}
+                  </div>
+                  <p style={{ fontSize: '11px', color: 'var(--ink-muted)', textAlign: 'center', lineHeight: 1.2, wordBreak: 'break-word' }}>
+                    {q.displayName.split(' ')[0]}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Badges */}

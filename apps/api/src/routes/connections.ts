@@ -46,6 +46,30 @@ connectionsRouter.get('/requests', async (req: AuthRequest, res: Response) => {
   return res.json({ data: requests.map((r) => ({ ...r.follower, requestId: r.id })) })
 })
 
+// GET /connections/user/:userId — get a user's accepted connections
+connectionsRouter.get('/user/:userId', async (req: AuthRequest, res: Response) => {
+  const { userId } = req.params
+
+  const connections = await prisma.connection.findMany({
+    where: { followerId: userId, status: 'ACCEPTED' },
+    include: {
+      following: {
+        select: { id: true, username: true, displayName: true, avatarUrl: true },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+  })
+
+  const data = connections.map((c) => ({
+    id: c.following.id,
+    username: c.following.username,
+    displayName: c.following.displayName,
+    avatarUrl: c.following.avatarUrl,
+  }))
+
+  return res.json({ data })
+})
+
 // POST /connections/request/:userId
 connectionsRouter.post('/request/:userId', async (req: AuthRequest, res: Response) => {
   const { userId } = req.params
