@@ -63,14 +63,16 @@ Typecheck web:       cd apps/web && npx tsc --noEmit
 2026-10-06 — iOS app work started. API base URL made configurable (VITE_API_BASE), capacitor://localhost added to API CORS allowlist
 2026-10-06 — Capacitor installed in apps/web (appId club.cutenote.app, appName QuteNote), iOS project generated, web build synced, app builds and runs in iPhone 18 Pro simulator showing the landing page
 2026-10-06 — App-mode polish: native app skips landing page straight to /login (isNativeApp in lib/native.ts), safe-area padding via .native-app class + viewport-fit=cover, capacitor backgroundColor cream + contentInset never (automatic caused white strip), landing nav hides section links under 640px. Verified in simulator
+2026-10-06 — Sign in with Apple: appleId column in schema (NOT yet on live DB), POST /auth/apple verifies Apple identity token via jose JWKS (aud club.cutenote.app), apple-sign-in plugin + black buttons on Login/SignUp (native only), App.entitlements + CODE_SIGN_ENTITLEMENTS wired
+2026-10-06 — Google in-app fix: /auth/google?native=1 sets state=native, callback redirects to qutenote://auth/success?token=; app opens Google in system browser (@capacitor/browser), appUrlOpen listener in AuthContext catches the token; qutenote:// scheme registered in Info.plist. Buttons render verified in simulator
 
 ## What I am working on right now
 iOS app conversion (Emerald's priority as of Oct 6). Capacitor wrapper works in simulator. Remaining Phase 5 web items (CN Score, badges, connection birthdays) are parked until the iOS app ships.
 
 ## Next 3 things to do
-1. iOS: add Sign in with Apple (Apple requires it because we offer Sign in with Google). Also note: Sign in with Google inside the app webview will not work as-is (OAuth redirects back to the website, not the app) — needs native handling or hiding in app until fixed
-2. iOS: app icon from Emerald (1024x1024 PNG, requested) → generate icon set + launch screen
-3. iOS: create App Store Connect record + provisioning profile + TestFlight upload (FIREFLY required)
+1. iOS: app icon from Emerald (1024x1024 PNG, requested) → generate icon set + launch screen
+2. FIREFLY bundle before TestFlight: (a) add appleId column to live DB (npx prisma db push — safe nullable column), (b) deploy API to DO (CORS capacitor origin + /auth/apple + native Google redirect), (c) register App ID club.cutenote.app WITH Sign in with Apple capability + provisioning profile via ASC API, (d) create ASC app record + TestFlight upload
+3. Testing note: Apple/Google sign-in can't be fully tested in simulator (no Apple ID signed in; server not yet deployed) — real test happens on Emerald's phone via TestFlight
 
 ## iOS build facts
 - Native project: apps/web/ios (Capacitor, SPM not CocoaPods)
