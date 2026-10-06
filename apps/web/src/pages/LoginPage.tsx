@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import { useAuth } from '../context/AuthContext'
+import { isNativeApp } from '../lib/native'
+import { appleSignIn, openGoogleSignIn } from '../lib/nativeAuth'
 
 export default function LoginPage() {
   const { login } = useAuth()
@@ -51,8 +53,35 @@ export default function LoginPage() {
             Welcome back
           </h2>
 
+          {isNativeApp && (
+            <button
+              onClick={async () => {
+                setError('')
+                try {
+                  const { token, user } = await appleSignIn()
+                  login(token, user)
+                  navigate('/home')
+                } catch (err: any) {
+                  // User closing Apple's sheet is not an error worth showing
+                  if (err?.response) setError(err.response?.data?.error ?? 'Apple sign-in failed. Please try again.')
+                }
+              }}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                width: '100%', padding: '11px 24px', fontSize: '14px', fontWeight: 500,
+                borderRadius: '50px', border: 'none',
+                background: '#000', color: '#fff',
+                fontFamily: 'var(--font-body)', cursor: 'pointer', marginBottom: '12px',
+              }}
+            >
+              <svg width="16" height="18" viewBox="0 0 170 200" fill="#fff"><path d="M150.4 69.2c-1.1.8-20.3 11.6-20.3 35.6 0 27.8 24.4 37.6 25.1 37.8-.1.6-3.9 13.4-12.9 26.5-8 11.5-16.4 23-29.1 23s-16-7.4-30.7-7.4c-14.3 0-19.4 7.6-31 7.6s-19.7-10.7-29-23.8C11.8 153.1 3 129.3 3 106.7c0-36.2 23.5-55.4 46.7-55.4 12.3 0 22.6 8.1 30.3 8.1 7.4 0 18.9-8.6 32.9-8.6 5.3 0 24.5.5 37.5 18.4zM106.3 35.5c5.8-6.9 9.9-16.5 9.9-26.1 0-1.3-.1-2.7-.4-3.8-9.4.4-20.7 6.3-27.4 14.1-5.3 6-10.3 15.6-10.3 25.3 0 1.5.2 2.9.3 3.4.6.1 1.6.2 2.6.2 8.5 0 19.1-5.7 25.3-13.1z"/></svg>
+              Sign in with Apple
+            </button>
+          )}
+
           <a
             href="/api/auth/google"
+            onClick={isNativeApp ? (e) => { e.preventDefault(); openGoogleSignIn() } : undefined}
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
               width: '100%', padding: '11px 24px', fontSize: '14px', fontWeight: 500,

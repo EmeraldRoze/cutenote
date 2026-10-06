@@ -13,7 +13,9 @@ const API_URL = process.env.NODE_ENV === 'production'
   : 'http://localhost:4000'
 
 // GET /auth/google — redirect user to Google's consent screen
-googleAuthRouter.get('/google', (_req: Request, res: Response) => {
+// ?native=1 means the request came from the iOS app: after sign-in we hand the
+// token back to the app via its qutenote:// link instead of the website
+googleAuthRouter.get('/google', (req: Request, res: Response) => {
   const params = new URLSearchParams({
     client_id: GOOGLE_CLIENT_ID,
     redirect_uri: `${API_URL}/auth/google/callback`,
@@ -21,6 +23,7 @@ googleAuthRouter.get('/google', (_req: Request, res: Response) => {
     scope: 'openid email profile',
     access_type: 'offline',
     prompt: 'select_account',
+    state: req.query.native === '1' ? 'native' : 'web',
   })
   res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`)
 })
@@ -95,6 +98,9 @@ googleAuthRouter.get('/google/callback', async (req: Request, res: Response) => 
     }
 
     const jwt = signToken(user.id)
+    if (req.query.state === 'native') {
+      return res.redirect(`qutenote://auth/success?token=${jwt}`)
+    }
     res.redirect(`${WEB_URL}/auth/google/success?token=${jwt}`)
   } catch (err: any) {
     console.error('Google OAuth error:', err?.message ?? err)

@@ -1,6 +1,9 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
+import { App as CapApp } from '@capacitor/app'
+import { Browser } from '@capacitor/browser'
 import { api } from '../lib/api'
+import { isNativeApp } from '../lib/native'
 
 interface User {
   id: string
@@ -40,6 +43,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then((res) => setUser(res.data.data))
       .catch(() => localStorage.removeItem('cn_token'))
       .finally(() => setLoading(false))
+  }, [])
+
+  // iOS app only: Google sign-in finishes in the system browser and comes
+  // back through a qutenote://auth/success link carrying the login token
+  useEffect(() => {
+    if (!isNativeApp) return
+    const sub = CapApp.addListener('appUrlOpen', ({ url }) => {
+      if (!url.startsWith('qutenote://auth/success')) return
+      const token = new URL(url).searchParams.get('token')
+      if (!token) return
+      Browser.close().catch(() => {})
+      localStorage.setItem('cn_token', token)
+      api.get('/auth/me').then((res) => setUser(res.data.data)).catch(() => {})
+    })
+    return () => { sub.then((s) => s.remove()) }
   }, [])
 
   function login(token: string, userData: User) {
