@@ -62,14 +62,15 @@ Typecheck web:       cd apps/web && npx tsc --noEmit
 2026-05-04 — (recovered from git history) Writing prompts + invite flow, 3-at-a-time prompt refresh, AI Help tab removed (Blank + Starters only), profile page with Quties list, tone selector removed
 2026-10-06 — iOS app work started. API base URL made configurable (VITE_API_BASE), capacitor://localhost added to API CORS allowlist
 2026-10-06 — Capacitor installed in apps/web (appId club.cutenote.app, appName QuteNote), iOS project generated, web build synced, app builds and runs in iPhone 18 Pro simulator showing the landing page
+2026-10-06 — App-mode polish: native app skips landing page straight to /login (isNativeApp in lib/native.ts), safe-area padding via .native-app class + viewport-fit=cover, capacitor backgroundColor cream + contentInset never (automatic caused white strip), landing nav hides section links under 640px. Verified in simulator
 
 ## What I am working on right now
 iOS app conversion (Emerald's priority as of Oct 6). Capacitor wrapper works in simulator. Remaining Phase 5 web items (CN Score, badges, connection birthdays) are parked until the iOS app ships.
 
 ## Next 3 things to do
-1. iOS: app-mode behavior — native app should skip the marketing landing page and go to login/home; fix status bar safe area; fix cramped mobile nav
-2. iOS: add Sign in with Apple (Apple requires it because we offer Sign in with Google)
-3. iOS: app icon from Emerald (1024x1024 PNG, requested), then create App Store Connect record + TestFlight upload (FIREFLY required)
+1. iOS: add Sign in with Apple (Apple requires it because we offer Sign in with Google). Also note: Sign in with Google inside the app webview will not work as-is (OAuth redirects back to the website, not the app) — needs native handling or hiding in app until fixed
+2. iOS: app icon from Emerald (1024x1024 PNG, requested) → generate icon set + launch screen
+3. iOS: create App Store Connect record + provisioning profile + TestFlight upload (FIREFLY required)
 
 ## iOS build facts
 - Native project: apps/web/ios (Capacitor, SPM not CocoaPods)
