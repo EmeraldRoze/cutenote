@@ -26,8 +26,13 @@ Written: 2026-10-06 (replaces stale April 10 handoff)
 3. xcodebuild -project ios/App/App.xcodeproj -scheme App -sdk iphoneos -destination 'generic/platform=iOS' -archivePath <path>.xcarchive CODE_SIGNING_ALLOWED=NO archive
 4. xcodebuild -exportArchive -archivePath <path>.xcarchive -exportOptionsPlist scripts/ios/exportOptions.plist -exportPath <dir> -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_Y5NXGFNCFV.p8 -authenticationKeyID Y5NXGFNCFV -authenticationKeyIssuerID a8f9ba85-917d-49e9-888e-e128d4ef6822
 
+## TestFlight status (Oct 6 evening)
+- Build 1.0(1) processed VALID, build resource e62c0a0b-c371-4fc6-9d9b-8c74e65b1229
+- Public Beta group afef6516-eef8-413d-b7c3-8103aba2b473, PUBLIC LINK: https://testflight.apple.com/join/BRW6MMEJ (activates on approval)
+- Beta review: WAITING_FOR_REVIEW (submitted Oct 6 ~22:11 UTC); beta app description + feedback email set; review contact copied from Dreambound
+
 ## Next steps
-1. Confirm beta review approved; give Emerald the public TestFlight link
+1. Confirm beta review approved; link goes live automatically — tell Emerald
 2. Round 1 on her phone: Apple sign-in and Google sign-in are UNPROVEN on real device — test first
 3. Collect ALL feedback before fixing (round protocol); then remaining Phase 5 web work (CN Score, badges, connection birthdays)
 
