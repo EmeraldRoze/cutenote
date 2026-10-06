@@ -1,7 +1,7 @@
 # Cute Note — Working Memory
-Last updated: 2026-10-06
-Current phase: iOS App — wrapping QuteNote with Capacitor for TestFlight
-Current task: Capacitor wrapper done, app runs in iPhone simulator. Next: app-mode polish (skip landing page, safe areas), then Sign in with Apple, then TestFlight upload.
+Last updated: 2026-10-06 (evening)
+Current phase: iOS App — first TestFlight build uploaded, waiting on Apple processing/beta review
+Current task: Build 1.0(1) uploaded to App Store Connect. Watcher script submitting beta review + creating public TestFlight link.
 
 ## Stack
 Frontend:      React + Vite + Tailwind CSS (web app, mobile-friendly)
@@ -65,14 +65,23 @@ Typecheck web:       cd apps/web && npx tsc --noEmit
 2026-10-06 — App-mode polish: native app skips landing page straight to /login (isNativeApp in lib/native.ts), safe-area padding via .native-app class + viewport-fit=cover, capacitor backgroundColor cream + contentInset never (automatic caused white strip), landing nav hides section links under 640px. Verified in simulator
 2026-10-06 — Sign in with Apple: appleId column in schema (NOT yet on live DB), POST /auth/apple verifies Apple identity token via jose JWKS (aud club.cutenote.app), apple-sign-in plugin + black buttons on Login/SignUp (native only), App.entitlements + CODE_SIGN_ENTITLEMENTS wired
 2026-10-06 — Google in-app fix: /auth/google?native=1 sets state=native, callback redirects to qutenote://auth/success?token=; app opens Google in system browser (@capacitor/browser), appUrlOpen listener in AuthContext catches the token; qutenote:// scheme registered in Info.plist. Buttons render verified in simulator
+2026-10-06 — FIREFLY bundle executed: live DB updated via prisma db execute (appleId column + Invite tables which were MISSING since May — invite feature was broken in prod), code deployed to DO (ACTIVE, /auth/apple verified live), Emerald's stamp icon + cream splash installed
+2026-10-06 — Apple paperwork via ASC API: bundle ID club.cutenote.app registered (58AWMG6XQZ), Sign in with Apple capability enabled (PRIMARY_APP_CONSENT), provisioning profile "QuteNote AppStore" created + installed (cert NVA7KZQ4G5), app record created via browser (Emerald signed in) — App ID 6819877820, SKU qutenote-001
+2026-10-06 — Build 1.0(1) archived unsigned, exported with manual signing exportOptions + ASC key flags, UPLOADED to App Store Connect. ITSAppUsesNonExemptEncryption=false in Info.plist. Watcher (scratchpad qutenote_testflight.js) polls processing → copies beta review contact from Dreambound → sets test notes → creates Public Beta group w/ public link → submits beta review
 
 ## What I am working on right now
 iOS app conversion (Emerald's priority as of Oct 6). Capacitor wrapper works in simulator. Remaining Phase 5 web items (CN Score, badges, connection birthdays) are parked until the iOS app ships.
 
 ## Next 3 things to do
-1. iOS: app icon from Emerald (1024x1024 PNG, requested) → generate icon set + launch screen
-2. FIREFLY bundle before TestFlight: (a) add appleId column to live DB (npx prisma db push — safe nullable column), (b) deploy API to DO (CORS capacitor origin + /auth/apple + native Google redirect), (c) register App ID club.cutenote.app WITH Sign in with Apple capability + provisioning profile via ASC API, (d) create ASC app record + TestFlight upload
-3. Testing note: Apple/Google sign-in can't be fully tested in simulator (no Apple ID signed in; server not yet deployed) — real test happens on Emerald's phone via TestFlight
+1. Confirm beta review approval, send Emerald the public TestFlight link, have her test on her phone (especially Apple + Google sign-in, both unproven on a real device)
+2. Collect Round 1 feedback (per round protocol: collect ALL feedback before starting fixes)
+3. Later rounds: bump CURRENT_PROJECT_VERSION in ios/App/App.xcodeproj for EVERY new upload; then remaining Phase 5 web features (CN Score, badges, connection birthdays)
+
+## QuteNote iOS facts
+- App Store Connect App ID 6819877820, bundle club.cutenote.app, SKU qutenote-001
+- Profile "QuteNote AppStore" (uuid 13ea71be-...) installed in ~/Library/MobileDevice/Provisioning Profiles and Xcode UserData
+- Upload pipeline: VITE_API_BASE=https://cutenote.club/api npm run build -w apps/web → npx cap sync ios → xcodebuild archive CODE_SIGNING_ALLOWED=NO → xcodebuild -exportArchive with exportOptions (manual signing, destination upload) + ASC auth key flags
+- ASC helper + exportOptions.plist + watcher live in session scratchpad — copy asc.js/exportOptions.plist into a project scripts/ios/ folder if needed long-term
 
 ## iOS build facts
 - Native project: apps/web/ios (Capacitor, SPM not CocoaPods)
