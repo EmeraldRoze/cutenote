@@ -55,3 +55,9 @@ body {
 #root {
   min-height: 100vh;
 }
+
+/* Inside the iOS/Android app shell: keep content clear of the status bar and home indicator */
+.native-app body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}

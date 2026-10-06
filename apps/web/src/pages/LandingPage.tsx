@@ -72,6 +72,11 @@ const css = `
   }
   .nav-cta:hover { background: white !important; }
 
+  @media (max-width: 640px) {
+    .nav-links { gap: 16px; }
+    .nav-links a:not(.nav-login) { display: none; }
+  }
+
   .hero {
     background: var(--plum);
     background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(200,189,232,0.12) 31px, rgba(200,189,232,0.12) 32px);
@@ -669,7 +674,7 @@ export default function LandingPage() {
           <a href="#how">How it works</a>
           <a href="#features">Features</a>
           <a href="#pricing">Pricing</a>
-          <a href="/login" onClick={e => { e.preventDefault(); navigate('/login') }} style={{cursor:'pointer'}}>Log in</a>
+          <a href="/login" className="nav-login" onClick={e => { e.preventDefault(); navigate('/login') }} style={{cursor:'pointer'}}>Log in</a>
           <button className="nav-cta" onClick={() => navigate('/signup')}>Join now</button>
         </div>
       </nav>
