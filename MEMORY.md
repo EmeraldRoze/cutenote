@@ -1,7 +1,7 @@
 # Cute Note — Working Memory
-Last updated: 2026-04-16
-Current phase: Phase 5 — Social (next)
-Current task: Phase 4 complete. Phase 5 is next.
+Last updated: 2026-10-06
+Current phase: iOS App — wrapping QuteNote with Capacitor for TestFlight
+Current task: Capacitor wrapper done, app runs in iPhone simulator. Next: app-mode polish (skip landing page, safe areas), then Sign in with Apple, then TestFlight upload.
 
 ## Stack
 Frontend:      React + Vite + Tailwind CSS (web app, mobile-friendly)
@@ -58,14 +58,25 @@ Typecheck web:       cd apps/web && npx tsc --noEmit
 2026-04-20 — Removed Ralph loop (scripts/ralph/) — working directly with project owner from now on
 2026-04-20 — Fixed multiple deploy failures: missing Phase 5 files, unused TypeScript variables
 2026-04-22 — PDF download feature on admin dashboard — generates printable 6x4 postcard (front: card design, back: note text + address)
+2026-04-23/24 — (recovered from git history; MEMORY.md was not updated at the time) Birthday field at signup, Sign in with Google, trust proxy fix, compose-without-subscription, connection approval flow + private profiles, remove connection button, privacy toggle, home page redesign, email-exact-match user search
+2026-05-04 — (recovered from git history) Writing prompts + invite flow, 3-at-a-time prompt refresh, AI Help tab removed (Blank + Starters only), profile page with Quties list, tone selector removed
+2026-10-06 — iOS app work started. API base URL made configurable (VITE_API_BASE), capacitor://localhost added to API CORS allowlist
+2026-10-06 — Capacitor installed in apps/web (appId club.cutenote.app, appName QuteNote), iOS project generated, web build synced, app builds and runs in iPhone 18 Pro simulator showing the landing page
 
 ## What I am working on right now
-Landing page and rebrand complete. Phase 5 (Social — Profiles, connections, activity feed) is next.
+iOS app conversion (Emerald's priority as of Oct 6). Capacitor wrapper works in simulator. Remaining Phase 5 web items (CN Score, badges, connection birthdays) are parked until the iOS app ships.
 
 ## Next 3 things to do
-1. Phase 5: Build user profile page showing notes sent/received, CN Score, badges
-2. Phase 5: User can search for and follow other users
-3. Phase 5: Activity feed showing recent notes from followed users
+1. iOS: app-mode behavior — native app should skip the marketing landing page and go to login/home; fix status bar safe area; fix cramped mobile nav
+2. iOS: add Sign in with Apple (Apple requires it because we offer Sign in with Google)
+3. iOS: app icon from Emerald (1024x1024 PNG, requested), then create App Store Connect record + TestFlight upload (FIREFLY required)
+
+## iOS build facts
+- Native project: apps/web/ios (Capacitor, SPM not CocoaPods)
+- Native build = `VITE_API_BASE=https://cutenote.club/api npm run build -w apps/web` then `npx cap sync ios` from apps/web
+- Simulator check: xcodebuild -project ios/App/App.xcodeproj -scheme App -sdk iphonesimulator CODE_SIGNING_ALLOWED=NO build
+- Apple credentials from Dreambound are reusable: ASC API key Y5NXGFNCFV (~/.appstoreconnect/private_keys/), issuer a8f9ba85-917d-49e9-888e-e128d4ef6822, Team 97276PB95S, cert "Apple Distribution: Emam Cohen" in login keychain. Key cannot do cloud signing — QuteNote needs its own provisioning profile made via ASC API (same pattern as "Dreambound AppStore" profile)
+- Postcards are physical goods, so Apple guideline 3.1.3(e) lets Stripe checkout stay (no Apple IAP cut)
 
 ## Things I learned the hard way
 - DO App Platform must build from the REPO ROOT (not apps/api source_dir). Packages are hoisted to /workspace/node_modules — if you build from apps/api only, dotenv and other deps can't be found at runtime.
@@ -76,6 +87,8 @@ Landing page and rebrand complete. Phase 5 (Social — Profiles, connections, ac
 - Kill existing processes before starting locally: `lsof -ti:4000 | xargs kill -9`
 - Auth endpoints (register/login/me) each have their own `select` — update all three when adding user fields
 - Stripe Invoice type doesn't expose .charge — cast via `any` with fallback
+- ~/Documents is synced by iCloud with "optimize storage" — after months idle it evicts big files (node_modules) and commands fail with ETIMEDOUT reads. Fix: `brctl download <folder>` and wait. Consider pinning the project folder "always keep downloaded"
+- First app launch in a fresh simulator can show a white screen for several seconds — relaunch/wait before assuming a crash
 
 ## Files changed in most recent session (2026-04-20)
 - apps/web/src/pages/LandingPage.tsx (new — full landing page)
