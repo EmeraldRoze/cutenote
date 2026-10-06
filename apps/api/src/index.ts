@@ -40,6 +40,7 @@ app.use(cors({
     'https://www.qutenote.com',
     'https://cutenote.club',
     'https://www.cutenote.club',
+    'capacitor://localhost',
   ],
   credentials: true,
 }))
