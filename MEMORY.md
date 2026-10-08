@@ -1,4 +1,4 @@
-# Cute Note — Working Memory
+# QuteNote — Working Memory
 Last updated: 2026-10-06 (evening)
 Current phase: iOS App — first TestFlight build uploaded, waiting on Apple processing/beta review
 Current task: Build 1.0(1) uploaded to App Store Connect. Watcher script submitting beta review + creating public TestFlight link.
@@ -16,7 +16,7 @@ AI assist:     Claude API (Anthropic) — key not yet in DO env vars
 Email:         SendGrid (Phase 7)
 
 ## Project Directory
-~/Documents/CUTENOTEDEV
+~/Documents/QUTENOTEDEV
 
 ## GitHub
 https://github.com/EmeraldRoze/cutenote
