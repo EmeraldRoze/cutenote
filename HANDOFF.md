@@ -26,7 +26,10 @@ Written: 2026-10-06 (replaces stale April 10 handoff)
 3. xcodebuild -project ios/App/App.xcodeproj -scheme App -sdk iphoneos -destination 'generic/platform=iOS' -archivePath <path>.xcarchive CODE_SIGNING_ALLOWED=NO archive
 4. xcodebuild -exportArchive -archivePath <path>.xcarchive -exportOptionsPlist scripts/ios/exportOptions.plist -exportPath <dir> -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_Y5NXGFNCFV.p8 -authenticationKeyID Y5NXGFNCFV -authenticationKeyIssuerID a8f9ba85-917d-49e9-888e-e128d4ef6822
 
-## TestFlight status (Oct 8): BUILD 2 APPROVED — PUBLIC LINK LIVE
+## TestFlight status (Oct 8 evening): BUILD 3 APPROVED — current
+Build 1.0(3) approved Oct 8: app points at qutenote.com everywhere (Emerald spotted cutenote.club in the sign-in flow of build 2). Testers auto-update via TestFlight. Pending decision from Emerald: Cloudflare redirect cutenote.club -> qutenote.com (needs FIREFLY).
+
+## Earlier (Oct 8): BUILD 2 APPROVED — PUBLIC LINK LIVE
 Build 1.0(2) approved in beta review Oct 8. https://testflight.apple.com/join/BRW6MMEJ is live (cap 100 testers). Emerald notified; Round 1 feedback collection begins once she installs. Demo-account fix was evidently the right diagnosis.
 
 ## History (Oct 7)
