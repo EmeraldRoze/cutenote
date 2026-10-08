@@ -6,7 +6,7 @@ import { api } from './api'
 export async function appleSignIn() {
   const { response } = await SignInWithApple.authorize({
     clientId: 'club.cutenote.app',
-    redirectURI: 'https://cutenote.club',
+    redirectURI: 'https://qutenote.com',
     scopes: 'email name',
   })
   const fullName = [response.givenName, response.familyName].filter(Boolean).join(' ')
