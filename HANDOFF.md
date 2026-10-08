@@ -26,7 +26,10 @@ Written: 2026-10-06 (replaces stale April 10 handoff)
 3. xcodebuild -project ios/App/App.xcodeproj -scheme App -sdk iphoneos -destination 'generic/platform=iOS' -archivePath <path>.xcarchive CODE_SIGNING_ALLOWED=NO archive
 4. xcodebuild -exportArchive -archivePath <path>.xcarchive -exportOptionsPlist scripts/ios/exportOptions.plist -exportPath <dir> -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_Y5NXGFNCFV.p8 -authenticationKeyID Y5NXGFNCFV -authenticationKeyIssuerID a8f9ba85-917d-49e9-888e-e128d4ef6822
 
-## TestFlight status (Oct 7)
+## TestFlight status (Oct 8): BUILD 2 APPROVED — PUBLIC LINK LIVE
+Build 1.0(2) approved in beta review Oct 8. https://testflight.apple.com/join/BRW6MMEJ is live (cap 100 testers). Emerald notified; Round 1 feedback collection begins once she installs. Demo-account fix was evidently the right diagnosis.
+
+## History (Oct 7)
 - Build 1.0(1) was REJECTED in beta review (most likely cause: no demo account for the sign-in wall; exact reason unread — ASC web session expired before Resolution Center could be checked)
 - Fix applied: demo account applereview@cutenote.club / QuteDemo2026! created on live app and attached to betaAppReviewDetail (demoAccountRequired true, note explains physical-goods Stripe exemption 3.1.3(e))
 - Apple refuses resubmission of a rejected build (422 BUILD_STATE_NOT_INTERNAL_TESTING) → build 1.0(2) uploaded Oct 7; watcher adds it to the group + submits review when processing finishes
