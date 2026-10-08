@@ -22,7 +22,7 @@ Written: 2026-10-06 (replaces stale April 10 handoff)
 
 ## Build/upload pipeline (per new build)
 1. Bump CURRENT_PROJECT_VERSION in apps/web/ios/App/App.xcodeproj (both Debug + Release) — EVERY upload
-2. cd apps/web && VITE_API_BASE=https://cutenote.club/api npm run build && npx cap sync ios
+2. cd apps/web && VITE_API_BASE=https://qutenote.com/api npm run build && npx cap sync ios
 3. xcodebuild -project ios/App/App.xcodeproj -scheme App -sdk iphoneos -destination 'generic/platform=iOS' -archivePath <path>.xcarchive CODE_SIGNING_ALLOWED=NO archive
 4. xcodebuild -exportArchive -archivePath <path>.xcarchive -exportOptionsPlist scripts/ios/exportOptions.plist -exportPath <dir> -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_Y5NXGFNCFV.p8 -authenticationKeyID Y5NXGFNCFV -authenticationKeyIssuerID a8f9ba85-917d-49e9-888e-e128d4ef6822
 

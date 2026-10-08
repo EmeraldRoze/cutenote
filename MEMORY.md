@@ -80,12 +80,12 @@ iOS app conversion (Emerald's priority as of Oct 6). Capacitor wrapper works in 
 ## QuteNote iOS facts
 - App Store Connect App ID 6819877820, bundle club.cutenote.app, SKU qutenote-001
 - Profile "QuteNote AppStore" (uuid 13ea71be-...) installed in ~/Library/MobileDevice/Provisioning Profiles and Xcode UserData
-- Upload pipeline: VITE_API_BASE=https://cutenote.club/api npm run build -w apps/web → npx cap sync ios → xcodebuild archive CODE_SIGNING_ALLOWED=NO → xcodebuild -exportArchive with exportOptions (manual signing, destination upload) + ASC auth key flags
+- Upload pipeline: VITE_API_BASE=https://qutenote.com/api npm run build -w apps/web → npx cap sync ios → xcodebuild archive CODE_SIGNING_ALLOWED=NO → xcodebuild -exportArchive with exportOptions (manual signing, destination upload) + ASC auth key flags
 - ASC helper + exportOptions.plist + watcher live in session scratchpad — copy asc.js/exportOptions.plist into a project scripts/ios/ folder if needed long-term
 
 ## iOS build facts
 - Native project: apps/web/ios (Capacitor, SPM not CocoaPods)
-- Native build = `VITE_API_BASE=https://cutenote.club/api npm run build -w apps/web` then `npx cap sync ios` from apps/web
+- Native build = `VITE_API_BASE=https://qutenote.com/api npm run build -w apps/web` then `npx cap sync ios` from apps/web
 - Simulator check: xcodebuild -project ios/App/App.xcodeproj -scheme App -sdk iphonesimulator CODE_SIGNING_ALLOWED=NO build
 - Apple credentials from Dreambound are reusable: ASC API key Y5NXGFNCFV (~/.appstoreconnect/private_keys/), issuer a8f9ba85-917d-49e9-888e-e128d4ef6822, Team 97276PB95S, cert "Apple Distribution: Emam Cohen" in login keychain. Key cannot do cloud signing — QuteNote needs its own provisioning profile made via ASC API (same pattern as "Dreambound AppStore" profile)
 - Postcards are physical goods, so Apple guideline 3.1.3(e) lets Stripe checkout stay (no Apple IAP cut)
