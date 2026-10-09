@@ -76,6 +76,8 @@ const updateSchema = z.object({
   displayName: z.string().min(1).max(50).optional(),
   bio: z.string().max(160).optional(),
   isPrivate: z.boolean().optional(),
+  // Profile emoji: only our own torn-paper art paths are allowed
+  avatarUrl: z.string().regex(/^\/emoji\/[a-z]+\.png$/, 'Pick one of the QuteNote emoji.').nullable().optional(),
 })
 
 usersRouter.put('/me', requireAuth, async (req: AuthRequest, res: Response) => {

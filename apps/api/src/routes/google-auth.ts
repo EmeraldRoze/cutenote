@@ -118,7 +118,7 @@ googleAuthRouter.get('/google/callback', async (req: Request, res: Response) => 
   <h1>You're signed in! 💌</h1>
   <p>Tap below to hop back into QuteNote.</p>
   <a class="btn" href="${appLink}">Open QuteNote</a>
-  <script>setTimeout(function(){ window.location.href = ${JSON.stringify(appLink)} }, 400)</script>
+  <script>setTimeout(function(){ window.location.href = ${JSON.stringify(appLink)} }, 50)</script>
 </body></html>`)
     }
     res.redirect(`${WEB_URL}/auth/google/success?token=${jwt}`)

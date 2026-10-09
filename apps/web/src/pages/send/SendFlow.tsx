@@ -161,7 +161,7 @@ export default function SendFlow() {
 
         {/* ── STEP 3: READY TO SEND ─────────────────────────────── */}
         {step === 'review' && (
-          <ReviewStep note={note as NoteData} onSent={() => setStep('sent')} />
+          <ReviewStep note={note as NoteData} onSent={() => setStep('sent')} onEdit={() => setStep('write')} />
         )}
 
         {/* ── IT'S ON ITS WAY ───────────────────────────────────── */}
@@ -279,7 +279,10 @@ function WriteStep({ note, update, onNext }: {
             })}
           </div>
           {visible.map((p) => (
-            <button key={p} onClick={() => update({ noteText: ((note.noteText ?? '') + (note.noteText ? '\n' : '') + p + ' ').trimStart() })} style={{
+            <button key={p} onClick={() => {
+              const clean = p.replace(/[…:.]+\s*$/, '')
+              update({ noteText: ((note.noteText ?? '') + (note.noteText ? '\n' : '') + clean + ' ').trimStart() })
+            }} style={{
               display: 'block', width: '100%', textAlign: 'left', padding: '10px 12px', marginBottom: '8px',
               borderRadius: '10px', border: '1px solid var(--stone)', background: 'var(--cream)',
               fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', cursor: 'pointer',
@@ -300,7 +303,8 @@ function WriteStep({ note, update, onNext }: {
       )}
 
       {/* Pen row */}
-      <p style={{ ...label, margin: '20px 0 10px' }}>Your pen</p>
+      <p style={{ ...label, margin: '20px 0 4px' }}>Your pen</p>
+      <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-muted)', margin: '0 0 10px' }}>Soon: teach QuteNote your own handwriting.</p>
       <div style={{ display: 'flex', gap: '8px', marginBottom: '28px' }}>
         {PENS.map((p) => {
           const selected = (note.fontChoice ?? 'CAVEAT') === p.value
@@ -330,7 +334,7 @@ function WriteStep({ note, update, onNext }: {
 }
 
 /* ── Review step: postcard preview + send ── */
-function ReviewStep({ note, onSent }: { note: NoteData; onSent: () => void }) {
+function ReviewStep({ note, onSent, onEdit }: { note: NoteData; onSent: () => void; onEdit: () => void }) {
   const navigate = useNavigate()
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
@@ -354,8 +358,9 @@ function ReviewStep({ note, onSent }: { note: NoteData; onSent: () => void }) {
       })
       onSent()
     } catch (err: any) {
-      if (err.response?.status === 402) setNeedsSub(true)
-      else setError(err.response?.data?.error ?? 'Something went sideways. Try again.')
+      const msg = err.response?.data?.error ?? ''
+      if (err.response?.status === 402 || err.response?.status === 403 || /subscri/i.test(msg)) setNeedsSub(true)
+      else setError(msg || 'Something went sideways. Try again.')
     } finally {
       setSending(false)
     }
@@ -407,12 +412,20 @@ function ReviewStep({ note, onSent }: { note: NoteData; onSent: () => void }) {
       )}
 
       {needsSub ? (
-        <button style={primaryBtn} onClick={() => navigate('/subscribe')}>Subscribe to send it</button>
+        <>
+          <div style={{ background: 'var(--lavender-pale)', border: '1px solid var(--lavender-light)', borderRadius: '12px', padding: '12px 16px', marginBottom: '14px', fontSize: '14px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
+            Your note is ready. A membership mails it: $7.95/mo for two postcards a month.
+          </div>
+          <button style={primaryBtn} onClick={() => navigate('/subscribe')}>Subscribe and send</button>
+        </>
       ) : (
         <button style={{ ...primaryBtn, opacity: sending ? 0.7 : 1 }} disabled={sending} onClick={handleSend}>
           {sending ? 'Sending…' : 'Send it'}
         </button>
       )}
+      <button onClick={onEdit} style={{ ...primaryBtn, background: 'var(--lavender-light)', color: 'var(--ink)', marginTop: '12px' }}>
+        Edit the note
+      </button>
     </>
   )
 }

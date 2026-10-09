@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { api } from '../lib/api'
 import QEmoji from '../components/QEmoji'
 import TabBar from '../components/TabBar'
+import { HappeningsRow, STATUS_EMOJI } from '../components/Happenings'
 
 // Profile — App Screens board layout in the Oct 2026 system:
 // membership card, stats, privacy, handwriting teaser, stamp book, postcards.
@@ -63,6 +64,7 @@ export default function ProfilePage() {
   const [sent, setSent] = useState<NoteThumb[]>([])
   const [received, setReceived] = useState<NoteThumb[]>([])
   const [requested, setRequested] = useState(false)
+  const [pickingAvatar, setPickingAvatar] = useState(false)
 
   useEffect(() => {
     setLoading(true)
@@ -119,8 +121,7 @@ export default function ProfilePage() {
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 24px 0' }}>
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-          <div style={sectionTitle}>Profile</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: '14px' }}>
           {isMe && (
             <button onClick={() => navigate('/subscribe')} aria-label="Membership" style={{
               height: '32px', padding: '0 12px', borderRadius: '999px', border: '1px solid var(--stone)',
@@ -138,8 +139,19 @@ export default function ProfilePage() {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontFamily: 'var(--font-display)', fontSize: '28px', color: uv, overflow: 'hidden',
           }}>
-            {profile.avatarUrl ? <img src={profile.avatarUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : initials(profile.displayName)}
+            {profile.avatarUrl?.startsWith('/emoji/')
+              ? <QEmoji name={profile.avatarUrl.replace('/emoji/', '').replace('.png', '')} size={62} />
+              : profile.avatarUrl
+                ? <img src={profile.avatarUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : initials(profile.displayName)}
           </div>
+          {isMe && (
+            <button onClick={() => setPickingAvatar(true)} aria-label="Pick your profile emoji" style={{
+              marginTop: '-26px', marginLeft: '72px', width: '30px', height: '30px', borderRadius: '15px',
+              border: '2px solid #fff', background: uv, color: '#fff', fontSize: '16px', lineHeight: 1,
+              cursor: 'pointer', boxShadow: '0 2px 8px rgba(43,34,56,0.2)',
+            }}>+</button>
+          )}
           <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', marginTop: '10px', letterSpacing: '-0.01em' }}>{profile.displayName}</div>
           <div style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)' }}>@{profile.username}</div>
           {profile.bio && <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', marginTop: '6px', textAlign: 'center' }}>{profile.bio}</p>}
@@ -159,6 +171,8 @@ export default function ProfilePage() {
             </button>
           )}
 
+          {isMe && <div style={{ width: '100%', marginTop: '16px' }}><HappeningsRow /></div>}
+
           {/* Membership card (me only) */}
           {isMe && user && (
             <div style={{
@@ -166,13 +180,7 @@ export default function ProfilePage() {
               borderRadius: '14px', background: 'var(--lavender-pale)', border: '1px solid var(--lavender-light)',
               display: 'flex', alignItems: 'center', gap: '14px',
             }}>
-              <span style={{ display: 'flex', gap: '6px' }}>
-                {[0, 1].map((i) => {
-                  const total = (user.notesAllowance ?? 0) + (user.giftedCredits ?? 0)
-                  const left = Math.max(0, total - (user.notesUsed ?? 0))
-                  return <span key={i} style={{ width: '22px', height: '28px', borderRadius: '3px', background: i < left ? uv : 'var(--lavender-light)' }} />
-                })}
-              </span>
+              <QEmoji name="envelope" size={36} />
               <span style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700 }}>
                   {user.subscriptionStatus === 'ACTIVE'
@@ -197,8 +205,8 @@ export default function ProfilePage() {
             display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', width: '100%', marginTop: '16px',
             padding: '14px 0', borderTop: '1px solid var(--stone)', borderBottom: '1px solid var(--stone)', textAlign: 'center',
           }}>
-            <div><div style={{ fontFamily: 'var(--font-display)', fontSize: '22px' }}>{profile._count.notesSent}</div><div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>cards sent</div></div>
-            <div><div style={{ fontFamily: 'var(--font-display)', fontSize: '22px' }}>{profile._count.notesReceived}</div><div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>cards received</div></div>
+            <button onClick={() => { setTab('sent'); document.getElementById('postcards')?.scrollIntoView({ behavior: 'smooth' }) }} style={{ background: 'none', border: 'none', cursor: 'pointer', textTransform: 'none', letterSpacing: 0, fontWeight: 400 }}><div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', color: 'var(--ink)' }}>{profile._count.notesSent}</div><div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>cards sent</div></button>
+            <button onClick={() => { setTab('received'); document.getElementById('postcards')?.scrollIntoView({ behavior: 'smooth' }) }} style={{ background: 'none', border: 'none', cursor: 'pointer', textTransform: 'none', letterSpacing: 0, fontWeight: 400 }}><div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', color: 'var(--ink)' }}>{profile._count.notesReceived}</div><div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>cards received</div></button>
             <div><div style={{ fontFamily: 'var(--font-display)', fontSize: '22px' }}>{profile._count.following}</div><div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>QTs</div></div>
           </div>
 
@@ -265,7 +273,7 @@ export default function ProfilePage() {
           {/* Postcards (me only — board shows own archive) */}
           {isMe && (
             <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', margin: '26px 0 12px' }}>
+              <div id="postcards" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', margin: '26px 0 12px' }}>
                 <div style={sectionTitle}>Your postcards</div>
                 <span style={{ display: 'flex', padding: '3px', borderRadius: '10px', background: 'var(--lavender-pale)' }}>
                   <button onClick={() => setTab('sent')} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: tab === 'sent' ? '#fff' : 'transparent', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Sent</button>
@@ -298,6 +306,31 @@ export default function ProfilePage() {
           )}
         </div>
       </div>
+
+      {pickingAvatar && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => setPickingAvatar(false)}>
+          <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, marginBottom: '14px' }}>Pick your emoji</h2>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              {STATUS_EMOJI.map((e) => (
+                <button key={e} onClick={async () => {
+                  await api.put('/users/me', { avatarUrl: `/emoji/${e}.png` })
+                  setProfile((p) => (p ? { ...p, avatarUrl: `/emoji/${e}.png` } : p))
+                  refreshUser?.()
+                  setPickingAvatar(false)
+                }} style={{
+                  width: '52px', height: '52px', borderRadius: '26px', cursor: 'pointer',
+                  background: '#fff', border: '1px solid var(--stone)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <QEmoji name={e} size={32} />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <TabBar />
     </div>
   )

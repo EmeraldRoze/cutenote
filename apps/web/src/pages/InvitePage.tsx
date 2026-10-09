@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import { useAuth } from '../context/AuthContext'
 import QEmoji from '../components/QEmoji'
+import { inviteByText } from '../lib/inviteText'
 
 // "Invite friends" — App Screens board layout in the Oct 2026 system
 
@@ -142,7 +143,7 @@ export default function InvitePage() {
             </form>
           ) : (
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => setComposing(true)} style={{
+              <button onClick={async () => { try { await inviteByText(user?.displayName?.split(' ')[0]); api.get('/invites').then((r) => setInvites(r.data.data)).catch(() => {}) } catch { setComposing(true) } }} style={{
                 flex: 1, height: '52px', border: 'none', borderRadius: '10px', background: uv, color: '#fff',
                 fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase',
                 letterSpacing: '0.12em', cursor: 'pointer',
@@ -153,6 +154,13 @@ export default function InvitePage() {
                 textTransform: 'uppercase', letterSpacing: '0.12em', cursor: 'pointer',
               }}>{copied ? 'Copied' : 'Copy link'}</button>
             </div>
+          )}
+          {!composing && (
+            <button onClick={() => setComposing(true)} style={{
+              background: 'none', border: 'none', color: 'var(--ink-mid)', cursor: 'pointer',
+              fontFamily: 'var(--font-body)', fontSize: '12px', textTransform: 'none', letterSpacing: 0, fontWeight: 400,
+              textDecoration: 'underline',
+            }}>Or type their number and we'll text them for you</button>
           )}
         </div>
       </div>

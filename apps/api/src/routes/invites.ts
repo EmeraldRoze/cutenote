@@ -11,8 +11,8 @@ export const invitesRouter = Router()
 // ─── Create invite & send SMS ────────────────────────────────────────────────
 
 const inviteSchema = z.object({
-  name: z.string().min(1, 'Please enter their name.').max(100),
-  phone: z.string().min(10, 'Please enter a valid phone number.').max(20),
+  name: z.string().min(1, 'Please enter their name.').max(100).optional(),
+  phone: z.string().min(10, 'Please enter a valid phone number.').max(20).optional(),
 })
 
 invitesRouter.post('/', requireAuth, async (req: AuthRequest, res: Response) => {
@@ -21,8 +21,9 @@ invitesRouter.post('/', requireAuth, async (req: AuthRequest, res: Response) => 
     return res.status(400).json({ error: result.error.errors[0].message })
   }
 
-  const { name, phone } = result.data
-  const cleanPhone = phone.replace(/[^\d+]/g, '')
+  const name = result.data.name ?? 'Friend'
+  const phone = result.data.phone
+  const cleanPhone = (phone ?? '').replace(/[^\d+]/g, '')
 
   const sender = await prisma.user.findUnique({
     where: { id: req.userId },
@@ -41,6 +42,11 @@ invitesRouter.post('/', requireAuth, async (req: AuthRequest, res: Response) => 
   })
 
   const link = `${WEB_URL}/collect-address/${token}`
+
+  // No phone given: the sender texts the link themselves from their own Messages app
+  if (!phone) {
+    return res.status(201).json({ data: { id: invite.id, status: 'link', link, recipientName: name } })
+  }
 
   // Send SMS via Twilio if configured
   if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_PHONE_NUMBER) {

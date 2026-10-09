@@ -4,6 +4,7 @@ import { api } from '../lib/api'
 import { useAuth } from '../context/AuthContext'
 import TabBar from '../components/TabBar'
 import QEmoji from '../components/QEmoji'
+import { inviteByText } from '../lib/inviteText'
 
 // "Your QTs" — layout from the App Screens board, rendered in the Oct 2026 system
 
@@ -115,7 +116,8 @@ export default function ConnectionsPage() {
           <span style={{ color: uv, fontSize: '16px' }}>→</span>
         </button>
 
-        {/* Search */}
+        {/* Search + text-a-friend */}
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
         <input
           type="text"
           value={query}
@@ -124,11 +126,17 @@ export default function ConnectionsPage() {
           style={{
             width: '100%', height: '46px', padding: '0 14px', borderRadius: '10px',
             border: '1px solid var(--stone)', background: '#fff', outline: 'none',
-            fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)', marginBottom: '14px',
+            fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)', flex: 1,
           }}
           onFocus={(e) => { e.target.style.border = `1.5px solid ${uv}` }}
           onBlur={(e) => { e.target.style.border = '1px solid var(--stone)' }}
         />
+        <button onClick={() => inviteByText(user?.displayName?.split(' ')[0]).catch(() => navigate('/invite'))} style={{
+          height: '46px', padding: '0 12px', borderRadius: '10px', background: '#fff', border: '1px solid var(--stone)',
+          color: uv, cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px',
+          letterSpacing: '0.1em', whiteSpace: 'nowrap',
+        }}>Text a friend</button>
+        </div>
 
         {/* People on QuteNote matching search (not yet QTs) */}
         {results.filter((r) => !connections.some((c) => c.id === r.id) && r.id !== user?.id).length > 0 && (

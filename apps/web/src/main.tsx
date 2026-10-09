@@ -4,7 +4,11 @@ import './index.css'
 import App from './App.tsx'
 import { isNativeApp } from './lib/native'
 
-if (isNativeApp) document.documentElement.classList.add('native-app')
+if (isNativeApp) {
+  document.documentElement.classList.add('native-app')
+  document.querySelector('meta[name=viewport]')?.setAttribute('content',
+    'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover')
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

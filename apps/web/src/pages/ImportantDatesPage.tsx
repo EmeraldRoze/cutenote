@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import TabBar from '../components/TabBar'
+import QEmoji from '../components/QEmoji'
 
 interface ImportantDate {
   id: string
@@ -15,6 +16,8 @@ interface ImportantDate {
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const LABELS = ['Birthday', 'Anniversary', 'Graduation', 'Other']
+const LABEL_ART: Record<string, string> = { Birthday: 'cake', Anniversary: 'hearteyes', Graduation: 'popper', Other: 'star' }
+const artForLabel = (l: string) => LABEL_ART[l] ?? 'star'
 
 const cardStyle = {
   background: 'var(--white)',
@@ -41,11 +44,14 @@ export default function ImportantDatesPage() {
   const [month, setMonth] = useState(1)
   const [day, setDay] = useState(1)
   const [saving, setSaving] = useState(false)
+  const [customLabel, setCustomLabel] = useState('')
+  const [friends, setFriends] = useState<{ id: string; displayName: string }[]>([])
 
   useEffect(() => {
     api.get('/important-dates')
       .then((res) => setDates(res.data.data))
       .finally(() => setLoading(false))
+    api.get('/connections').then((res) => setFriends(res.data.data)).catch(() => {})
   }, [])
 
   async function handleAdd() {
@@ -54,7 +60,7 @@ export default function ImportantDatesPage() {
     try {
       const res = await api.post('/important-dates', {
         connectionName: name.trim(),
-        label,
+        label: label === 'Other' && customLabel.trim() ? customLabel.trim() : label,
         month,
         day,
       })
@@ -142,6 +148,17 @@ export default function ImportantDatesPage() {
               placeholder="e.g. Mom, best friend Sarah..."
               maxLength={100}
             />
+            {name.length >= 1 && friends.filter((f) => f.displayName.toLowerCase().includes(name.toLowerCase()) && f.displayName !== name).length > 0 && (
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '8px' }}>
+                {friends.filter((f) => f.displayName.toLowerCase().includes(name.toLowerCase()) && f.displayName !== name).slice(0, 4).map((f) => (
+                  <button key={f.id} onClick={() => setName(f.displayName)} style={{
+                    fontSize: '12px', padding: '6px 12px', borderRadius: '50px', cursor: 'pointer',
+                    border: '1px solid var(--lavender-light)', background: 'var(--lavender-pale)',
+                    color: 'var(--ink)', fontFamily: 'var(--font-body)', textTransform: 'none', letterSpacing: 0, fontWeight: 400,
+                  }}>{f.displayName}</button>
+                ))}
+              </div>
+            )}
 
             <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ink)', marginBottom: '8px', marginTop: '14px' }}>What kind of date?</p>
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
@@ -157,11 +174,20 @@ export default function ImportantDatesPage() {
                     fontFamily: 'var(--font-body)',
                   }}
                 >
-                  {l}
+                  <QEmoji name={artForLabel(l)} size={14} style={{ marginRight: '4px' }} />{l}
                 </button>
               ))}
             </div>
 
+            {label === 'Other' && (
+              <input
+                style={{ ...inputStyle, marginTop: '10px' }}
+                value={customLabel}
+                onChange={(e) => setCustomLabel(e.target.value)}
+                placeholder="What's the date for?"
+                maxLength={50}
+              />
+            )}
             <div style={{ display: 'flex', gap: '12px', marginTop: '14px' }}>
               <div style={{ flex: 1 }}>
                 <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ink)', marginBottom: '8px' }}>Month</p>
@@ -233,8 +259,8 @@ export default function ImportantDatesPage() {
               </div>
               <div>
                 <p style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}>{d.connectionName}</p>
-                <p style={{ fontSize: '12px', color: 'var(--ink-muted)' }}>
-                  {d.label}{isUpcoming(d) && ' — coming up!'}
+                <p style={{ fontSize: '12px', color: 'var(--ink-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <QEmoji name={artForLabel(d.label)} size={14} />{d.label}{isUpcoming(d) && ' — coming up!'}
                 </p>
               </div>
             </div>

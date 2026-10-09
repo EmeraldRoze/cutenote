@@ -88,9 +88,9 @@ export default function SubscribePage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '28px', textAlign: 'left' }}>
             {[
               '2 physical postcards per month',
-              'AI writing help for every note',
+              'Thoughtful prompts to help you express your feels',
               'Your QTs can send to you too',
-              'Handwritten-style fonts',
+              'Add in your own personal handwriting',
             ].map(feature => (
               <div key={feature} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span style={{ color: 'var(--lavender)', fontSize: '16px', flexShrink: 0 }}>✓</span>

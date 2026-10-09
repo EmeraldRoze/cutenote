@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import QEmoji from '../components/QEmoji'
 import TabBar from '../components/TabBar'
+import { StatusComposer, type MyStatus } from '../components/Happenings'
 
 const uv = '#5A32D6'
 const label: React.CSSProperties = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase', color: 'var(--ink-mid)' }
@@ -23,7 +24,6 @@ interface FeedItem {
   recipient?: FeedUser
 }
 interface ImportantDate { id: string; connectionName: string; label: string; month: number; day: number }
-interface MyStatus { id: string; emoji: string | null; text: string; createdAt: string }
 
 const OCCASION_SENTENCE: Record<string, string> = {
   BIRTHDAY: 'a birthday note', ANNIVERSARY: 'an anniversary note',
@@ -36,7 +36,6 @@ const OCCASION_ART: Record<string, string> = {
   HOLIDAY: 'star', CONSOLATION: 'rainbow', JUST_BECAUSE: 'envelope',
   INVITATION: 'plane', CUSTOM: 'envelope',
 }
-const STATUS_EMOJI = ['sun', 'heart', 'coffee', 'moon', 'cloud', 'rainbow', 'music', 'flower', 'smile', 'joy', 'star', 'plane']
 
 function timeAgo(d: string) {
   const mins = Math.floor((Date.now() - +new Date(d)) / 60000)
@@ -101,7 +100,7 @@ export default function HomePage() {
 
         {/* Logo row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '44px', marginBottom: '12px' }}>
-          <img src="/brand/logo.png" alt="QuteNote" style={{ width: '128px', display: 'block' }} />
+          <img src="/site/logo-ink.png" alt="QuteNote" style={{ width: '128px', display: 'block' }} />
         </div>
 
         {/* Happenings status row */}
@@ -246,71 +245,6 @@ export default function HomePage() {
       {composing && <StatusComposer onDone={(s) => { if (s) setMyStatus(s); setComposing(false) }} />}
 
       <TabBar />
-    </div>
-  )
-}
-
-function StatusComposer({ onDone }: { onDone: (s: MyStatus | null) => void }) {
-  const [emoji, setEmoji] = useState('sun')
-  const [text, setText] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
-
-  async function share() {
-    setSaving(true)
-    setError('')
-    try {
-      const r = await api.post('/statuses', { emoji, text: text.trim() })
-      onDone({ ...r.data.data })
-    } catch (err: any) {
-      setError(err.response?.data?.error ?? 'That did not go through. Try again.')
-      setSaving(false)
-    }
-  }
-
-  return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => onDone(null)}>
-      <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, marginBottom: '14px' }}>What's new with you?</h2>
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '14px' }}>
-          {STATUS_EMOJI.map((e) => (
-            <button key={e} onClick={() => setEmoji(e)} style={{
-              width: '44px', height: '44px', borderRadius: '22px', cursor: 'pointer',
-              background: emoji === e ? 'var(--lavender-pale)' : '#fff',
-              border: emoji === e ? `1.5px solid ${uv}` : '1px solid var(--stone)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <QEmoji name={e} size={26} />
-            </button>
-          ))}
-        </div>
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value.slice(0, 60))}
-          placeholder="Sixty characters of honesty"
-          style={{
-            width: '100%', height: '48px', padding: '0 14px', borderRadius: '10px',
-            border: '1px solid var(--stone)', outline: 'none', background: '#fff',
-            fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)',
-          }}
-          onFocus={(e) => { e.target.style.border = `1.5px solid ${uv}` }}
-          onBlur={(e) => { e.target.style.border = '1px solid var(--stone)' }}
-        />
-        <p style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-muted)', textAlign: 'right', margin: '6px 0 14px' }}>{text.length}/60</p>
-        {error && <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--error)', marginBottom: '10px' }}>{error}</p>}
-        <button
-          disabled={!text.trim() || saving}
-          onClick={share}
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '52px',
-            borderRadius: '10px', border: 'none', cursor: 'pointer',
-            background: uv, color: '#fff', opacity: !text.trim() || saving ? 0.45 : 1,
-            fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.12em',
-          }}
-        >
-          {saving ? 'Sharing…' : 'Share status'}
-        </button>
-      </div>
     </div>
   )
 }

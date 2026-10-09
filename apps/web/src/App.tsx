@@ -18,6 +18,7 @@ import ProfilePage from './pages/ProfilePage'
 import InvitePage from './pages/InvitePage'
 import CollectAddressPage from './pages/CollectAddressPage'
 import ImportantDatesPage from './pages/ImportantDatesPage'
+import { WelcomePage, OnboardingQTs, OnboardingBirthdays, OnboardingReminders } from './pages/Onboarding'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -38,7 +39,8 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<PublicRoute>{isNativeApp ? <Navigate to="/login" replace /> : <LandingPage />}</PublicRoute>} />
+      <Route path="/" element={<PublicRoute>{isNativeApp ? <Navigate to="/welcome" replace /> : <LandingPage />}</PublicRoute>} />
+      <Route path="/welcome" element={<PublicRoute><WelcomePage /></PublicRoute>} />
       <Route path="/signup" element={<PublicRoute><SignUpPage /></PublicRoute>} />
       <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
@@ -49,6 +51,9 @@ function AppRoutes() {
       <Route path="/send" element={<ProtectedRoute><SendFlow /></ProtectedRoute>} />
       <Route path="/connections" element={<ProtectedRoute><ConnectionsPage /></ProtectedRoute>} />
       <Route path="/dates" element={<ProtectedRoute><ImportantDatesPage /></ProtectedRoute>} />
+      <Route path="/onboarding/qts" element={<ProtectedRoute><OnboardingQTs /></ProtectedRoute>} />
+      <Route path="/onboarding/birthdays" element={<ProtectedRoute><OnboardingBirthdays /></ProtectedRoute>} />
+      <Route path="/onboarding/reminders" element={<ProtectedRoute><OnboardingReminders /></ProtectedRoute>} />
       <Route path="/address" element={<ProtectedRoute><AddressPage /></ProtectedRoute>} />
       <Route path="/subscribe" element={<ProtectedRoute><SubscribePage /></ProtectedRoute>} />
       <Route path="/subscribe/success" element={<ProtectedRoute><SubscribeSuccessPage /></ProtectedRoute>} />
