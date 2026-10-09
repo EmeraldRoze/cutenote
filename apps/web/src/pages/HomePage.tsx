@@ -286,7 +286,7 @@ export default function HomePage() {
                   <p style={{ color: 'var(--ink-muted)', textAlign: 'center', padding: '16px 0', fontSize: '13px' }}>Loading...</p>
                 )}
                 {!feedLoading && feed.length === 0 && (
-                  <p style={{ color: 'var(--ink-muted)', textAlign: 'center', padding: '16px 0', fontFamily: 'var(--font-handwriting)', fontSize: '17px' }}>
+                  <p style={{ color: 'var(--ink-muted)', textAlign: 'center', padding: '16px 0', fontFamily: 'var(--font-handwriting)', fontSize: '12px' }}>
                     Your people are out there. Invite someone you love.
                   </p>
                 )}
@@ -312,7 +312,7 @@ export default function HomePage() {
                 )}
                 {!datesLoading && dates.length === 0 && (
                   <div style={{ textAlign: 'center', padding: '16px 0' }}>
-                    <p style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-handwriting)', fontSize: '17px', marginBottom: '12px' }}>
+                    <p style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-handwriting)', fontSize: '12px', marginBottom: '12px' }}>
                       No important dates yet.
                     </p>
                     <button

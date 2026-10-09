@@ -208,7 +208,7 @@ export default function ImportantDatesPage() {
 
         {!loading && sorted.length === 0 && !showForm && (
           <div style={{ ...cardStyle, textAlign: 'center' }}>
-            <p style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-handwriting)', fontSize: '17px' }}>
+            <p style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-handwriting)', fontSize: '12px' }}>
               No dates saved yet. Never miss a birthday again!
             </p>
           </div>

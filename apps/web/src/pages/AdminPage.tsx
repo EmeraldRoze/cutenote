@@ -106,7 +106,7 @@ export default function AdminPage() {
         )}
 
         {!loading && filtered.length === 0 && (
-          <p style={{ textAlign: 'center', color: 'var(--ink-muted)', padding: '40px 0', fontFamily: 'var(--font-handwriting)', fontSize: '18px' }}>
+          <p style={{ textAlign: 'center', color: 'var(--ink-muted)', padding: '40px 0', fontFamily: 'var(--font-handwriting)', fontSize: '13px' }}>
             No notes here yet.
           </p>
         )}

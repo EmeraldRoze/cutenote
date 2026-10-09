@@ -127,8 +127,9 @@ const css = `
     opacity: 0.8;
   }
   .hero-sub {
-    font-family: 'Caveat', cursive;
-    font-size: 27px;
+    font-family: 'Rock Salt', cursive;
+    font-size: 16px;
+    line-height: 2;
     color: var(--lav-mid);
     font-style: italic;
     line-height: 1.6;
@@ -238,8 +239,9 @@ const css = `
   .pc-handwriting {
     position: absolute;
     top: 18px; left: 18px;
-    font-family: 'Caveat', cursive;
-    font-size: 17px;
+    font-family: 'Rock Salt', cursive;
+    font-size: 10px;
+    line-height: 1.8;
     color: var(--ink-mid);
     line-height: 1.7;
     max-width: 150px;
@@ -499,8 +501,8 @@ const css = `
     background-image: repeating-linear-gradient(transparent, transparent 25px, var(--rule) 25px, var(--rule) 26px);
   }
   .t-quote {
-    font-family: 'Caveat', cursive;
-    font-size: 20px;
+    font-family: 'Rock Salt', cursive;
+    font-size: 12px;
     color: var(--ink-mid);
     line-height: 1.7;
     margin-bottom: 20px;
@@ -583,8 +585,9 @@ const css = `
     font-weight: 400;
   }
   .cta-postcard p {
-    font-family: 'Caveat', cursive;
-    font-size: 24px;
+    font-family: 'Rock Salt', cursive;
+    font-size: 15px;
+    line-height: 2;
     color: var(--ink-mid);
     line-height: 1.6;
     margin-bottom: 36px;
@@ -795,7 +798,7 @@ export default function LandingPage() {
             <div className="price-amount">$0</div>
             <div className="price-period">forever free</div>
             <div className="price-divider"></div>
-            <p className="faq-a" style={{marginBottom:'22px'}}>Your home base on QuteNote. Connect with your people, receive notes, and get ready to spread a little love.</p>
+            <p className="faq-a" style={{marginBottom:'22px'}}>Connect with your people, see important dates, receive notes, and spread a little love.</p>
             <button className="btn-outline" onClick={() => navigate('/signup')}>Get started free</button>
           </div>
           <div className="price-card featured">
@@ -857,7 +860,7 @@ export default function LandingPage() {
       <section id="faq">
         <div className="section-label">FAQ</div>
         <div className="accent-bar"></div>
-        <h2 className="section-title">A few things you might be wondering.</h2>
+        <h2 className="section-title">Good questions.</h2>
         <div className="faq-grid">
           <div className="faq-item">
             <div className="faq-q">How do you send a postcard without knowing someone's address?</div>

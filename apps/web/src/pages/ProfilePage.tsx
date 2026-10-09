@@ -116,7 +116,7 @@ export default function ProfilePage() {
   if (!profile) {
     return (
       <div style={{ minHeight: '100vh', background: 'var(--cream)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-        <p style={{ color: 'var(--ink-muted)', fontSize: '16px', fontFamily: 'var(--font-handwriting)' }}>User not found</p>
+        <p style={{ color: 'var(--ink-muted)', fontSize: '11px', fontFamily: 'var(--font-handwriting)' }}>User not found</p>
         <button onClick={() => navigate('/home')} style={{ fontSize: '13px', color: 'var(--lavender-dark)', background: 'none', border: 'none', cursor: 'pointer' }}>
           Go home
         </button>
@@ -285,7 +285,7 @@ export default function ProfilePage() {
             )}
           </div>
           {quties.length === 0 && (
-            <p style={{ color: 'var(--ink-muted)', textAlign: 'center', padding: '12px 0', fontFamily: 'var(--font-handwriting)', fontSize: '16px' }}>
+            <p style={{ color: 'var(--ink-muted)', textAlign: 'center', padding: '12px 0', fontFamily: 'var(--font-handwriting)', fontSize: '11px' }}>
               {profile.isMe ? 'No Quties yet. Find someone to connect with!' : 'No connections yet.'}
             </p>
           )}
@@ -345,7 +345,7 @@ export default function ProfilePage() {
 
         {profile.badges.length === 0 && profile.isMe && (
           <div style={{ ...cardStyle, textAlign: 'center' }}>
-            <p style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-handwriting)', fontSize: '16px' }}>
+            <p style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-handwriting)', fontSize: '11px' }}>
               No badges yet. Send your first note to earn one!
             </p>
           </div>
