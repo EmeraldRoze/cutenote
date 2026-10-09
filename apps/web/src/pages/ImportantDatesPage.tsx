@@ -41,6 +41,7 @@ export default function ImportantDatesPage() {
   const [dates, setDates] = useState<ImportantDate[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
+  const [reminderStatus, setReminderStatus] = useState<'idle' | 'working' | 'denied' | 'failed'>('idle')
   const [name, setName] = useState('')
   const [label, setLabel] = useState('Birthday')
   const [month, setMonth] = useState(1)
@@ -127,14 +128,36 @@ export default function ImportantDatesPage() {
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '32px 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
         {isNativeApp && !remindersEnabled() && (
-          <button onClick={() => enableReminders().then(() => window.location.reload())} style={{
-            width: '100%', marginBottom: '14px', padding: '12px 16px', borderRadius: '12px',
-            border: '1.5px dashed var(--lavender-soft)', background: 'var(--lavender-pale)', cursor: 'pointer',
-            fontFamily: 'var(--font-body)', fontSize: '13px', color: '#5A32D6', fontWeight: 700,
-            textTransform: 'uppercase', letterSpacing: '0.1em',
-          }}>
-            Turn on reminders — we'll buzz you 7 days before
-          </button>
+          <div style={{ marginBottom: '14px' }}>
+            <button
+              disabled={reminderStatus === 'working'}
+              onClick={async () => {
+                setReminderStatus('working')
+                const r = await enableReminders()
+                if (r === 'on') { window.location.reload(); return }
+                setReminderStatus(r)
+              }}
+              style={{
+                width: '100%', padding: '12px 16px', borderRadius: '12px',
+                border: '1.5px dashed var(--lavender-soft)', background: 'var(--lavender-pale)', cursor: 'pointer',
+                fontFamily: 'var(--font-body)', fontSize: '13px', color: '#5A32D6', fontWeight: 700,
+                textTransform: 'uppercase', letterSpacing: '0.1em',
+                opacity: reminderStatus === 'working' ? 0.6 : 1,
+              }}
+            >
+              {reminderStatus === 'working' ? 'Turning on…' : "Turn on reminders — we'll buzz you 7 days before"}
+            </button>
+            {reminderStatus === 'denied' && (
+              <p style={{ marginTop: '8px', fontSize: '12px', color: 'var(--ink-soft, #766E82)', textAlign: 'center' }}>
+                Notifications are off for QuteNote in your iPhone Settings. Open Settings → QuteNote → Notifications and allow them, then try again.
+              </p>
+            )}
+            {reminderStatus === 'failed' && (
+              <p style={{ marginTop: '8px', fontSize: '12px', color: 'var(--ink-soft, #766E82)', textAlign: 'center' }}>
+                Hmm, that didn't go through. Check your connection and try again in a moment.
+              </p>
+            )}
+          </div>
         )}
 
         {/* Add button */}
