@@ -127,8 +127,8 @@ const css = `
     opacity: 0.8;
   }
   .hero-sub {
-    font-family: 'Lora', serif;
-    font-size: 20px;
+    font-family: 'Caveat', cursive;
+    font-size: 27px;
     color: var(--lav-mid);
     font-style: italic;
     line-height: 1.6;
@@ -238,9 +238,8 @@ const css = `
   .pc-handwriting {
     position: absolute;
     top: 18px; left: 18px;
-    font-family: 'Lora', serif;
-    font-style: italic;
-    font-size: 13px;
+    font-family: 'Caveat', cursive;
+    font-size: 17px;
     color: var(--ink-mid);
     line-height: 1.7;
     max-width: 150px;
@@ -265,9 +264,8 @@ const css = `
   }
   .section-title.light { color: var(--plum); }
   .section-sub {
-    font-family: 'Lora', serif;
-    font-style: italic;
-    font-size: 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 17px;
     color: var(--ink-mid);
     max-width: 560px;
     line-height: 1.6;
@@ -501,9 +499,8 @@ const css = `
     background-image: repeating-linear-gradient(transparent, transparent 25px, var(--rule) 25px, var(--rule) 26px);
   }
   .t-quote {
-    font-family: 'Lora', serif;
-    font-style: italic;
-    font-size: 15px;
+    font-family: 'Caveat', cursive;
+    font-size: 20px;
     color: var(--ink-mid);
     line-height: 1.7;
     margin-bottom: 20px;
@@ -586,9 +583,8 @@ const css = `
     font-weight: 400;
   }
   .cta-postcard p {
-    font-family: 'Lora', serif;
-    font-style: italic;
-    font-size: 17px;
+    font-family: 'Caveat', cursive;
+    font-size: 24px;
     color: var(--ink-mid);
     line-height: 1.6;
     margin-bottom: 36px;
@@ -663,33 +659,31 @@ export default function LandingPage() {
   return (
     <div className="landing">
       <style>{css}</style>
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
 
       <nav className="landing-nav">
         <button className="nav-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ padding: 0 }}><img src="/brand/logo.png" alt="QuteNote" style={{ height: '36px', display: 'block' }} /></button>
         <div className="nav-links">
           <a href="#how">How it works</a>
-          <a href="#features">Features</a>
+          <a href="#features">Why Be Qute?</a>
           <a href="#pricing">Pricing</a>
           <a href="/login" className="nav-login" onClick={e => { e.preventDefault(); navigate('/login') }} style={{cursor:'pointer'}}>Log in</a>
-          <button className="nav-cta" onClick={() => navigate('/signup')}>Join now</button>
+          <button className="nav-cta" onClick={() => navigate('/signup')}>Join QuteNote</button>
         </div>
       </nav>
 
       {/* HERO */}
       <section className="hero">
         <div className="hero-text">
-          <span className="hero-eyebrow">&#10022; Join early access</span>
+          <span className="hero-eyebrow">&#10022; Early access</span>
           <h1>Send something real.</h1>
           <div className="hero-underline"></div>
-          <p className="hero-sub">Sometimes we choke on our feelings.<br/>QuteNote is your personal Heimlich.</p>
-          <p className="hero-body">Connect with friends, get reminded of important dates, and send messages that arrive as physical postcards at the click of a button.</p>
+          <p className="hero-sub">Sometimes a text just doesn't cut it. Sometimes you have a lot to say and no idea how to start.</p>
+          <p className="hero-body">QuteNote helps you turn what you're feeling into a real postcard, delivered to someone's actual mailbox. We'll handle the logistics, you just bring the feeling.</p>
           <form className="hero-form" onSubmit={e => { e.preventDefault(); handleJoin(heroEmail) }}>
-            <input type="email" className="hero-input" placeholder="your@email.com" value={heroEmail} onChange={e => setHeroEmail(e.target.value)} />
-            <button type="submit" className="btn-primary">Join now <QEmoji name="envelope" size={18} style={{ marginLeft: '4px' }} /></button>
+            <input type="email" className="hero-input" placeholder="Your email address" value={heroEmail} onChange={e => setHeroEmail(e.target.value)} />
+            <button type="submit" className="btn-primary">I'm in <QEmoji name="envelope" size={18} style={{ marginLeft: '4px' }} /></button>
           </form>
-          <p className="hero-note">Free to join. First postcard on us.</p>
+          <p className="hero-note">Free to join. Your first postcard is on us.</p>
         </div>
         <div className="hero-visual">
           <div className="postcard pc1">
@@ -720,32 +714,32 @@ export default function LandingPage() {
         <div style={{position:'relative', zIndex:2}}>
           <div className="section-label">How it works</div>
           <div className="accent-bar"></div>
-          <h2 className="section-title">Thoughtful in 60 seconds.</h2>
-          <p className="section-sub">Everyone loves to get sweet messages in the mail, but sometimes it's hard to send them. Instead of doomscrolling on your phone, send a QuteNote. You write it on your phone, we send it in the mail.</p>
+          <h2 className="section-title">Thoughtful doesn't have to be complicated.</h2>
+          <p className="section-sub">Instead of doomscrolling on your phone, send a QuteNote. You write it on your phone, we send it in the mail.</p>
           <div className="steps-grid">
             <div className="step-card">
               <span className="step-emoji"><QEmoji name="heart" size={32} /></span>
               <div className="step-num">01</div>
-              <h3>Build your circle</h3>
-              <p>Create a profile, add important dates, and start adding friends to your circle.</p>
+              <h3>Add QTs</h3>
+              <p>Connect with your favorite people.</p>
             </div>
             <div className="step-card">
               <span className="step-emoji">&#128276;</span>
               <div className="step-num">02</div>
               <h3>Get the nudge</h3>
-              <p>Your feed shows your connections' birthdays, anniversaries, and hard days — so you always know who needs to hear from you.</p>
+              <p>Birthdays, hard days, weird days, and all the little moments worth creating connection.</p>
             </div>
             <div className="step-card">
               <span className="step-emoji">&#9997;&#65039;</span>
               <div className="step-num">03</div>
-              <h3>Write &amp; send</h3>
-              <p>Pick a QuteNote designed by an artist or upload a photo. Next, use one of our writing prompts or just go for it. Then hit send. No address, no post office, easy peasy.</p>
+              <h3>Find your words</h3>
+              <p>Write from the heart, with a little help when you need it (NO AI BS).</p>
             </div>
             <div className="step-card">
               <span className="step-emoji"><QEmoji name="envelope" size={32} /></span>
               <div className="step-num">04</div>
-              <h3>They feel it</h3>
-              <p>A real postcard lands in their mailbox. Physical. Permanent. 100% more meaningful than a text.</p>
+              <h3>Make their mailbox day</h3>
+              <p>We print your note and mail it as a real postcard. They get a surprise at the mailbox and you get to feel cool for sending actual mail.</p>
             </div>
           </div>
         </div>
@@ -754,30 +748,29 @@ export default function LandingPage() {
       {/* FEATURES */}
       <section id="features">
         <div style={{position:'relative', zIndex:2}}>
-          <div className="section-label" style={{color:'var(--lav-light)'}}>Why QuteNote</div>
+          <div className="section-label">Why Be Qute?</div>
           <div className="accent-bar" style={{background:'var(--peach)'}}></div>
-          <h2 className="section-title light">Card apps send cards.<br/>We build relationships.</h2>
-          <p className="section-sub light">Everything is designed to remove friction and make showing up easy. When someone pops into your head, send a QuteNote. Think of something nice about someone? Tell them in a QuteNote.</p>
+          <h2 className="section-title light">Card apps send cards.<br/>We're here for actual connection.</h2>
           <div className="features-grid">
             <div className="feature-card">
               <div className="feature-icon">&#128274;</div>
               <div>
-                <h3>No address needed. Ever.</h3>
-                <p>An encrypted address model means senders never see recipient's addresses. Privacy is baked in, and friction is taken out. Your friends get the postcard, and your home address isn't floating around the internet.</p>
+                <h3>No address awkwardness</h3>
+                <p>Connect with your people on QuteNote and you never have to ask for an address yourself.</p>
               </div>
             </div>
             <div className="feature-card">
               <div className="feature-icon">&#128197;</div>
               <div>
-                <h3>Never forget a birthday</h3>
-                <p>A Venmo-style feed that shows birthdays, anniversaries, and important milestones. We make sure you don't forget your people — and make it easy to do something about it.</p>
+                <h3>Remember the little things</h3>
+                <p>Because being remembered feels pretty wonderful.</p>
               </div>
             </div>
             <div className="feature-card">
               <div className="feature-icon">&#9997;&#65039;</div>
               <div>
-                <h3>Creative Prompts</h3>
-                <p>Do you ever feel like you want to express how much you care about someone but don't know where to start? QuteNote helps get those feelings unstuck with fun and sweet prompts to get the words flowing.</p>
+                <h3>Help when the words won't come</h3>
+                <p>Get thoughtful prompts when you know what you feel but aren't quite sure how to say it.</p>
               </div>
             </div>
             <div className="feature-card">
@@ -795,38 +788,27 @@ export default function LandingPage() {
       <section id="pricing">
         <div className="section-label">Pricing</div>
         <div className="accent-bar"></div>
-        <h2 className="section-title">Simple, flat pricing.</h2>
-        <p className="section-sub">Going to the post office sucks. We make mail qute again.</p>
+        <h2 className="section-title">Make Mail Qute Again.</h2>
         <div className="pricing-grid">
           <div className="price-card">
             <div className="price-tier">&#128140; Free Profile</div>
             <div className="price-amount">$0</div>
             <div className="price-period">forever free</div>
             <div className="price-divider"></div>
-            <ul className="price-list">
-              <li>Connect with friends &amp; family</li>
-              <li>Get notified of important dates</li>
-              <li>Draft QuteNotes</li>
-              <li>See featured artists &amp; designs</li>
-            </ul>
+            <p className="faq-a" style={{marginBottom:'22px'}}>Your home base on QuteNote. Connect with your people, receive notes, and get ready to spread a little love.</p>
             <button className="btn-outline" onClick={() => navigate('/signup')}>Get started free</button>
           </div>
           <div className="price-card featured">
             <div className="price-badge">Most popular</div>
-            <div className="price-tier">&#128156; Subscriber</div>
+            <div className="price-tier">&#128156; QuteNote Subscriber</div>
             <div className="price-amount">$7.95</div>
             <div className="price-period">per month · cancel anytime</div>
             <div className="price-divider"></div>
-            <ul className="price-list">
-              <li>2 postcards included every month</li>
-              <li>$3.49 per additional send</li>
-              <li>Badges &amp; points</li>
-              <li>"Pass It Forward" gifted credits</li>
-            </ul>
-            <button className="btn-filled" onClick={() => navigate('/signup')}>Join now</button>
+            <p className="faq-a" style={{marginBottom:'22px'}}>Two physical postcards a month, printed and mailed for you.</p>
+            <button className="btn-filled" onClick={() => navigate('/signup')}>Join QuteNote</button>
           </div>
         </div>
-        <p style={{marginTop:'20px', fontSize:'13px', color:'var(--ink-light)', fontStyle:'italic'}}>Printing + postage always included. No surprise charges.</p>
+        <p style={{marginTop:'20px', fontSize:'13px', color:'var(--ink-light)', fontStyle:'italic'}}>Printing and postage included. No surprise charges.</p>
       </section>
 
       {/* TESTIMONIALS */}
@@ -834,8 +816,8 @@ export default function LandingPage() {
         <div style={{position:'relative', zIndex:2}}>
           <div className="section-label">What people are saying</div>
           <div className="accent-bar"></div>
-          <h2 className="section-title">Don't save it for the eulogy. Say it now.</h2>
-          <p className="section-sub">From people who finally stopped meaning to send a card and actually did it.</p>
+          <h2 className="section-title">Yell it from the bleachers.</h2>
+          <p className="section-sub">Don't save the good stuff for later. Tell people what they mean to you while you can. The little things have a way of becoming the big things.</p>
           <div className="testimonials-grid">
             <div className="testimonial-card">
               <p className="t-quote">"I cried when I got a postcard from my college roommate for my birthday. She lives in London. I didn't even know she had my address — turns out she didn't need it."</p>
@@ -875,8 +857,7 @@ export default function LandingPage() {
       <section id="faq">
         <div className="section-label">FAQ</div>
         <div className="accent-bar"></div>
-        <h2 className="section-title">Good questions.</h2>
-        <p className="section-sub">We know, it sounds like magic. Here's how it works.</p>
+        <h2 className="section-title">A few things you might be wondering.</h2>
         <div className="faq-grid">
           <div className="faq-item">
             <div className="faq-q">How do you send a postcard without knowing someone's address?</div>
@@ -892,7 +873,7 @@ export default function LandingPage() {
           </div>
           <div className="faq-item">
             <div className="faq-q">What if the recipient isn't on QuteNote yet?</div>
-            <p className="faq-a">We send them a magic link to claim their postcard and join.</p>
+            <p className="faq-a">We send them a friendly link to claim their postcard and join. Their card still arrives in 3–5 business days.</p>
           </div>
           <div className="faq-item">
             <div className="faq-q">Is my address actually private?</div>
@@ -908,13 +889,13 @@ export default function LandingPage() {
       {/* CTA */}
       <section id="cta">
         <div className="cta-postcard">
-          <h2>Ready to send something real?</h2>
-          <p>Show up — one postcard at a time.</p>
+          <h2>Someone came to mind, didn't they?</h2>
+          <p>Go make their day.</p>
           <form className="cta-form" onSubmit={e => { e.preventDefault(); handleJoin(ctaEmail) }}>
-            <input type="email" className="cta-input" placeholder="your@email.com" value={ctaEmail} onChange={e => setCtaEmail(e.target.value)} />
-            <button type="submit" className="btn-primary">I'm in &#128140;</button>
+            <input type="email" className="cta-input" placeholder="Your email address" value={ctaEmail} onChange={e => setCtaEmail(e.target.value)} />
+            <button type="submit" className="btn-primary">Send something real <QEmoji name="envelope" size={18} style={{ marginLeft: '4px' }} /></button>
           </form>
-          <p style={{marginTop:'14px', fontSize:'12px', color:'var(--ink-light)'}}>First postcard free. No spam ever.</p>
+          <p style={{marginTop:'14px', fontSize:'12px', color:'var(--ink-light)'}}>Your first postcard is on us. No spam, ever.</p>
         </div>
       </section>
 
