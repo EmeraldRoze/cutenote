@@ -72,6 +72,9 @@ Typecheck web:       cd apps/web && npx tsc --noEmit
 2026-10-08 — Domain consolidation (FIREFLY): Stripe webhook -> qutenote.com, GitHub repo renamed EmeraldRoze/qutenote (DO spec updated, deploy verified), cutenote.club 301-redirects to qutenote.com via Cloudflare rule. Folder renamed ~/Documents/QUTENOTEDEV
 2026-10-08 — Brand kit applied from Emerald's qutenote-web-assets.zip: watercolor wordmark (public/brand/logo.png) on Login/SignUp/Home, 20 torn-paper emoji (public/emoji/) via QEmoji component across occasions, review step, card picker, badges, celebration pages, landing Join button. Build 4 uploaded with it all
 
+2026-10-08/09 — Landing page restyled to watercolor brand (cream paper, plum Recoleta, white nav with wordmark, plum footer), then Emerald's full website copy applied verbatim + fonts unified to app set (Recoleta/DM Sans/Caveat; Lobster and Lora removed). Verified in local preview, deployed, confirmed live
+2026-10-09 — Google sign-in in-app fix: callback for native now serves a "You're signed in / Open QuteNote" page with tap-to-return button instead of silent qutenote:// redirect (iOS blocks silent custom-scheme redirects). Server-side only, no new build needed. Awaiting Emerald retest
+
 ## What I am working on right now
 iOS app conversion (Emerald's priority as of Oct 6). Capacitor wrapper works in simulator. Remaining Phase 5 web items (CN Score, badges, connection birthdays) are parked until the iOS app ships.
 
