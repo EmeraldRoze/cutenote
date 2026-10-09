@@ -32,16 +32,16 @@ const css = `
     position: sticky;
     top: 0;
     z-index: 100;
-    background: var(--plum);
+    background: #FFFFFF;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 5vw;
-    height: 60px;
-    background-image: repeating-linear-gradient(transparent, transparent 29px, rgba(200,189,232,0.15) 29px, rgba(200,189,232,0.15) 30px);
+    height: 64px;
+    border-bottom: 1px solid var(--lav-pale);
   }
   .nav-logo {
-    font-family: 'Lobster', cursive;
+    font-family: 'Recoleta', Georgia, serif;
     font-size: 26px;
     color: white;
     text-decoration: none;
@@ -52,13 +52,13 @@ const css = `
   }
   .nav-links { display: flex; gap: 28px; align-items: center; }
   .nav-links a {
-    color: var(--lav-light);
+    color: var(--ink-mid);
     text-decoration: none;
     font-size: 14px;
     font-weight: 400;
     transition: color 0.2s;
   }
-  .nav-links a:hover { color: white; }
+  .nav-links a:hover { color: var(--plum); }
   .nav-cta {
     background: var(--blush) !important;
     color: var(--plum) !important;
@@ -79,8 +79,8 @@ const css = `
   }
 
   .hero {
-    background: var(--plum);
-    background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(200,189,232,0.12) 31px, rgba(200,189,232,0.12) 32px);
+    background: var(--cream);
+    background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(216,206,234,0.4) 31px, rgba(216,206,234,0.4) 32px);
     min-height: 90vh;
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -112,9 +112,9 @@ const css = `
     margin-bottom: 24px;
   }
   .hero h1 {
-    font-family: 'Lobster', cursive;
+    font-family: 'Recoleta', Georgia, serif;
     font-size: clamp(52px, 6vw, 78px);
-    color: white;
+    color: var(--plum);
     line-height: 1.1;
     margin-bottom: 12px;
   }
@@ -129,19 +129,17 @@ const css = `
   .hero-sub {
     font-family: 'Lora', serif;
     font-size: 20px;
-    color: var(--lav-light);
+    color: var(--lav-mid);
     font-style: italic;
     line-height: 1.6;
     margin-bottom: 16px;
   }
   .hero-body {
     font-size: 15px;
-    color: var(--ink-light);
+    color: var(--ink-mid);
     line-height: 1.7;
     margin-bottom: 40px;
     max-width: 460px;
-    background: var(--plum);
-    padding: 2px 0;
   }
   .hero-form {
     display: flex;
@@ -153,9 +151,9 @@ const css = `
     min-width: 220px;
     padding: 14px 20px;
     border-radius: 12px;
-    border: 1.5px solid var(--lav-mid);
-    background: rgba(255,255,255,0.06);
-    color: white;
+    border: 1.5px solid var(--lav-light);
+    background: #FFFFFF;
+    color: var(--ink);
     font-family: 'DM Sans', sans-serif;
     font-size: 15px;
     outline: none;
@@ -180,8 +178,7 @@ const css = `
   .hero-note {
     margin-top: 14px;
     font-size: 12px;
-    color: var(--ink-light);
-    background: var(--plum);
+    color: var(--ink-mid);
     display: inline-block;
   }
 
@@ -260,13 +257,13 @@ const css = `
     margin-bottom: 14px;
   }
   .section-title {
-    font-family: 'Lobster', cursive;
+    font-family: 'Recoleta', Georgia, serif;
     font-size: clamp(36px, 4vw, 52px);
     color: var(--ink);
     line-height: 1.15;
     margin-bottom: 16px;
   }
-  .section-title.light { color: white; }
+  .section-title.light { color: var(--plum); }
   .section-sub {
     font-family: 'Lora', serif;
     font-style: italic;
@@ -316,13 +313,13 @@ const css = `
     background: var(--lavender);
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-family: 'Lobster', cursive;
+    font-family: 'Recoleta', Georgia, serif;
     font-size: 17px;
     color: white;
     margin-bottom: 18px;
   }
   .step-card h3 {
-    font-family: 'Lobster', cursive;
+    font-family: 'Recoleta', Georgia, serif;
     font-size: 20px;
     color: var(--ink);
     margin-bottom: 10px;
@@ -339,12 +336,12 @@ const css = `
     display: block;
   }
 
-  #features { background: var(--plum); position: relative; overflow: hidden; }
+  #features { background: var(--parchment); position: relative; overflow: hidden; }
   #features::after {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(200,189,232,0.08) 31px, rgba(200,189,232,0.08) 32px);
+    background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(74,59,107,0.05) 31px, rgba(74,59,107,0.05) 32px);
     pointer-events: none;
   }
   .features-grid {
@@ -353,7 +350,7 @@ const css = `
     gap: 20px;
   }
   .feature-card {
-    background: var(--parchment);
+    background: #FFFFFF;
     border-radius: 16px;
     padding: 30px 28px;
     display: flex;
@@ -373,7 +370,7 @@ const css = `
     border: 1.5px solid var(--lav-light);
   }
   .feature-card h3 {
-    font-family: 'Lobster', cursive;
+    font-family: 'Recoleta', Georgia, serif;
     font-size: 19px;
     color: var(--ink);
     margin-bottom: 8px;
@@ -421,14 +418,14 @@ const css = `
     border-radius: 12px;
   }
   .price-tier {
-    font-family: 'Lobster', cursive;
+    font-family: 'Recoleta', Georgia, serif;
     font-size: 22px;
     color: var(--ink);
     margin-bottom: 6px;
     font-weight: 400;
   }
   .price-amount {
-    font-family: 'Lobster', cursive;
+    font-family: 'Recoleta', Georgia, serif;
     font-size: 46px;
     color: var(--lav-mid);
     line-height: 1;
@@ -542,7 +539,7 @@ const css = `
     background-image: repeating-linear-gradient(transparent, transparent 26px, var(--rule) 26px, var(--rule) 27px);
   }
   .faq-q {
-    font-family: 'Lobster', cursive;
+    font-family: 'Recoleta', Georgia, serif;
     font-size: 17px;
     color: var(--ink);
     margin-bottom: 10px;
@@ -551,16 +548,16 @@ const css = `
   .faq-a { font-size: 14px; color: var(--ink-mid); line-height: 1.65; }
 
   #cta {
-    background: var(--plum);
+    background: var(--parchment);
     text-align: center;
     padding: 120px 5vw;
     position: relative;
     overflow: hidden;
-    background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(200,189,232,0.1) 31px, rgba(200,189,232,0.1) 32px);
+    background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(74,59,107,0.05) 31px, rgba(74,59,107,0.05) 32px);
   }
   .cta-postcard {
     display: inline-block;
-    background: var(--parchment);
+    background: #FFFFFF;
     background-image: repeating-linear-gradient(transparent, transparent 26px, var(--rule) 26px, var(--rule) 27px);
     border-radius: 16px;
     padding: 60px 80px;
@@ -568,7 +565,7 @@ const css = `
     width: 100%;
     position: relative;
     border: 1.5px solid var(--lav-light);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    box-shadow: 0 20px 60px rgba(74,59,107,0.15);
   }
   .cta-postcard::before {
     content: '\\1F49C';
@@ -582,7 +579,7 @@ const css = `
     font-size: 20px;
   }
   .cta-postcard h2 {
-    font-family: 'Lobster', cursive;
+    font-family: 'Recoleta', Georgia, serif;
     font-size: 42px;
     color: var(--ink);
     margin-bottom: 14px;
@@ -616,7 +613,7 @@ const css = `
   .cta-input:focus { border-color: var(--lavender); }
 
   .landing-footer {
-    background: var(--ink);
+    background: var(--plum);
     padding: 40px 5vw;
     display: flex;
     align-items: center;
@@ -625,14 +622,14 @@ const css = `
     gap: 16px;
   }
   .footer-logo {
-    font-family: 'Lobster', cursive;
+    font-family: 'Recoleta', Georgia, serif;
     font-size: 22px;
     color: white;
   }
   .footer-links { display: flex; gap: 24px; }
-  .footer-links a { color: var(--ink-light); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+  .footer-links a { color: var(--lav-light); text-decoration: none; font-size: 13px; transition: color 0.2s; }
   .footer-links a:hover { color: white; }
-  .footer-copy { font-size: 12px; color: var(--ink-light); }
+  .footer-copy { font-size: 12px; color: var(--lav-light); }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(24px); }
@@ -670,7 +667,7 @@ export default function LandingPage() {
       <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
 
       <nav className="landing-nav">
-        <button className="nav-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>QuteNote</button>
+        <button className="nav-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ padding: 0 }}><img src="/brand/logo.png" alt="QuteNote" style={{ height: '36px', display: 'block' }} /></button>
         <div className="nav-links">
           <a href="#how">How it works</a>
           <a href="#features">Features</a>
@@ -727,7 +724,7 @@ export default function LandingPage() {
           <p className="section-sub">Everyone loves to get sweet messages in the mail, but sometimes it's hard to send them. Instead of doomscrolling on your phone, send a QuteNote. You write it on your phone, we send it in the mail.</p>
           <div className="steps-grid">
             <div className="step-card">
-              <span className="step-emoji">&#129782;</span>
+              <span className="step-emoji"><QEmoji name="heart" size={32} /></span>
               <div className="step-num">01</div>
               <h3>Build your circle</h3>
               <p>Create a profile, add important dates, and start adding friends to your circle.</p>
@@ -745,7 +742,7 @@ export default function LandingPage() {
               <p>Pick a QuteNote designed by an artist or upload a photo. Next, use one of our writing prompts or just go for it. Then hit send. No address, no post office, easy peasy.</p>
             </div>
             <div className="step-card">
-              <span className="step-emoji">&#128236;</span>
+              <span className="step-emoji"><QEmoji name="envelope" size={32} /></span>
               <div className="step-num">04</div>
               <h3>They feel it</h3>
               <p>A real postcard lands in their mailbox. Physical. Permanent. 100% more meaningful than a text.</p>
