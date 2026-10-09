@@ -4,25 +4,25 @@ import QEmoji from '../components/QEmoji'
 
 const css = `
   :root {
-    --plum: #4A3B6B;
-    --lavender: #9B8EC4;
-    --lav-mid: #7B6DAF;
-    --lav-light: #C8BDE8;
-    --lav-pale: #EDE8F7;
-    --blush: #F2C4CE;
-    --peach: #F7DECE;
-    --butter: #F7EAC8;
-    --cream: #FAF7F2;
-    --parchment: #F3EDE3;
-    --ink: #2E2440;
-    --ink-mid: #5C5070;
-    --ink-light: #9B92AD;
-    --rule: #D8CEEA;
-    --rule-red: #F0B8C0;
+    --plum: #2B2238;
+    --lavender: #5A32D6;
+    --lav-mid: #A78BC7;
+    --lav-light: #D9C9F1;
+    --lav-pale: #EEE6FA;
+    --blush: #D9C9F1;
+    --peach: #EEE6FA;
+    --butter: #EEE6FA;
+    --cream: #FBF8F4;
+    --parchment: #EEE6FA;
+    --ink: #2B2238;
+    --ink-mid: #5C5468;
+    --ink-light: #766E82;
+    --rule: #EFE8DE;
+    --rule-red: transparent;
   }
 
   .landing * { margin: 0; padding: 0; box-sizing: border-box; }
-  .landing { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); overflow-x: hidden; }
+  .landing { font-family: 'Anonymous Pro', monospace; background: var(--cream); color: var(--ink); overflow-x: hidden; }
 
   .ruled {
     background-image: repeating-linear-gradient(transparent, transparent 31px, var(--rule) 31px, var(--rule) 32px);
@@ -41,7 +41,7 @@ const css = `
     border-bottom: 1px solid var(--lav-pale);
   }
   .nav-logo {
-    font-family: 'Recoleta', Georgia, serif;
+    font-family: 'Unbounded', sans-serif;
     font-size: 26px;
     color: white;
     text-decoration: none;
@@ -60,18 +60,20 @@ const css = `
   }
   .nav-links a:hover { color: var(--plum); }
   .nav-cta {
-    background: var(--blush) !important;
-    color: var(--plum) !important;
+    background: var(--lavender) !important;
+    color: #fff !important;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     font-weight: 500 !important;
     padding: 8px 20px !important;
     border-radius: 20px !important;
     transition: background 0.2s !important;
     cursor: pointer;
     border: none;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Anonymous Pro', monospace;
     font-size: 14px;
   }
-  .nav-cta:hover { background: white !important; }
+  .nav-cta:hover { background: #4A28B4 !important; }
 
   @media (max-width: 640px) {
     .nav-links { gap: 16px; }
@@ -112,7 +114,7 @@ const css = `
     margin-bottom: 24px;
   }
   .hero h1 {
-    font-family: 'Recoleta', Georgia, serif;
+    font-family: 'Unbounded', sans-serif;
     font-size: clamp(52px, 6vw, 78px);
     color: var(--plum);
     line-height: 1.1;
@@ -127,9 +129,11 @@ const css = `
     opacity: 0.8;
   }
   .hero-sub {
-    font-family: 'Rock Salt', cursive;
-    font-size: 16px;
-    line-height: 2;
+    font-family: 'Anonymous Pro', monospace;
+    font-style: italic;
+    color: var(--lavender);
+    font-size: 17px;
+    line-height: 1.7;
     color: var(--lav-mid);
     font-style: italic;
     line-height: 1.6;
@@ -155,7 +159,7 @@ const css = `
     border: 1.5px solid var(--lav-light);
     background: #FFFFFF;
     color: var(--ink);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Anonymous Pro', monospace;
     font-size: 15px;
     outline: none;
     transition: border-color 0.2s;
@@ -163,19 +167,21 @@ const css = `
   .hero-input::placeholder { color: var(--ink-light); }
   .hero-input:focus { border-color: var(--blush); }
   .btn-primary {
-    background: var(--blush);
-    color: var(--plum);
+    background: var(--lavender);
+    color: #fff;
     border: none;
     padding: 14px 28px;
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
+    border-radius: 10px;
+    font-family: 'Anonymous Pro', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
     cursor: pointer;
     transition: background 0.2s, transform 0.15s;
     white-space: nowrap;
   }
-  .btn-primary:hover { background: white; transform: translateY(-1px); }
+  .btn-primary:hover { background: #4A28B4; transform: translateY(-1px); }
   .hero-note {
     margin-top: 14px;
     font-size: 12px;
@@ -239,9 +245,10 @@ const css = `
   .pc-handwriting {
     position: absolute;
     top: 18px; left: 18px;
-    font-family: 'Rock Salt', cursive;
-    font-size: 10px;
-    line-height: 1.8;
+    font-family: 'Anonymous Pro', monospace;
+    font-style: italic;
+    font-size: 12px;
+    line-height: 1.7;
     color: var(--ink-mid);
     line-height: 1.7;
     max-width: 150px;
@@ -258,7 +265,7 @@ const css = `
     margin-bottom: 14px;
   }
   .section-title {
-    font-family: 'Recoleta', Georgia, serif;
+    font-family: 'Unbounded', sans-serif;
     font-size: clamp(36px, 4vw, 52px);
     color: var(--ink);
     line-height: 1.15;
@@ -266,7 +273,7 @@ const css = `
   }
   .section-title.light { color: var(--plum); }
   .section-sub {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Anonymous Pro', monospace;
     font-size: 17px;
     color: var(--ink-mid);
     max-width: 560px;
@@ -313,13 +320,13 @@ const css = `
     background: var(--lavender);
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-family: 'Recoleta', Georgia, serif;
+    font-family: 'Unbounded', sans-serif;
     font-size: 17px;
     color: white;
     margin-bottom: 18px;
   }
   .step-card h3 {
-    font-family: 'Recoleta', Georgia, serif;
+    font-family: 'Unbounded', sans-serif;
     font-size: 20px;
     color: var(--ink);
     margin-bottom: 10px;
@@ -370,7 +377,7 @@ const css = `
     border: 1.5px solid var(--lav-light);
   }
   .feature-card h3 {
-    font-family: 'Recoleta', Georgia, serif;
+    font-family: 'Unbounded', sans-serif;
     font-size: 19px;
     color: var(--ink);
     margin-bottom: 8px;
@@ -418,14 +425,14 @@ const css = `
     border-radius: 12px;
   }
   .price-tier {
-    font-family: 'Recoleta', Georgia, serif;
+    font-family: 'Unbounded', sans-serif;
     font-size: 22px;
     color: var(--ink);
     margin-bottom: 6px;
     font-weight: 400;
   }
   .price-amount {
-    font-family: 'Recoleta', Georgia, serif;
+    font-family: 'Unbounded', sans-serif;
     font-size: 46px;
     color: var(--lav-mid);
     line-height: 1;
@@ -454,11 +461,13 @@ const css = `
     padding: 13px;
     border-radius: 12px;
     border: 1.5px solid var(--lavender);
-    background: transparent;
-    color: var(--lav-mid);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
+    background: #fff;
+    color: var(--lavender);
+    font-family: 'Anonymous Pro', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
     cursor: pointer;
     transition: all 0.2s;
   }
@@ -470,13 +479,15 @@ const css = `
     border: none;
     background: var(--lavender);
     color: white;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
+    font-family: 'Anonymous Pro', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
     cursor: pointer;
     transition: all 0.2s;
   }
-  .btn-filled:hover { background: var(--lav-mid); transform: translateY(-1px); }
+  .btn-filled:hover { background: #4A28B4; transform: translateY(-1px); }
 
   #testimonials { background: var(--parchment); position: relative; overflow: hidden; }
   #testimonials::before {
@@ -501,8 +512,9 @@ const css = `
     background-image: repeating-linear-gradient(transparent, transparent 25px, var(--rule) 25px, var(--rule) 26px);
   }
   .t-quote {
-    font-family: 'Rock Salt', cursive;
-    font-size: 12px;
+    font-family: 'Anonymous Pro', monospace;
+    font-style: italic;
+    font-size: 14px;
     color: var(--ink-mid);
     line-height: 1.7;
     margin-bottom: 20px;
@@ -538,7 +550,7 @@ const css = `
     background-image: repeating-linear-gradient(transparent, transparent 26px, var(--rule) 26px, var(--rule) 27px);
   }
   .faq-q {
-    font-family: 'Recoleta', Georgia, serif;
+    font-family: 'Unbounded', sans-serif;
     font-size: 17px;
     color: var(--ink);
     margin-bottom: 10px;
@@ -578,16 +590,18 @@ const css = `
     font-size: 20px;
   }
   .cta-postcard h2 {
-    font-family: 'Recoleta', Georgia, serif;
+    font-family: 'Unbounded', sans-serif;
     font-size: 42px;
     color: var(--ink);
     margin-bottom: 14px;
     font-weight: 400;
   }
   .cta-postcard p {
-    font-family: 'Rock Salt', cursive;
-    font-size: 15px;
-    line-height: 2;
+    font-family: 'Anonymous Pro', monospace;
+    font-style: italic;
+    color: var(--lavender);
+    font-size: 16px;
+    line-height: 1.7;
     color: var(--ink-mid);
     line-height: 1.6;
     margin-bottom: 36px;
@@ -604,7 +618,7 @@ const css = `
     border-radius: 12px;
     border: 1.5px solid var(--lav-light);
     background: white;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Anonymous Pro', monospace;
     font-size: 14px;
     color: var(--ink);
     outline: none;
@@ -621,7 +635,7 @@ const css = `
     gap: 16px;
   }
   .footer-logo {
-    font-family: 'Recoleta', Georgia, serif;
+    font-family: 'Unbounded', sans-serif;
     font-size: 22px;
     color: white;
   }

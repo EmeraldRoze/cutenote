@@ -84,7 +84,7 @@ export default function AddressPage() {
           border: '1px solid var(--lavender-light)', padding: '16px 20px', marginBottom: '24px',
         }}>
           <p style={{ fontSize: '14px', color: 'var(--lavender-deep)', lineHeight: 1.6 }}>
-            Your address is how your Quties send you physical notes. It's stored privately and only used for mailing.
+            Your address is how your QTs send you physical notes. It's stored privately and only used for mailing.
           </p>
         </div>
 

@@ -142,7 +142,7 @@ export default function ConnectionsPage() {
           ← Home
         </button>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 500, color: 'var(--ink)' }}>
-          Quties
+          QTs
         </h1>
         <div style={{ width: '60px' }} />
       </nav>
@@ -290,7 +290,7 @@ export default function ConnectionsPage() {
         {/* Connections list */}
         <div style={{ ...cardStyle, ...paperTexture }}>
           <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ink)', marginBottom: '16px' }}>
-            Quties {!loading && `(${connections.length})`}
+            QTs {!loading && `(${connections.length})`}
           </p>
           {loading && <p style={{ fontSize: '13px', color: 'var(--ink-muted)', textAlign: 'center', padding: '16px 0' }}>Loading...</p>}
           {!loading && connections.length === 0 && (

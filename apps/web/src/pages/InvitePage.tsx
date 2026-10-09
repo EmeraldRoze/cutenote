@@ -67,7 +67,7 @@ export default function InvitePage() {
                 fontFamily: 'var(--font-body)',
               }}
             >
-              Invite another Qutie
+              Invite another QT
             </button>
             <button
               onClick={() => navigate('/home')}
@@ -101,7 +101,7 @@ export default function InvitePage() {
           ← Home
         </button>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 500, color: 'var(--ink)' }}>
-          Invite a Qutie
+          Invite a QT
         </h1>
         <div style={{ width: '60px' }} />
       </nav>

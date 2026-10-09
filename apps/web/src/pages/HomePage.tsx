@@ -123,7 +123,7 @@ export default function HomePage() {
           >
             <div>
               <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)', marginBottom: '2px' }}>Add your address</p>
-              <p style={{ fontSize: '12px', color: 'var(--ink-muted)' }}>So your Quties can send you notes too.</p>
+              <p style={{ fontSize: '12px', color: 'var(--ink-muted)' }}>So your QTs can send you notes too.</p>
             </div>
             <span style={{ fontSize: '18px', flexShrink: 0, marginLeft: '12px' }}>→</span>
           </button>
@@ -165,7 +165,7 @@ export default function HomePage() {
           Send a QuteNote
         </button>
 
-        {/* Invite a Qutie */}
+        {/* Invite a QT */}
         <button
           onClick={() => navigate('/invite')}
           style={{
@@ -178,7 +178,7 @@ export default function HomePage() {
           onMouseEnter={e => (e.currentTarget.style.background = 'var(--lavender-pale)')}
           onMouseLeave={e => (e.currentTarget.style.background = 'var(--white)')}
         >
-          Invite a Qutie
+          Invite a QT
         </button>
 
         {/* Notes remaining (subscribers only) */}

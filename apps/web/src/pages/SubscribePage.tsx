@@ -89,7 +89,7 @@ export default function SubscribePage() {
             {[
               '2 physical postcards per month',
               'AI writing help for every note',
-              'Your Quties can send to you too',
+              'Your QTs can send to you too',
               'Handwritten-style fonts',
             ].map(feature => (
               <div key={feature} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -150,7 +150,7 @@ export default function SubscribePage() {
           border: '1px solid var(--lavender-light)', padding: '16px 20px',
         }}>
           <p style={{ fontSize: '13px', color: 'var(--lavender-deep)', lineHeight: 1.6 }}>
-            <strong>Free accounts</strong> can add their address, connect with Quties, and receive notes. A subscription is only needed to send physical postcards.
+            <strong>Free accounts</strong> can add their address, connect with QTs, and receive notes. A subscription is only needed to send physical postcards.
           </p>
         </div>
 

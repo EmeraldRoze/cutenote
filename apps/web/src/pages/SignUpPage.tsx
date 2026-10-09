@@ -150,7 +150,7 @@ export default function SignUpPage() {
                 onFocus={e => { e.target.style.borderColor = 'var(--lavender)'; e.target.style.boxShadow = 'var(--shadow-input)' }}
                 onBlur={e => { e.target.style.borderColor = 'var(--border-default)'; e.target.style.boxShadow = 'none' }}
               />
-              <p style={{ fontSize: '11px', color: 'var(--ink-muted)', marginTop: '4px' }}>So your Quties know when to celebrate you!</p>
+              <p style={{ fontSize: '11px', color: 'var(--ink-muted)', marginTop: '4px' }}>So your QTs know when to celebrate you!</p>
             </div>
             <div>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: 'var(--ink)', marginBottom: '6px' }}>Email</label>

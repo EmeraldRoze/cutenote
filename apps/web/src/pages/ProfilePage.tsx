@@ -30,7 +30,7 @@ interface Profile {
   }
 }
 
-interface Qutie {
+interface QT {
   id: string
   username: string
   displayName: string
@@ -61,7 +61,7 @@ export default function ProfilePage() {
   const { user: _me } = useAuth()
   const navigate = useNavigate()
   const [profile, setProfile] = useState<Profile | null>(null)
-  const [quties, setQuties] = useState<Qutie[]>([])
+  const [quties, setQTs] = useState<QT[]>([])
   const [loading, setLoading] = useState(true)
   const [connecting, setConnecting] = useState(false)
 
@@ -72,7 +72,7 @@ export default function ProfilePage() {
         setProfile(res.data.data)
         return api.get(`/connections/user/${res.data.data.id}`)
       })
-      .then((res) => setQuties(res.data.data))
+      .then((res) => setQTs(res.data.data))
       .catch(() => setProfile(null))
       .finally(() => setLoading(false))
   }, [username])
@@ -234,7 +234,7 @@ export default function ProfilePage() {
           {[
             { value: profile._count.notesSent, label: 'Sent' },
             { value: profile._count.notesReceived, label: 'Received' },
-            { value: profile._count.following, label: 'Quties' },
+            { value: profile._count.following, label: 'QTs' },
           ].map((stat) => (
             <div key={stat.label} style={{
               ...cardStyle, padding: '14px 8px', textAlign: 'center',
@@ -265,11 +265,11 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Quties list */}
+        {/* QTs list */}
         <div style={cardStyle}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
             <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ink)' }}>
-              Quties ({quties.length})
+              QTs ({quties.length})
             </p>
             {profile.isMe && (
               <button
@@ -286,7 +286,7 @@ export default function ProfilePage() {
           </div>
           {quties.length === 0 && (
             <p style={{ color: 'var(--ink-muted)', textAlign: 'center', padding: '12px 0', fontFamily: 'var(--font-handwriting)', fontSize: '11px' }}>
-              {profile.isMe ? 'No Quties yet. Find someone to connect with!' : 'No connections yet.'}
+              {profile.isMe ? 'No QTs yet. Find someone to connect with!' : 'No connections yet.'}
             </p>
           )}
           {quties.length > 0 && (

@@ -1,57 +1,63 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: 'Recoleta';
-  src: url('/Recoleta-Regular.otf') format('opentype');
-  font-weight: 400 600;
-  font-style: normal;
-  font-display: swap;
-}
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --lavender:       #9B8EC4;
-  --lavender-light: #C4BAE0;
-  --lavender-pale:  #EDE9F7;
-  --lavender-dark:  #6A5FA0;
-  --lavender-deep:  #3D3470;
+  /* QuteNote iOS Design Guide, Oct 2026 — typed mail on good paper */
+  --ultraviolet:    #5A32D6;  /* the one action color */
+  --lavender:       #5A32D6;  /* legacy alias: old action color -> ultraviolet */
+  --lavender-light: #D9C9F1;
+  --lavender-pale:  #EEE6FA;
+  --lavender-dark:  #4A28B4;  /* pressed/hover: darker ultraviolet */
+  --lavender-deep:  #2B2238;  /* legacy alias: heading color -> ink */
+  --lavender-soft:  #A78BC7;  /* dashed borders, outline accents */
 
-  --blush:          #F5C2C7;
-  --blush-pale:     #FDF0F1;
+  --blush:          #D9C9F1;  /* pink is retired; legacy aliases map to lavender */
+  --blush-pale:     #EEE6FA;
 
-  --ink:            #2C2540;
-  --ink-mid:        #5E5480;
-  --ink-muted:      #9590AA;
+  --ink:            #2B2238;
+  --ink-mid:        #5C5468;
+  --ink-muted:      #766E82;
 
   --cream:          #FBF8F4;
-  --cream-warm:     #F5EFE6;
-  --cream-ruled:    #E8E0D5;
+  --cream-warm:     #EEE6FA;  /* panels that matter sit on lavender-pale */
+  --cream-ruled:    #EFE8DE;
+  --stone:          #E6E1DC;
+  --lime:           #C6FF3D;  /* countdown pills and new dots ONLY */
   --white:          #FFFFFF;
 
   --error:          #E04E6B;
   --error-pale:     #FDEDF1;
 
-  --border-default: #D9D3E8;
-  --border-focused: #9B8EC4;
+  --border-default: #E6E1DC;
+  --border-focused: #5A32D6;
 
-  --shadow-card:    0 2px 12px rgba(155,142,196,0.13), 0 1px 3px rgba(44,37,64,0.07);
-  --shadow-button:  0 2px 8px rgba(155,142,196,0.25);
-  --shadow-input:   0 0 0 3px rgba(155,142,196,0.20);
+  --shadow-card:    0 4px 14px rgba(43,34,56,0.08);
+  --shadow-button:  0 4px 14px rgba(43,34,56,0.10);
+  --shadow-input:   0 0 0 3px rgba(90,50,214,0.15);
 
-  --font-display:     'Recoleta', Georgia, serif;
-  --font-body:        'DM Sans', system-ui, sans-serif;
-  --font-handwriting: 'Rock Salt', cursive;
+  --font-display:     'Unbounded', sans-serif;
+  --font-body:        'Anonymous Pro', monospace;
+  --font-handwriting: 'Anonymous Pro', monospace;
 }
 
 body {
   font-family: var(--font-body);
   background: var(--cream);
+  background-image: repeating-linear-gradient(transparent, transparent 31px, var(--cream-ruled) 31px, var(--cream-ruled) 32px);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
-  line-height: 1.6;
-  /* The Recoleta font file is missing ligature glyphs (fi/fl render as boxes) */
-  font-variant-ligatures: none;
+  line-height: 1.55;
+}
+
+/* Headlines: Unbounded, never bold — hierarchy comes from size */
+h1, h2, h3 { font-weight: 400; }
+
+/* Buttons are verbs: typewriter bold, all caps, wide tracking */
+button {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
 }
 
 #root {
