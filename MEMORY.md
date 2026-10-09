@@ -75,6 +75,9 @@ Typecheck web:       cd apps/web && npx tsc --noEmit
 2026-10-08/09 — Landing page restyled to watercolor brand (cream paper, plum Recoleta, white nav with wordmark, plum footer), then Emerald's full website copy applied verbatim + fonts unified to app set (Recoleta/DM Sans/Caveat; Lobster and Lora removed). Verified in local preview, deployed, confirmed live
 2026-10-09 — Google sign-in in-app fix: callback for native now serves a "You're signed in / Open QuteNote" page with tap-to-return button instead of silent qutenote:// redirect (iOS blocks silent custom-scheme redirects). Server-side only, no new build needed. Awaiting Emerald retest
 
+2026-10-09 — Font watermark fix (trial Recoleta renders fi/fl as Latinotype watermark boxes — ligatures disabled globally; OPEN: license real Recoleta or swap before public launch). Build 5 approved with it
+2026-10-09 — Round edits from Emerald: handwriting font is Rock Salt everywhere (--font-handwriting + landing, sizes tuned down since Rock Salt runs wide; postcard PRODUCT fonts untouched), Free Profile card copy updated, FAQ title back to "Good questions.", full website copy + fonts from her doc applied. All live on qutenote.com
+
 ## What I am working on right now
 iOS app conversion (Emerald's priority as of Oct 6). Capacitor wrapper works in simulator. Remaining Phase 5 web items (CN Score, badges, connection birthdays) are parked until the iOS app ships.
 
