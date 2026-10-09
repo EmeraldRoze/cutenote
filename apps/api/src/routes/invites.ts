@@ -163,5 +163,11 @@ invitesRouter.post('/collect/:token', async (req: Request, res: Response) => {
     },
   })
 
+  // Every friend = a free card: the inviter earns one gifted credit per completed invite
+  await prisma.user.update({
+    where: { id: invite.senderId },
+    data: { giftedCredits: { increment: 1 } },
+  })
+
   return res.json({ data: { message: 'Address saved! Your surprise is on its way.' } })
 })

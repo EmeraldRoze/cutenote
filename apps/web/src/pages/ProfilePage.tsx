@@ -5,11 +5,14 @@ import { api } from '../lib/api'
 import QEmoji from '../components/QEmoji'
 import TabBar from '../components/TabBar'
 
-interface Badge {
-  badgeType: string
-  earnedAt: string
-}
+// Profile — App Screens board layout in the Oct 2026 system:
+// membership card, stats, privacy, handwriting teaser, stamp book, postcards.
 
+const uv = '#5A32D6'
+const label: React.CSSProperties = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase', color: 'var(--ink-mid)' }
+const sectionTitle: React.CSSProperties = { fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)' }
+
+interface Badge { badgeType: string; earnedAt: string }
 interface Profile {
   id: string
   username: string
@@ -23,334 +26,278 @@ interface Profile {
   badges: Badge[]
   connectionStatus: string | null
   isMe: boolean
-  _count: {
-    notesSent: number
-    notesReceived: number
-    followers: number
-    following: number
-  }
+  _count: { notesSent: number; notesReceived: number; followers: number; following: number }
 }
-
-interface QT {
+interface NoteThumb {
   id: string
-  username: string
-  displayName: string
-  avatarUrl: string | null
+  occasionType: string
+  cardDesignId?: string | null
+  cardImageUrl?: string | null
+  createdAt: string
 }
 
-const BADGE_LABELS: Record<string, { label: string; icon: string; art?: string }> = {
-  FIRST_NOTE: { label: 'First Note', icon: '✉' },
-  BIRTHDAY_HERO: { label: 'Birthday Hero', icon: '🎂', art: 'cake' },
-  ON_A_ROLL: { label: 'On a Roll', icon: '🔥' },
-  KINDNESS_MACHINE: { label: 'Kindness Machine', icon: '💛' },
-  PASS_IT_FORWARD: { label: 'Pass It Forward', icon: '🎁', art: 'gift' },
-  CONNECTED: { label: 'Connected', icon: '🤝' },
-  THOUGHTFUL_FRIEND: { label: 'Thoughtful Friend', icon: '💭' },
-  HOLIDAY_SPIRIT: { label: 'Holiday Spirit', icon: '🎄' },
+// Badges render as stamps in the stamp book
+const STAMPS: Record<string, { label: string; art: string; bg: string }> = {
+  FIRST_NOTE: { label: 'First note', art: 'envelope', bg: 'var(--lavender-pale)' },
+  BIRTHDAY_HERO: { label: 'Birthday hero', art: 'cake', bg: '#F9E8EF' },
+  ON_A_ROLL: { label: 'On a roll', art: 'popper', bg: '#FDF3DC' },
+  KINDNESS_MACHINE: { label: 'Kindness machine', art: 'heart', bg: '#FBEAEA' },
+  PASS_IT_FORWARD: { label: 'Pass it forward', art: 'gift', bg: '#EAF2FB' },
+  CONNECTED: { label: 'Connected', art: 'clover', bg: '#EDF5E4' },
+  THOUGHTFUL_FRIEND: { label: 'Thoughtful friend', art: 'flower', bg: 'var(--lavender-pale)' },
+  HOLIDAY_SPIRIT: { label: 'Holiday spirit', art: 'star', bg: '#FDF3DC' },
 }
-
-const cardStyle = {
-  background: 'var(--white)',
-  borderRadius: '20px',
-  border: '1px solid var(--border-default)',
-  boxShadow: 'var(--shadow-card)',
-  padding: '20px',
+const CARD_BG: Record<string, string> = { 'design-1': '#EAF2FB', 'design-2': 'var(--lavender-pale)', 'design-3': '#EDF5E4' }
+const CARD_ART: Record<string, string> = { 'design-1': 'flower', 'design-2': 'popper', 'design-3': 'star' }
+const OCCASION_ART: Record<string, string> = {
+  BIRTHDAY: 'cake', ANNIVERSARY: 'hearteyes', CONGRATULATIONS: 'popper', HOLIDAY: 'star',
+  CONSOLATION: 'rainbow', JUST_BECAUSE: 'envelope', INVITATION: 'plane', CUSTOM: 'envelope',
 }
 
 export default function ProfilePage() {
-  const { username } = useParams<{ username: string }>()
-  const { user: _me } = useAuth()
+  const { username } = useParams()
   const navigate = useNavigate()
+  const { user, refreshUser } = useAuth()
   const [profile, setProfile] = useState<Profile | null>(null)
-  const [quties, setQTs] = useState<QT[]>([])
   const [loading, setLoading] = useState(true)
-  const [connecting, setConnecting] = useState(false)
+  const [tab, setTab] = useState<'sent' | 'received'>('sent')
+  const [sent, setSent] = useState<NoteThumb[]>([])
+  const [received, setReceived] = useState<NoteThumb[]>([])
+  const [requested, setRequested] = useState(false)
 
   useEffect(() => {
-    if (!username) return
+    setLoading(true)
     api.get(`/users/${username}`)
-      .then((res) => {
-        setProfile(res.data.data)
-        return api.get(`/connections/user/${res.data.data.id}`)
-      })
-      .then((res) => setQTs(res.data.data))
+      .then((res) => setProfile(res.data.data))
       .catch(() => setProfile(null))
       .finally(() => setLoading(false))
   }, [username])
 
-  async function handleConnect() {
-    if (!profile) return
-    setConnecting(true)
-    try {
-      await api.post(`/connections/request/${profile.id}`)
-      setProfile((p) => p ? { ...p, connectionStatus: profile.isPrivate ? 'PENDING' : 'ACCEPTED' } : null)
-    } catch {
-      // already connected
-    } finally {
-      setConnecting(false)
-    }
+  const isMe = profile?.isMe ?? (user?.username === username)
+
+  useEffect(() => {
+    if (!isMe) return
+    api.get('/notes/sent').then((r) => setSent(r.data.data)).catch(() => {})
+    api.get('/notes/received').then((r) => setReceived(r.data.data)).catch(() => {})
+  }, [isMe])
+
+  async function togglePrivacy() {
+    await api.post('/connections/privacy', { isPrivate: !user?.isPrivate })
+    refreshUser?.()
+    setProfile((p) => (p ? { ...p, isPrivate: !p.isPrivate } : p))
   }
 
-  async function handleUnfollow() {
+  async function addQT() {
     if (!profile) return
-    setConnecting(true)
-    try {
-      await api.delete(`/connections/${profile.id}`)
-      setProfile((p) => p ? { ...p, connectionStatus: null } : null)
-    } finally {
-      setConnecting(false)
-    }
+    await api.post(`/connections/request/${profile.id}`)
+    setRequested(true)
   }
 
-  function getInitials(name: string) {
-    return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
-  }
+  const initials = (name: string) => name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ color: 'var(--ink-muted)', fontSize: '14px' }}>Loading...</p>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ fontFamily: 'var(--font-body)', color: 'var(--ink-muted)' }}>One sec…</p>
+        <TabBar />
+      </div>
+    )
+  }
+  if (!profile) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ fontFamily: 'var(--font-body)', color: 'var(--ink-muted)' }}>No one by that name here.</p>
+        <TabBar />
       </div>
     )
   }
 
-  if (!profile) {
-    return (
-      <div style={{ minHeight: '100vh', background: 'var(--cream)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-        <p style={{ color: 'var(--ink-muted)', fontSize: '11px', fontFamily: 'var(--font-handwriting)' }}>User not found</p>
-        <button onClick={() => navigate('/home')} style={{ fontSize: '13px', color: 'var(--lavender-dark)', background: 'none', border: 'none', cursor: 'pointer' }}>
-          Go home
-        </button>
-      </div>
-    )
-  }
+  const notes = tab === 'sent' ? sent : received
+  const earned = profile.badges.map((b) => b.badgeType).filter((t) => STAMPS[t])
 
   return (
     <div style={{ minHeight: '100vh', paddingBottom: '110px' }}>
-      {/* Nav */}
-      <nav style={{
-        background: 'var(--white)',
-        borderBottom: '1px solid var(--lavender-pale)',
-        padding: '14px 20px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      }}>
-        <button onClick={() => navigate(-1)} style={{ fontSize: '13px', fontWeight: 500, color: 'var(--lavender-dark)', background: 'none', border: 'none', cursor: 'pointer' }}>
-          ← Back
-        </button>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 500, color: 'var(--ink)' }}>
-          Profile
-        </h1>
-        <div style={{ width: '60px' }} />
-      </nav>
+      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 24px 0' }}>
 
-      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '32px 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+          <div style={sectionTitle}>Profile</div>
+          {isMe && (
+            <button onClick={() => navigate('/subscribe')} aria-label="Membership" style={{
+              height: '32px', padding: '0 12px', borderRadius: '999px', border: '1px solid var(--stone)',
+              background: '#fff', color: 'var(--ink-mid)', cursor: 'pointer',
+              fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.1em',
+            }}>Membership</button>
+          )}
+        </div>
 
-        {/* Avatar + name */}
-        <div style={{ ...cardStyle, textAlign: 'center', paddingTop: '32px', paddingBottom: '24px' }}>
+        {/* Identity */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div style={{
-            width: 80, height: 80, borderRadius: '50%',
-            background: 'var(--lavender-pale)',
+            width: '96px', height: '96px', borderRadius: '48px', background: 'var(--lavender-light)',
+            border: '3px solid #fff', boxShadow: '0 4px 14px rgba(43,34,56,0.1)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 12px',
-            fontSize: '24px', fontWeight: 600, color: 'var(--lavender-dark)',
+            fontFamily: 'var(--font-display)', fontSize: '28px', color: uv, overflow: 'hidden',
           }}>
-            {profile.avatarUrl
-              ? <img src={profile.avatarUrl} style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover' }} />
-              : getInitials(profile.displayName)}
+            {profile.avatarUrl ? <img src={profile.avatarUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : initials(profile.displayName)}
           </div>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 500, color: 'var(--ink)' }}>
-            {profile.displayName}
-          </h2>
-          <p style={{ fontSize: '13px', color: 'var(--ink-muted)', marginTop: '2px' }}>@{profile.username}</p>
-          {profile.bio && (
-            <p style={{ fontSize: '14px', color: 'var(--ink)', marginTop: '8px', lineHeight: '1.4' }}>{profile.bio}</p>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', marginTop: '10px', letterSpacing: '-0.01em' }}>{profile.displayName}</div>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)' }}>@{profile.username}</div>
+          {profile.bio && <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', marginTop: '6px', textAlign: 'center' }}>{profile.bio}</p>}
+
+          {!isMe && (
+            <button
+              onClick={addQT}
+              disabled={requested || profile.connectionStatus === 'ACCEPTED' || profile.connectionStatus === 'PENDING'}
+              style={{
+                marginTop: '12px', height: '40px', padding: '0 18px', borderRadius: '999px', cursor: 'pointer',
+                border: `1.5px solid ${uv}`,
+                background: profile.connectionStatus === 'ACCEPTED' ? 'var(--lavender-pale)' : '#fff',
+                color: uv, fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '12px', letterSpacing: '0.12em',
+              }}
+            >
+              {profile.connectionStatus === 'ACCEPTED' ? 'Your QT' : requested || profile.connectionStatus === 'PENDING' ? 'Requested' : 'Add QT'}
+            </button>
           )}
 
-          {/* Connection button (only for other users) */}
-          {!profile.isMe && (
-            <div style={{ marginTop: '16px' }}>
-              {profile.connectionStatus === 'ACCEPTED' ? (
-                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                  <button
-                    onClick={() => navigate(`/send?to=${profile.id}`)}
-                    style={{
-                      fontSize: '13px', fontWeight: 500, padding: '8px 20px',
-                      borderRadius: '50px', border: 'none', cursor: 'pointer',
-                      background: 'var(--lavender)', color: '#fff',
-                      fontFamily: 'var(--font-body)',
-                    }}
-                  >
-                    Send Qute
-                  </button>
-                  <button
-                    onClick={handleUnfollow}
-                    disabled={connecting}
-                    style={{
-                      fontSize: '13px', fontWeight: 500, padding: '8px 20px',
-                      borderRadius: '50px', border: '1.5px solid var(--border-default)',
-                      cursor: 'pointer', background: 'var(--white)', color: 'var(--ink-muted)',
-                      fontFamily: 'var(--font-body)',
-                    }}
-                  >
-                    Unfollow
-                  </button>
-                </div>
-              ) : profile.connectionStatus === 'PENDING' ? (
-                <span style={{ fontSize: '13px', color: 'var(--ink-muted)' }}>Request pending</span>
-              ) : (
-                <button
-                  onClick={handleConnect}
-                  disabled={connecting}
-                  style={{
-                    fontSize: '13px', fontWeight: 500, padding: '8px 20px',
-                    borderRadius: '50px', border: 'none', cursor: 'pointer',
-                    background: 'var(--lavender)', color: '#fff',
-                    fontFamily: 'var(--font-body)',
-                  }}
-                >
-                  {connecting ? 'Connecting...' : 'Connect'}
-                </button>
+          {/* Membership card (me only) */}
+          {isMe && user && (
+            <div style={{
+              width: '100%', boxSizing: 'border-box', marginTop: '18px', padding: '14px 16px',
+              borderRadius: '14px', background: 'var(--lavender-pale)', border: '1px solid var(--lavender-light)',
+              display: 'flex', alignItems: 'center', gap: '14px',
+            }}>
+              <span style={{ display: 'flex', gap: '6px' }}>
+                {[0, 1].map((i) => {
+                  const total = (user.notesAllowance ?? 0) + (user.giftedCredits ?? 0)
+                  const left = Math.max(0, total - (user.notesUsed ?? 0))
+                  return <span key={i} style={{ width: '22px', height: '28px', borderRadius: '3px', background: i < left ? uv : 'var(--lavender-light)' }} />
+                })}
+              </span>
+              <span style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700 }}>
+                  {user.subscriptionStatus === 'ACTIVE'
+                    ? `${Math.max(0, (user.notesAllowance ?? 0) + (user.giftedCredits ?? 0) - (user.notesUsed ?? 0))} of ${(user.notesAllowance ?? 0) + (user.giftedCredits ?? 0)} cards left this month`
+                    : 'No membership yet'}
+                </span>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>
+                  {user.subscriptionStatus === 'ACTIVE' ? 'Member · $7.95/mo' : 'Join for $7.95/mo · two postcards a month'}
+                </span>
+              </span>
+              {user.subscriptionStatus !== 'ACTIVE' && (
+                <button onClick={() => navigate('/subscribe')} style={{
+                  height: '34px', padding: '0 12px', borderRadius: '999px', border: 'none', background: uv, color: '#fff',
+                  fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em', cursor: 'pointer',
+                }}>Join</button>
               )}
             </div>
           )}
 
-          {/* Edit profile link for own profile */}
-          {profile.isMe && (
-            <button
-              onClick={() => navigate('/settings')}
-              style={{
-                marginTop: '16px', fontSize: '13px', fontWeight: 500, padding: '8px 20px',
-                borderRadius: '50px', border: '1.5px solid var(--border-default)',
-                cursor: 'pointer', background: 'var(--white)', color: 'var(--ink-muted)',
-                fontFamily: 'var(--font-body)',
-              }}
-            >
-              Edit Profile
-            </button>
-          )}
-        </div>
+          {/* Stats */}
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', width: '100%', marginTop: '16px',
+            padding: '14px 0', borderTop: '1px solid var(--stone)', borderBottom: '1px solid var(--stone)', textAlign: 'center',
+          }}>
+            <div><div style={{ fontFamily: 'var(--font-display)', fontSize: '22px' }}>{profile._count.notesSent}</div><div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>cards sent</div></div>
+            <div><div style={{ fontFamily: 'var(--font-display)', fontSize: '22px' }}>{profile._count.notesReceived}</div><div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>cards received</div></div>
+            <div><div style={{ fontFamily: 'var(--font-display)', fontSize: '22px' }}>{profile._count.following}</div><div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>QTs</div></div>
+          </div>
 
-        {/* Stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-          {[
-            { value: profile._count.notesSent, label: 'Sent' },
-            { value: profile._count.notesReceived, label: 'Received' },
-            { value: profile._count.following, label: 'QTs' },
-          ].map((stat) => (
-            <div key={stat.label} style={{
-              ...cardStyle, padding: '14px 8px', textAlign: 'center',
+          {/* Privacy (me only) */}
+          {isMe && (
+            <div style={{ width: '100%', marginTop: '14px', padding: '14px 16px', boxSizing: 'border-box', borderRadius: '14px', background: '#fff', border: '1px solid var(--stone)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700 }}>Who sees your sends</span>
+                <span style={{ display: 'flex', padding: '3px', borderRadius: '10px', background: 'var(--lavender-pale)' }}>
+                  <button onClick={() => user?.isPrivate || togglePrivacy()} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: user?.isPrivate ? '#fff' : 'transparent', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Private</button>
+                  <button onClick={() => user?.isPrivate && togglePrivacy()} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: user?.isPrivate ? 'transparent' : '#fff', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Public</button>
+                </span>
+              </div>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', lineHeight: 1.45, color: 'var(--ink-mid)' }}>
+                {user?.isPrivate
+                  ? 'Private: your sends stay off feeds, and only you can see the cards you sent.'
+                  : "Public: your sends show on your QTs' feeds and on your profile. Messages are never shown."}
+              </div>
+            </div>
+          )}
+
+          {/* Handwriting teaser (me only) */}
+          {isMe && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '14px', width: '100%', boxSizing: 'border-box',
+              marginTop: '14px', padding: '14px', borderRadius: '14px', background: '#fff',
+              border: `1.5px dashed var(--lavender-soft)`,
             }}>
-              <p style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--lavender)' }}>
-                {stat.value}
-              </p>
-              <p style={{ fontSize: '11px', color: 'var(--ink-muted)', marginTop: '2px' }}>{stat.label}</p>
+              <span style={{ width: '48px', height: '48px', minWidth: '48px', borderRadius: '12px', background: 'var(--lavender-pale)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-body)', fontStyle: 'italic', fontSize: '16px', color: uv }}>Aa</span>
+              <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700 }}>Your handwriting</span>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>Teach QuteNote to write like you. Coming soon.</span>
+              </span>
             </div>
-          ))}
-        </div>
-
-        {/* CN Score + streak */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-          <div style={{ ...cardStyle, textAlign: 'center' }}>
-            <p style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: 600, color: 'var(--lavender)' }}>
-              {profile.points}
-            </p>
-            <p style={{ fontSize: '12px', color: 'var(--ink-muted)', marginTop: '4px' }}>CN Score</p>
-          </div>
-          <div style={{ ...cardStyle, textAlign: 'center' }}>
-            <p style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: 600, color: 'var(--lavender)' }}>
-              {profile.currentStreak}
-            </p>
-            <p style={{ fontSize: '12px', color: 'var(--ink-muted)', marginTop: '4px' }}>
-              Month streak {profile.longestStreak > profile.currentStreak && `(best: ${profile.longestStreak})`}
-            </p>
-          </div>
-        </div>
-
-        {/* QTs list */}
-        <div style={cardStyle}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-            <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ink)' }}>
-              QTs ({quties.length})
-            </p>
-            {profile.isMe && (
-              <button
-                onClick={() => navigate('/connections')}
-                style={{
-                  fontSize: '12px', fontWeight: 500, color: 'var(--lavender-dark)',
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  fontFamily: 'var(--font-body)',
-                }}
-              >
-                Manage →
-              </button>
-            )}
-          </div>
-          {quties.length === 0 && (
-            <p style={{ color: 'var(--ink-muted)', textAlign: 'center', padding: '12px 0', fontFamily: 'var(--font-handwriting)', fontSize: '11px' }}>
-              {profile.isMe ? 'No QTs yet. Find someone to connect with!' : 'No connections yet.'}
-            </p>
           )}
-          {quties.length > 0 && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-              {quties.map((q) => (
-                <div
-                  key={q.id}
-                  onClick={() => navigate(`/profile/${q.username}`)}
-                  style={{
-                    display: 'flex', flexDirection: 'column', alignItems: 'center',
-                    gap: '4px', cursor: 'pointer', width: '64px',
-                  }}
-                >
-                  <div style={{
-                    width: 44, height: 44, borderRadius: '50%',
-                    background: 'var(--lavender-pale)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: 'var(--lavender-dark)', fontSize: '14px', fontWeight: 600,
-                    overflow: 'hidden',
-                  }}>
-                    {q.avatarUrl
-                      ? <img src={q.avatarUrl} style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover' }} />
-                      : getInitials(q.displayName)}
-                  </div>
-                  <p style={{ fontSize: '11px', color: 'var(--ink-muted)', textAlign: 'center', lineHeight: 1.2, wordBreak: 'break-word' }}>
-                    {q.displayName.split(' ')[0]}
-                  </p>
+
+          {/* Stamp book */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%', margin: '26px 0 4px' }}>
+            <div style={sectionTitle}>Stamp book</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>{earned.length} collected</div>
+          </div>
+          <div style={{ width: '100%', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', marginBottom: '14px' }}>
+            Stamps arrive as you send, connect, and show up. Just for fun.
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px 8px', width: '100%' }}>
+            {earned.map((t) => (
+              <div key={t} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '58px', height: '69px', boxSizing: 'border-box', padding: '4px', background: '#fff', border: `2px dashed var(--lavender-soft)`, borderRadius: '4px', boxShadow: '0 2px 6px rgba(43,34,56,0.1)' }}>
+                  <span style={{ display: 'flex', width: '100%', height: '100%', borderRadius: '2px', background: STAMPS[t].bg, alignItems: 'center', justifyContent: 'center' }}>
+                    <QEmoji name={STAMPS[t].art} size={34} />
+                  </span>
+                </span>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '11px', lineHeight: 1.25, textAlign: 'center', color: 'var(--ink-mid)' }}>{STAMPS[t].label}</span>
+              </div>
+            ))}
+            {['Keep sending', 'Coming soon'].map((l) => (
+              <div key={l} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '58px', height: '69px', boxSizing: 'border-box', border: '2px dashed var(--lavender-light)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--lavender-light)', fontSize: '18px' }}>?</span>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '11px', lineHeight: 1.25, textAlign: 'center', color: 'var(--ink-muted)' }}>{l}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Postcards (me only — board shows own archive) */}
+          {isMe && (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', margin: '26px 0 12px' }}>
+                <div style={sectionTitle}>Your postcards</div>
+                <span style={{ display: 'flex', padding: '3px', borderRadius: '10px', background: 'var(--lavender-pale)' }}>
+                  <button onClick={() => setTab('sent')} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: tab === 'sent' ? '#fff' : 'transparent', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Sent</button>
+                  <button onClick={() => setTab('received')} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: tab === 'received' ? '#fff' : 'transparent', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Received</button>
+                </span>
+              </div>
+              {tab === 'sent' && user?.isPrivate && (
+                <div style={{ width: '100%', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', marginBottom: '10px' }}>
+                  Only you can see your sent cards.
                 </div>
-              ))}
-            </div>
+              )}
+              {notes.length === 0 ? (
+                <p style={{ width: '100%', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-muted)', padding: '10px 0 20px' }}>
+                  {tab === 'sent' ? 'Nothing sent yet. Someone came to mind, didn’t they?' : 'No postcards received yet.'}
+                </p>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', width: '100%' }}>
+                  {notes.map((n) => (
+                    <div key={n.id} style={{
+                      height: '96px', borderRadius: '8px', border: '4px solid #fff',
+                      boxShadow: '0 2px 8px rgba(43,34,56,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: n.cardImageUrl ? `url(${n.cardImageUrl}) center/cover` : CARD_BG[n.cardDesignId ?? ''] ?? 'var(--lavender-pale)',
+                    }}>
+                      {!n.cardImageUrl && <QEmoji name={CARD_ART[n.cardDesignId ?? ''] ?? OCCASION_ART[n.occasionType] ?? 'envelope'} size={48} />}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
-
-        {/* Badges */}
-        {profile.badges.length > 0 && (
-          <div style={cardStyle}>
-            <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ink)', marginBottom: '12px' }}>Badges</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              {profile.badges.map((b) => {
-                const info = BADGE_LABELS[b.badgeType] ?? { label: b.badgeType, icon: '⭐', art: 'star' }
-                return (
-                  <div key={b.badgeType} style={{
-                    padding: '8px 14px', borderRadius: '50px',
-                    background: 'var(--lavender-pale)', border: '1px solid var(--lavender-light)',
-                    fontSize: '12px', fontWeight: 500, color: 'var(--lavender-dark)',
-                    display: 'flex', alignItems: 'center', gap: '4px',
-                  }}>
-                    <span>{info.art ? <QEmoji name={info.art} size={14} /> : info.icon}</span>
-                    <span>{info.label}</span>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
-
-        {profile.badges.length === 0 && profile.isMe && (
-          <div style={{ ...cardStyle, textAlign: 'center' }}>
-            <p style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-handwriting)', fontSize: '11px' }}>
-              No badges yet. Send your first note to earn one!
-            </p>
-          </div>
-        )}
       </div>
       <TabBar />
     </div>
