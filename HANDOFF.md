@@ -52,6 +52,9 @@ Build 1.0(2) approved in beta review Oct 8. https://testflight.apple.com/join/BR
 - DONE Oct 8: cutenote.club -> qutenote.com 301 redirect live (Cloudflare single redirect rule "Forward everything to qutenote.com" on zone 66b0f84e..., created via dashboard with Emerald logged in; API token is DNS-only). Verified: apex + www redirect with path/query preserved, qutenote.com healthy. Domain consolidation COMPLETE.
 - CORS keeps both domains during transition (fine). Google OAuth prod redirect already qutenote.com
 
+## Design system (Oct 9) — CURRENT DIRECTION
+Source of truth: ~/Downloads/QuteNote iOS Design Guide.docx (extracted text in scripts/ios/../design notes; re-extract if needed). Tokens live in apps/web/src/index.css with legacy var aliases. Landing has its own :root block, same values. Guide's unbuilt features listed in MEMORY.md. Emerald's settle-items: QTs chosen (not Quties), $7.95 kept, pen options untouched.
+
 ## Next steps
 1. Confirm beta review approved; link goes live automatically — tell Emerald
 2. Round 1 on her phone: Apple sign-in and Google sign-in are UNPROVEN on real device — test first

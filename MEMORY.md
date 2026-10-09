@@ -78,6 +78,9 @@ Typecheck web:       cd apps/web && npx tsc --noEmit
 2026-10-09 — Font watermark fix (trial Recoleta renders fi/fl as Latinotype watermark boxes — ligatures disabled globally; OPEN: license real Recoleta or swap before public launch). Build 5 approved with it
 2026-10-09 — Round edits from Emerald: handwriting font is Rock Salt everywhere (--font-handwriting + landing, sizes tuned down since Rock Salt runs wide; postcard PRODUCT fonts untouched), Free Profile card copy updated, FAQ title back to "Good questions.", full website copy + fonts from her doc applied. All live on qutenote.com
 
+2026-10-09 — NEW DESIGN SYSTEM applied from "QuteNote iOS Design Guide.docx" (Downloads): Ultraviolet #5A32D6 sole action color, Unbounded headlines (never bold), Anonymous Pro body/buttons (caps + tracking), ruled cream paper, lavenders #A78BC7/#D9C9F1/#EEE6FA, stone, lime #C6FF3D (countdowns/new dots only), ALL pinks retired, Recoleta+Rock Salt+DM Sans retired (trial-font licensing issue dissolved). Implemented via index.css token aliases (old var names map to new values) + landing :root retokenized. Quties -> QTs renamed. Price stays $7.95 (guide settle-item; Stripe reality). Favicon served as /favicon-v4.png (CDN cache workaround — CF token can't purge). Build 6 uploaded
+2026-10-09 — NOT YET BUILT from the guide (future rounds): status rows/popup, lime countdown nudge cards, stamp book, handwriting capture, group cards, 5-tab bar with + button, onboarding flow, 2-hour edit window, occasion-in-prompt-dropdown
+
 ## What I am working on right now
 iOS app conversion (Emerald's priority as of Oct 6). Capacitor wrapper works in simulator. Remaining Phase 5 web items (CN Score, badges, connection birthdays) are parked until the iOS app ships.
 
