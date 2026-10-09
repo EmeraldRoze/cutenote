@@ -69,6 +69,9 @@ Typecheck web:       cd apps/web && npx tsc --noEmit
 2026-10-06 — Apple paperwork via ASC API: bundle ID club.cutenote.app registered (58AWMG6XQZ), Sign in with Apple capability enabled (PRIMARY_APP_CONSENT), provisioning profile "QuteNote AppStore" created + installed (cert NVA7KZQ4G5), app record created via browser (Emerald signed in) — App ID 6819877820, SKU qutenote-001
 2026-10-06 — Build 1.0(1) archived unsigned, exported with manual signing exportOptions + ASC key flags, UPLOADED to App Store Connect. ITSAppUsesNonExemptEncryption=false in Info.plist. Watcher (scratchpad qutenote_testflight.js) polls processing → copies beta review contact from Dreambound → sets test notes → creates Public Beta group w/ public link → submits beta review
 
+2026-10-08 — Domain consolidation (FIREFLY): Stripe webhook -> qutenote.com, GitHub repo renamed EmeraldRoze/qutenote (DO spec updated, deploy verified), cutenote.club 301-redirects to qutenote.com via Cloudflare rule. Folder renamed ~/Documents/QUTENOTEDEV
+2026-10-08 — Brand kit applied from Emerald's qutenote-web-assets.zip: watercolor wordmark (public/brand/logo.png) on Login/SignUp/Home, 20 torn-paper emoji (public/emoji/) via QEmoji component across occasions, review step, card picker, badges, celebration pages, landing Join button. Build 4 uploaded with it all
+
 ## What I am working on right now
 iOS app conversion (Emerald's priority as of Oct 6). Capacitor wrapper works in simulator. Remaining Phase 5 web items (CN Score, badges, connection birthdays) are parked until the iOS app ships.
 
