@@ -26,7 +26,10 @@ Written: 2026-10-06 (replaces stale April 10 handoff)
 3. xcodebuild -project ios/App/App.xcodeproj -scheme App -sdk iphoneos -destination 'generic/platform=iOS' -archivePath <path>.xcarchive CODE_SIGNING_ALLOWED=NO archive
 4. xcodebuild -exportArchive -archivePath <path>.xcarchive -exportOptionsPlist scripts/ios/exportOptions.plist -exportPath <dir> -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_Y5NXGFNCFV.p8 -authenticationKeyID Y5NXGFNCFV -authenticationKeyIssuerID a8f9ba85-917d-49e9-888e-e128d4ef6822
 
-## TestFlight status (Oct 9): BUILD 8 APPROVED — current
+## TestFlight status (Oct 9): BUILD 9 IN REVIEW — current
+Build 1.0(9): onboarding flow, all 21 TestFlight feedback fixes (fetched via ASC betaFeedbackScreenshotSubmissions — reusable pattern), new stamp app icon, emoji avatars, sms:-composer invites, no-zoom app feel. Deployed to web, link-mode invites verified live. Round C candidates: push notifications (real reminders), handwriting studio, group cards, recipient claim flow, 2-hour edit window.
+
+## Earlier (Oct 9): BUILD 8 APPROVED
 Build 1.0(8): App Screens Round A (Profile w/ membership+stamp book+postcards, Your QTs, Invite w/ real referral credit). Web+API deployed. Round B queued: onboarding 0-4, handwriting 15-17, group cards 18-20, claim flow 21-25, send-flow board refinements.
 
 ## Earlier (Oct 9): BUILD 7 APPROVED
