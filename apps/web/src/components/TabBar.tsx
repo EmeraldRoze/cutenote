@@ -4,24 +4,16 @@ import { useAuth } from '../context/AuthContext'
 const UV = '#5A32D6'
 const INACTIVE = '#766E82'
 
-function Icon({ d, extra }: { d: string; extra?: React.ReactNode }) {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-      <path d={d} />{extra}
-    </svg>
-  )
-}
-
 export default function TabBar() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const { user } = useAuth()
 
-  const tabs: { label: string; path: string; icon?: React.ReactNode; emojiIcon?: string }[] = [
-    { label: 'Home', path: '/home', icon: <Icon d="M4 11l8-7 8 7v9h-5v-6H9v6H4z" /> },
+  const tabs: { label: string; path: string; emojiIcon: string }[] = [
+    { label: 'Home', path: '/home', emojiIcon: '/emoji/house.png' },
     { label: 'QTs', path: '/connections', emojiIcon: '/emoji/bff.png' },
-    { label: 'Dates', path: '/dates', icon: <Icon d="M4 10h16M9 3v4M15 3v4" extra={<rect x="4" y="5" width="16" height="15" rx="2" />} /> },
-    { label: 'Profile', path: `/profile/${user?.username ?? ''}`, icon: <Icon d="M4.5 20c.8-3.8 3.8-6 7.5-6s6.7 2.2 7.5 6" extra={<circle cx="12" cy="8.5" r="4" />} /> },
+    { label: 'Dates', path: '/dates', emojiIcon: '/emoji/calendar.png' },
+    { label: 'Profile', path: `/profile/${user?.username ?? ''}`, emojiIcon: '/emoji/blush.png' },
   ]
 
   function tab(t: typeof tabs[number]) {
@@ -34,12 +26,10 @@ export default function TabBar() {
         fontSize: '11px', fontWeight: 700, fontFamily: 'var(--font-body)',
         textTransform: 'none', letterSpacing: 0,
       }}>
-        {t.emojiIcon
-          ? <img src={t.emojiIcon} alt="" style={{
-              height: '22px', width: 'auto',
-              filter: active ? 'none' : 'grayscale(1) opacity(0.6)',
-            }} />
-          : t.icon}
+        <img src={t.emojiIcon} alt="" style={{
+          height: '22px', width: 'auto',
+          filter: active ? 'none' : 'grayscale(1) opacity(0.6)',
+        }} />
         {t.label}
       </button>
     )
