@@ -26,7 +26,11 @@ Written: 2026-10-06 (replaces stale April 10 handoff)
 3. xcodebuild -project ios/App/App.xcodeproj -scheme App -sdk iphoneos -destination 'generic/platform=iOS' -archivePath <path>.xcarchive CODE_SIGNING_ALLOWED=NO archive
 4. xcodebuild -exportArchive -archivePath <path>.xcarchive -exportOptionsPlist scripts/ios/exportOptions.plist -exportPath <dir> -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_Y5NXGFNCFV.p8 -authenticationKeyID Y5NXGFNCFV -authenticationKeyIssuerID a8f9ba85-917d-49e9-888e-e128d4ef6822
 
-## TestFlight status (Oct 9): BUILD 11 APPROVED — current
+## TestFlight status (Oct 9): BUILD 12 IN REVIEW — current
+Build 1.0(12): BFF bunny-ears emoji on QTs tab + page title. Tiny round, shipped same day.
+Still pending from C1: Emerald taps "Turn on reminders" on her phone -> fire live test push.
+
+## Earlier (Oct 9): BUILD 11 APPROVED
 Build 1.0(11): C1 — push reminders (APNs key CXSX9P9S8Z via APNS_KEY_BASE64 on DO api; PUSH capability added to bundle ID; profile REGENERATED uuid fa8c65e5) + 2-hour edit window (scheduler submits PENDING notes; PATCH /notes/:id). DeviceToken table live. Scheduler confirmed running in prod logs. Lockfile gotcha: npm installs touch ROOT package-lock.json — always commit it. Pending: Emerald enables reminders on build 11 -> fire live test push (query DeviceToken on prod, sendPush locally with ~/.appstoreconnect key).
 
 ## Earlier (Oct 9): BUILD 10 APPROVED
