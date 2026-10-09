@@ -33,9 +33,7 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div className="text-center mb-8">
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '42px', fontWeight: 600, color: 'var(--lavender-deep)', lineHeight: 1.1 }}>
-            QuteNote
-          </h1>
+          <img src="/brand/logo.png" alt="QuteNote" style={{ width: '260px', maxWidth: '80%', margin: '0 auto', display: 'block' }} />
           <p style={{ fontFamily: 'var(--font-handwriting)', fontSize: '20px', color: 'var(--lavender)', marginTop: '6px' }}>
             Send something real.
           </p>

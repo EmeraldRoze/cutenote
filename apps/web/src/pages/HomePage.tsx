@@ -71,9 +71,7 @@ export default function HomePage() {
         alignItems: 'center',
         justifyContent: 'space-between',
       }}>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 600, color: 'var(--lavender-deep)' }}>
-          QuteNote
-        </h1>
+        <img src="/brand/logo.png" alt="QuteNote" style={{ height: '34px', display: 'block' }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span style={{ fontSize: '13px', color: 'var(--ink-muted)' }}>@{user?.username}</span>
           <div
