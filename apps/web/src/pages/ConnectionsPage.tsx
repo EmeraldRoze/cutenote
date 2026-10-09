@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import { useAuth } from '../context/AuthContext'
+import TabBar from '../components/TabBar'
 
 interface Connection {
   id: string
@@ -124,7 +125,7 @@ export default function ConnectionsPage() {
   })
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--cream)' }}>
+    <div style={{ minHeight: '100vh', paddingBottom: '110px' }}>
 
       {/* Nav */}
       <nav style={{
@@ -351,6 +352,7 @@ export default function ConnectionsPage() {
         </div>
 
       </div>
+      <TabBar />
     </div>
   )
 }

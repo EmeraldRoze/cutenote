@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../lib/api'
 import QEmoji from '../components/QEmoji'
+import TabBar from '../components/TabBar'
 
 interface Badge {
   badgeType: string
@@ -125,7 +126,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--cream)' }}>
+    <div style={{ minHeight: '100vh', paddingBottom: '110px' }}>
       {/* Nav */}
       <nav style={{
         background: 'var(--white)',
@@ -351,6 +352,7 @@ export default function ProfilePage() {
           </div>
         )}
       </div>
+      <TabBar />
     </div>
   )
 }

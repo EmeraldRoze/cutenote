@@ -1,365 +1,315 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import QEmoji from '../components/QEmoji'
+import TabBar from '../components/TabBar'
 
+const uv = '#5A32D6'
+const label: React.CSSProperties = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase', color: 'var(--ink-mid)' }
+
+interface FeedUser { id: string; username: string; displayName: string; avatarUrl: string | null }
 interface FeedItem {
+  kind: 'status' | 'note'
   id: string
-  type: string
-  occasionType: string
-  status: string
-  sender: { id: string; username: string; displayName: string; avatarUrl: string | null }
-  recipient: { id: string; username: string; displayName: string; avatarUrl: string | null }
   createdAt: string
+  hearts: number
+  heartedByMe: boolean
+  emoji?: string | null
+  text?: string
+  user?: FeedUser
+  occasionType?: string
+  sender?: FeedUser
+  recipient?: FeedUser
+}
+interface ImportantDate { id: string; connectionName: string; label: string; month: number; day: number }
+interface MyStatus { id: string; emoji: string | null; text: string; createdAt: string }
+
+const OCCASION_SENTENCE: Record<string, string> = {
+  BIRTHDAY: 'a birthday note', ANNIVERSARY: 'an anniversary note',
+  CONGRATULATIONS: 'a congrats note', HOLIDAY: 'a holiday note',
+  CONSOLATION: 'a thinking-of-you note', JUST_BECAUSE: 'a just-because note',
+  INVITATION: 'an invitation', CUSTOM: 'a note',
+}
+const OCCASION_ART: Record<string, string> = {
+  BIRTHDAY: 'cake', ANNIVERSARY: 'hearteyes', CONGRATULATIONS: 'popper',
+  HOLIDAY: 'star', CONSOLATION: 'rainbow', JUST_BECAUSE: 'envelope',
+  INVITATION: 'plane', CUSTOM: 'envelope',
+}
+const STATUS_EMOJI = ['sun', 'heart', 'coffee', 'moon', 'cloud', 'rainbow', 'music', 'flower', 'smile', 'joy', 'star', 'plane']
+
+function timeAgo(d: string) {
+  const mins = Math.floor((Date.now() - +new Date(d)) / 60000)
+  if (mins < 60) return `${Math.max(1, mins)}m`
+  if (mins < 60 * 24) return `${Math.floor(mins / 60)}h`
+  return `${Math.floor(mins / 1440)}d`
 }
 
-interface ImportantDate {
-  id: string
-  connectionName: string
-  label: string
-  month: number
-  day: number
-  year?: number
+function daysUntil(month: number, day: number) {
+  const now = new Date()
+  const year = now.getFullYear()
+  let next = new Date(year, month - 1, day)
+  const today = new Date(year, now.getMonth(), now.getDate())
+  if (next < today) next = new Date(year + 1, month - 1, day)
+  return Math.round((+next - +today) / 86400000)
 }
-
-const paperTexture = {
-  backgroundImage: `repeating-linear-gradient(
-    to bottom,
-    transparent,
-    transparent 27px,
-    rgba(232,224,213,0.5) 27px,
-    rgba(232,224,213,0.5) 28px
-  )`,
-}
-
-const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 export default function HomePage() {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
   const navigate = useNavigate()
-  const [hasAddress, setHasAddress] = useState<boolean | null>(null)
   const [feed, setFeed] = useState<FeedItem[]>([])
   const [dates, setDates] = useState<ImportantDate[]>([])
-  const [feedLoading, setFeedLoading] = useState(true)
-  const [datesLoading, setDatesLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'feed' | 'dates'>('feed')
+  const [myStatus, setMyStatus] = useState<MyStatus | null>(null)
+  const [hasAddress, setHasAddress] = useState<boolean | null>(null)
+  const [composing, setComposing] = useState(false)
+  const [lastSeen] = useState(() => Number(localStorage.getItem('qn_feed_seen') ?? 0))
 
   useEffect(() => {
-    api.get('/address/me').then((res) => setHasAddress(!!res.data.data)).catch(() => setHasAddress(false))
-    api.get('/feed').then((res) => setFeed(res.data.data)).catch(() => {}).finally(() => setFeedLoading(false))
-    api.get('/important-dates').then((res) => setDates(res.data.data)).catch(() => {}).finally(() => setDatesLoading(false))
+    api.get('/statuses/home-feed').then((r) => setFeed(r.data.data)).catch(() => {})
+    api.get('/important-dates').then((r) => setDates(r.data.data)).catch(() => {})
+    api.get('/statuses/mine').then((r) => setMyStatus(r.data.data)).catch(() => {})
+    api.get('/address/me').then((r) => setHasAddress(!!r.data.data)).catch(() => setHasAddress(null))
+    localStorage.setItem('qn_feed_seen', String(Date.now()))
   }, [])
 
-  function handleLogout() {
-    logout()
-    navigate('/login')
-  }
+  const greeting = useMemo(() => {
+    const h = new Date().getHours()
+    const part = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening'
+    return `Good ${part},`
+  }, [])
+  const firstName = user?.displayName?.split(' ')[0] ?? ''
 
-  function getInitials(name: string) {
-    return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
+  const nudge = useMemo(() => {
+    const upcoming = dates
+      .map((d) => ({ ...d, days: daysUntil(d.month, d.day) }))
+      .filter((d) => d.days <= 45)
+      .sort((a, b) => a.days - b.days)[0]
+    return upcoming ?? null
+  }, [dates])
+
+  async function toggleHeart(item: FeedItem) {
+    const targetType = item.kind === 'status' ? 'STATUS' : 'NOTE'
+    setFeed((f) => f.map((i) => i === item
+      ? { ...i, heartedByMe: !i.heartedByMe, hearts: i.hearts + (i.heartedByMe ? -1 : 1) }
+      : i))
+    try { await api.post('/statuses/heart', { targetType, targetId: item.id }) } catch { /* refreshed on next load */ }
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--cream)' }}>
+    <div style={{ minHeight: '100vh', paddingBottom: '110px' }}>
+      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '18px 24px 0' }}>
 
-      {/* Nav */}
-      <nav style={{
-        background: 'var(--white)',
-        borderBottom: '1px solid var(--lavender-pale)',
-        padding: '14px 20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
-        <img src="/brand/logo.png" alt="QuteNote" style={{ height: '34px', display: 'block' }} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span style={{ fontSize: '13px', color: 'var(--ink-muted)' }}>@{user?.username}</span>
-          <div
-            onClick={() => navigate(`/profile/${user?.username}`)}
-            style={{
-              width: '32px', height: '32px', borderRadius: '50%',
-              background: 'var(--lavender-pale)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', overflow: 'hidden',
-              color: 'var(--lavender-dark)', fontSize: '12px', fontWeight: 600,
-            }}
-          >
-            {user?.avatarUrl
-              ? <img src={user.avatarUrl} style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
-              : getInitials(user?.displayName ?? '')}
-          </div>
-          <button
-            onClick={handleLogout}
-            style={{ fontSize: '13px', color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer' }}
-          >
-            Log out
-          </button>
-        </div>
-      </nav>
-
-      {/* Main */}
-      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '40px 20px' }}>
-
-        {/* Welcome */}
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <p style={{ fontSize: '13px', color: 'var(--ink-muted)', marginBottom: '4px' }}>Welcome back,</p>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: 500, color: 'var(--ink)' }}>
-            {user?.displayName}
-          </h2>
+        {/* Logo row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '44px', marginBottom: '12px' }}>
+          <img src="/brand/logo.png" alt="QuteNote" style={{ width: '128px', display: 'block' }} />
         </div>
 
-        {/* Address nudge */}
-        {hasAddress === false && (
-          <button
-            onClick={() => navigate('/address')}
-            style={{
-              width: '100%', marginBottom: '16px', padding: '14px 20px',
-              borderRadius: '16px', border: '1.5px solid var(--blush)',
-              background: 'var(--blush-pale)', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              fontFamily: 'var(--font-body)', textAlign: 'left',
-            }}
-          >
-            <div>
-              <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)', marginBottom: '2px' }}>Add your address</p>
-              <p style={{ fontSize: '12px', color: 'var(--ink-muted)' }}>So your QTs can send you notes too.</p>
-            </div>
-            <span style={{ fontSize: '18px', flexShrink: 0, marginLeft: '12px' }}>→</span>
-          </button>
-        )}
-
-        {/* Subscribe nudge */}
-        {user?.subscriptionStatus !== 'ACTIVE' && (
-          <button
-            onClick={() => navigate('/subscribe')}
-            style={{
-              width: '100%', marginBottom: '16px', padding: '14px 20px',
-              borderRadius: '16px', border: '1.5px solid var(--lavender-light)',
-              background: 'var(--lavender-pale)', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              fontFamily: 'var(--font-body)', textAlign: 'left',
-            }}
-          >
-            <div>
-              <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--lavender-deep)', marginBottom: '2px' }}>Subscribe to send postcards</p>
-              <p style={{ fontSize: '12px', color: 'var(--ink-muted)' }}>2 notes/month for $7.95 — cancel anytime</p>
-            </div>
-            <span style={{ fontSize: '18px', flexShrink: 0, marginLeft: '12px' }}>→</span>
-          </button>
-        )}
-
-        {/* Send CTA */}
-        <button
-          onClick={() => navigate('/send')}
-          style={{
-            width: '100%', padding: '18px 24px', fontSize: '16px', fontWeight: 500,
-            borderRadius: '50px', border: 'none', cursor: 'pointer',
-            background: 'var(--lavender)', color: '#fff',
-            boxShadow: 'var(--shadow-button)', fontFamily: 'var(--font-body)',
-            marginBottom: '10px', transition: 'background 0.15s',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--lavender-dark)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'var(--lavender)')}
-        >
-          Send a QuteNote
-        </button>
-
-        {/* Invite a QT */}
-        <button
-          onClick={() => navigate('/invite')}
-          style={{
-            width: '100%', padding: '14px 24px', fontSize: '14px', fontWeight: 500,
-            borderRadius: '50px', border: '1.5px solid var(--lavender-light)', cursor: 'pointer',
-            background: 'var(--white)', color: 'var(--lavender-dark)',
-            fontFamily: 'var(--font-body)', transition: 'background 0.15s',
-            marginBottom: '24px',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--lavender-pale)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'var(--white)')}
-        >
-          Invite a QT
-        </button>
-
-        {/* Notes remaining (subscribers only) */}
-        {user?.subscriptionStatus === 'ACTIVE' && (
-          <div style={{
-            background: 'var(--white)', borderRadius: '20px',
-            border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card)',
-            padding: '16px 20px', marginBottom: '16px',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          }}>
-            <div>
-              <p style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}>
-                Notes this month
-              </p>
-              <p style={{ fontSize: '12px', color: 'var(--ink-muted)', marginTop: '2px' }}>
-                {(user.notesAllowance - user.notesUsed + user.giftedCredits) > 0
-                  ? `${user.notesAllowance - user.notesUsed + user.giftedCredits} included — extras are $3.49 each`
-                  : 'All included notes used — extras are $3.49 each'}
-              </p>
-            </div>
-            <p style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: 600, color: 'var(--lavender)' }}>
-              {user.notesUsed}/{user.notesAllowance}
-            </p>
-          </div>
-        )}
-
-        {/* Stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
-          <div style={{
-            background: 'var(--white)', borderRadius: '20px',
-            border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card)',
-            padding: '20px', textAlign: 'center',
-          }}>
-            <p style={{ fontFamily: 'var(--font-display)', fontSize: '32px', fontWeight: 600, color: 'var(--lavender)' }}>
-              {user?.points ?? 0}
-            </p>
-            <p style={{ fontSize: '12px', color: 'var(--ink-muted)', marginTop: '4px' }}>Points</p>
-          </div>
-          <div style={{
-            background: 'var(--white)', borderRadius: '20px',
-            border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card)',
-            padding: '20px', textAlign: 'center',
-          }}>
-            <p style={{ fontFamily: 'var(--font-display)', fontSize: '32px', fontWeight: 600, color: 'var(--lavender)' }}>
-              {user?.currentStreak ?? 0}
-            </p>
-            <p style={{ fontSize: '12px', color: 'var(--ink-muted)', marginTop: '4px' }}>Month streak</p>
-          </div>
-        </div>
-
-        {/* Admin link */}
-        {user?.isAdmin && (
-          <button
-            onClick={() => navigate('/admin')}
-            style={{
-              width: '100%', padding: '14px 24px', fontSize: '14px', fontWeight: 500,
-              borderRadius: '50px', border: '1.5px solid var(--border-default)', cursor: 'pointer',
-              background: 'var(--white)', color: 'var(--ink-muted)',
-              fontFamily: 'var(--font-body)', marginBottom: '24px',
-            }}
-          >
-            Admin Dashboard
-          </button>
-        )}
-
-        {/* Feed with tabs */}
-        <div style={{
-          background: 'var(--white)', borderRadius: '20px',
-          border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card)',
-          overflow: 'hidden',
+        {/* Happenings status row */}
+        <button onClick={() => setComposing(true)} style={{
+          display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
+          padding: '8px 12px 8px 8px', borderRadius: '30px', border: '1px solid var(--stone)',
+          background: '#fff', boxShadow: '0 4px 14px rgba(43,34,56,0.05)', cursor: 'pointer', textAlign: 'left',
         }}>
-          {/* Tab bar */}
-          <div style={{ display: 'flex', borderBottom: '1px solid var(--border-default)' }}>
-            <button
-              onClick={() => setActiveTab('feed')}
-              style={{
-                flex: 1, padding: '14px', fontSize: '13px', fontWeight: 500,
-                background: 'none', border: 'none', cursor: 'pointer',
-                color: activeTab === 'feed' ? 'var(--lavender-deep)' : 'var(--ink-muted)',
-                borderBottom: activeTab === 'feed' ? '2px solid var(--lavender)' : '2px solid transparent',
-                fontFamily: 'var(--font-body)', transition: 'all 0.15s',
-              }}
-            >
-              Recent Quteness
-            </button>
-            <button
-              onClick={() => setActiveTab('dates')}
-              style={{
-                flex: 1, padding: '14px', fontSize: '13px', fontWeight: 500,
-                background: 'none', border: 'none', cursor: 'pointer',
-                color: activeTab === 'dates' ? 'var(--lavender-deep)' : 'var(--ink-muted)',
-                borderBottom: activeTab === 'dates' ? '2px solid var(--lavender)' : '2px solid transparent',
-                fontFamily: 'var(--font-body)', transition: 'all 0.15s',
-              }}
-            >
-              Important Dates
+          <span style={{ width: '40px', height: '40px', minWidth: '40px', borderRadius: '20px', background: 'var(--lavender-pale)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <QEmoji name={myStatus?.emoji ?? 'sun'} size={28} />
+          </span>
+          <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+            <span style={label}>Happenings</span>
+            <span style={{ fontSize: '16px', fontFamily: 'var(--font-body)', fontWeight: 400, textTransform: 'none', letterSpacing: 0, color: myStatus ? 'var(--ink)' : 'var(--ink-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {myStatus?.text ?? "What's new with you?"}
+            </span>
+          </span>
+          <span style={{ color: uv, display: 'flex' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20l4-1 11-11-3-3L5 16z" /></svg>
+          </span>
+        </button>
+
+        {/* Greeting */}
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '27px', lineHeight: 1.18, color: 'var(--ink)', fontWeight: 400, letterSpacing: '-0.01em', margin: '22px 0 0' }}>
+          {greeting}<br />{firstName}.
+        </h1>
+
+        {/* Date nudge */}
+        {nudge && (
+          <div style={{ marginTop: '18px', padding: '16px', borderRadius: '16px', background: 'var(--lavender-pale)', border: '1px solid var(--lavender-light)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <QEmoji name={/birth/i.test(nudge.label) ? 'cake' : 'star'} size={48} />
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'inline-block', fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase', color: 'var(--ink)', background: 'var(--lime)', padding: '3px 9px', borderRadius: '10px' }}>
+                  {nudge.days === 0 ? 'Today' : `In ${nudge.days} day${nudge.days === 1 ? '' : 's'}`}
+                </div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', marginTop: '2px', fontWeight: 400, letterSpacing: '-0.01em' }}>
+                  {nudge.connectionName}'s {nudge.label.toLowerCase()}
+                </div>
+              </div>
+            </div>
+            <div style={{ fontSize: '15px', lineHeight: 1.45, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
+              Write it now. We'll mail it so it lands on the day.
+            </div>
+            <button onClick={() => navigate(`/send?toName=${encodeURIComponent(nudge.connectionName.split(' ')[0])}`)} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', height: '46px',
+              borderRadius: '10px', background: uv, color: '#fff', border: 'none', cursor: 'pointer',
+              fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.12em',
+            }}>
+              Write to {nudge.connectionName.split(' ')[0]}
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M13 6l6 6-6 6" /></svg>
             </button>
           </div>
+        )}
 
-          {/* Tab content */}
-          <div style={{ padding: '20px', ...paperTexture, minHeight: '120px' }}>
-            {activeTab === 'feed' && (
-              <>
-                {feedLoading && (
-                  <p style={{ color: 'var(--ink-muted)', textAlign: 'center', padding: '16px 0', fontSize: '13px' }}>Loading...</p>
-                )}
-                {!feedLoading && feed.length === 0 && (
-                  <p style={{ color: 'var(--ink-muted)', textAlign: 'center', padding: '16px 0', fontFamily: 'var(--font-handwriting)', fontSize: '12px' }}>
-                    Your people are out there. Invite someone you love.
-                  </p>
-                )}
-                {!feedLoading && feed.length > 0 && (
-                  <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {feed.map((item) => (
-                      <li key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: 'var(--ink)' }}>
-                        <span style={{ fontSize: '16px' }}><QEmoji name="envelope" size={18} /></span>
-                        <span>
-                          <strong>{item.sender.displayName}</strong> sent a note to <strong>{item.recipient.displayName}</strong>
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </>
+        {/* Address nudge (kept — people need it to receive mail) */}
+        {hasAddress === false && (
+          <button onClick={() => navigate('/address')} style={{
+            width: '100%', marginTop: '14px', padding: '12px 16px', borderRadius: '12px',
+            border: '1.5px dashed var(--lavender-soft)', background: '#fff', cursor: 'pointer',
+            fontFamily: 'var(--font-body)', fontSize: '13px', color: uv, fontWeight: 700,
+            textTransform: 'uppercase', letterSpacing: '0.12em',
+          }}>
+            Add your address so QTs can mail you back
+          </button>
+        )}
+
+        {/* Feed */}
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: '16px', margin: '26px 0 2px', fontWeight: 400, letterSpacing: '-0.01em' }}>Your QTs, lately</div>
+        <div style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>Statuses and public sends. Messages are never shown.</div>
+
+        {feed.length === 0 && (
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-muted)', padding: '28px 0' }}>
+            Quiet in here. Add some QTs and the good stuff follows.
+          </p>
+        )}
+
+        {feed.map((item) => (
+          <div key={`${item.kind}-${item.id}`} style={{ display: 'flex', gap: '12px', padding: '16px 0', borderBottom: '1px solid var(--stone)' }}>
+            {item.kind === 'status' ? (
+              <span style={{ width: '36px', height: '36px', minWidth: '36px', borderRadius: '18px', background: 'var(--lavender-pale)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: '9px' }}>
+                {(item.user?.displayName ?? '?').split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
+              </span>
+            ) : (
+              <span style={{ width: '36px', minWidth: '36px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
+                <QEmoji name={OCCASION_ART[item.occasionType ?? 'CUSTOM'] ?? 'envelope'} size={36} />
+              </span>
             )}
-
-            {activeTab === 'dates' && (
-              <>
-                {datesLoading && (
-                  <p style={{ color: 'var(--ink-muted)', textAlign: 'center', padding: '16px 0', fontSize: '13px' }}>Loading...</p>
-                )}
-                {!datesLoading && dates.length === 0 && (
-                  <div style={{ textAlign: 'center', padding: '16px 0' }}>
-                    <p style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-handwriting)', fontSize: '12px', marginBottom: '12px' }}>
-                      No important dates yet.
-                    </p>
-                    <button
-                      onClick={() => navigate('/dates')}
-                      style={{
-                        fontSize: '13px', fontWeight: 500, padding: '8px 20px',
-                        borderRadius: '50px', border: '1.5px solid var(--lavender-light)',
-                        background: 'var(--white)', color: 'var(--lavender-dark)',
-                        cursor: 'pointer', fontFamily: 'var(--font-body)',
-                      }}
-                    >
-                      Add a date
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {item.kind === 'status' ? (
+                <>
+                  <div style={{ fontSize: '15px', fontFamily: 'var(--font-body)' }}>
+                    <strong>{item.user?.displayName}</strong>{' '}
+                    <span style={{ color: 'var(--ink-mid)' }}>shared a status · {timeAgo(item.createdAt)}</span>
+                    {+new Date(item.createdAt) > lastSeen && (
+                      <span style={{ display: 'inline-block', width: '10px', height: '10px', marginLeft: '6px', borderRadius: '5px', background: 'var(--lime)', border: '1.5px solid var(--ink)', verticalAlign: 'middle' }} />
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '10px 12px', borderRadius: '12px', background: '#fff', border: '1px solid var(--stone)' }}>
+                    {item.emoji && <QEmoji name={item.emoji} size={18} />}
+                    <span style={{ fontSize: '15px', lineHeight: 1.4, fontFamily: 'var(--font-body)' }}>{item.text}</span>
+                  </div>
+                  <button onClick={() => navigate(`/send?toName=${encodeURIComponent(item.user?.displayName.split(' ')[0] ?? '')}`)} style={{
+                    alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: '8px', height: '40px',
+                    padding: '0 12px 0 14px', borderRadius: '6px', background: 'var(--lavender-pale)',
+                    border: '1.5px dashed var(--lavender-soft)', color: uv, cursor: 'pointer',
+                    fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.12em',
+                  }}>
+                    Send a little somethin'
+                    <span style={{ position: 'relative', width: '26px', height: '17px', flexShrink: 0 }}>
+                      <img src="/brand/postmark-heart-only.png" alt="" style={{ position: 'absolute', inset: 0, width: '26px', height: '17px', objectFit: 'contain' }} />
+                      <img src="/brand/postmark-waves-only.png" alt="" style={{ position: 'absolute', inset: 0, width: '26px', height: '17px', objectFit: 'contain' }} />
+                    </span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div style={{ fontSize: '15px', lineHeight: 1.4, fontFamily: 'var(--font-body)' }}>
+                    <strong>{item.sender?.displayName}</strong> sent <strong>{item.recipient?.displayName}</strong>{' '}
+                    {OCCASION_SENTENCE[item.occasionType ?? 'CUSTOM'] ?? 'a note'}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>
+                    <span>{timeAgo(item.createdAt)}</span>
+                    <button onClick={() => toggleHeart(item)} style={{
+                      height: '30px', display: 'flex', alignItems: 'center', gap: '5px', border: 'none',
+                      background: 'transparent', padding: 0, fontSize: '13px', cursor: 'pointer',
+                      color: item.heartedByMe ? uv : 'var(--ink-mid)', fontFamily: 'var(--font-body)',
+                      textTransform: 'none', letterSpacing: 0, fontWeight: item.heartedByMe ? 700 : 400,
+                    }}>
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill={item.heartedByMe ? uv : 'none'} stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" /></svg>
+                      {item.hearts}
                     </button>
                   </div>
-                )}
-                {!datesLoading && dates.length > 0 && (
-                  <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {dates.map((d) => (
-                      <li key={d.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div>
-                          <p style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}>{d.connectionName}</p>
-                          <p style={{ fontSize: '12px', color: 'var(--ink-muted)' }}>{d.label}</p>
-                        </div>
-                        <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--lavender-dark)' }}>
-                          {MONTH_NAMES[d.month - 1]} {d.day}
-                        </p>
-                      </li>
-                    ))}
-                    <li style={{ textAlign: 'center', paddingTop: '8px' }}>
-                      <button
-                        onClick={() => navigate('/dates')}
-                        style={{
-                          fontSize: '12px', fontWeight: 500, color: 'var(--lavender-dark)',
-                          background: 'none', border: 'none', cursor: 'pointer',
-                          fontFamily: 'var(--font-body)',
-                        }}
-                      >
-                        Manage dates →
-                      </button>
-                    </li>
-                  </ul>
-                )}
-              </>
-            )}
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        ))}
+      </div>
 
+      {/* Status composer */}
+      {composing && <StatusComposer onDone={(s) => { if (s) setMyStatus(s); setComposing(false) }} />}
+
+      <TabBar />
+    </div>
+  )
+}
+
+function StatusComposer({ onDone }: { onDone: (s: MyStatus | null) => void }) {
+  const [emoji, setEmoji] = useState('sun')
+  const [text, setText] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  async function share() {
+    setSaving(true)
+    setError('')
+    try {
+      const r = await api.post('/statuses', { emoji, text: text.trim() })
+      onDone({ ...r.data.data })
+    } catch (err: any) {
+      setError(err.response?.data?.error ?? 'That did not go through. Try again.')
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => onDone(null)}>
+      <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, marginBottom: '14px' }}>What's new with you?</h2>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '14px' }}>
+          {STATUS_EMOJI.map((e) => (
+            <button key={e} onClick={() => setEmoji(e)} style={{
+              width: '44px', height: '44px', borderRadius: '22px', cursor: 'pointer',
+              background: emoji === e ? 'var(--lavender-pale)' : '#fff',
+              border: emoji === e ? `1.5px solid ${uv}` : '1px solid var(--stone)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <QEmoji name={e} size={26} />
+            </button>
+          ))}
+        </div>
+        <input
+          value={text}
+          onChange={(e) => setText(e.target.value.slice(0, 60))}
+          placeholder="Sixty characters of honesty"
+          style={{
+            width: '100%', height: '48px', padding: '0 14px', borderRadius: '10px',
+            border: '1px solid var(--stone)', outline: 'none', background: '#fff',
+            fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)',
+          }}
+          onFocus={(e) => { e.target.style.border = `1.5px solid ${uv}` }}
+          onBlur={(e) => { e.target.style.border = '1px solid var(--stone)' }}
+        />
+        <p style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-muted)', textAlign: 'right', margin: '6px 0 14px' }}>{text.length}/60</p>
+        {error && <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--error)', marginBottom: '10px' }}>{error}</p>}
+        <button
+          disabled={!text.trim() || saving}
+          onClick={share}
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '52px',
+            borderRadius: '10px', border: 'none', cursor: 'pointer',
+            background: uv, color: '#fff', opacity: !text.trim() || saving ? 0.45 : 1,
+            fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.12em',
+          }}
+        >
+          {saving ? 'Sharing…' : 'Share status'}
+        </button>
       </div>
     </div>
   )

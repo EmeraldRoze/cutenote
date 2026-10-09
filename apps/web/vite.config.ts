@@ -7,10 +7,12 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      '/api': {
-        target: 'http://localhost:4000',
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
+      '/api': process.env.QN_PROXY_PROD
+        ? { target: 'https://qutenote.com', changeOrigin: true }
+        : {
+            target: 'http://localhost:4000',
+            rewrite: (path) => path.replace(/^\/api/, ''),
+          },
     },
   },
 })

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { api } from '../../lib/api'
 import type { NoteData } from './SendFlow'
 
@@ -9,11 +9,16 @@ interface User {
   avatarUrl: string | null
 }
 
-export default function StepRecipient({ onNext }: { onNext: (data: Partial<NoteData>) => void }) {
+export default function StepRecipient({ onNext, initialQuery }: { onNext: (data: Partial<NoteData>) => void; initialQuery?: string }) {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<User[]>([])
   const [selected, setSelected] = useState<User | null>(null)
   const [searching, setSearching] = useState(false)
+
+  useEffect(() => {
+    if (initialQuery) search(initialQuery)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function search(q: string) {
     setQuery(q)
@@ -78,6 +83,7 @@ export default function StepRecipient({ onNext }: { onNext: (data: Partial<NoteD
                   display: 'flex', alignItems: 'center', gap: '12px',
                   background: 'none', border: 'none', cursor: 'pointer',
                   borderBottom: '1px solid var(--lavender-pale)',
+                  textTransform: 'none', letterSpacing: 0, fontWeight: 400,
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--lavender-pale)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'none')}

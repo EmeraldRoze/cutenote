@@ -17,6 +17,7 @@ import GoogleAuthSuccessPage from './pages/GoogleAuthSuccessPage'
 import ProfilePage from './pages/ProfilePage'
 import InvitePage from './pages/InvitePage'
 import CollectAddressPage from './pages/CollectAddressPage'
+import ImportantDatesPage from './pages/ImportantDatesPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -47,6 +48,7 @@ function AppRoutes() {
       <Route path="/profile/:username" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
       <Route path="/send" element={<ProtectedRoute><SendFlow /></ProtectedRoute>} />
       <Route path="/connections" element={<ProtectedRoute><ConnectionsPage /></ProtectedRoute>} />
+      <Route path="/dates" element={<ProtectedRoute><ImportantDatesPage /></ProtectedRoute>} />
       <Route path="/address" element={<ProtectedRoute><AddressPage /></ProtectedRoute>} />
       <Route path="/subscribe" element={<ProtectedRoute><SubscribePage /></ProtectedRoute>} />
       <Route path="/subscribe/success" element={<ProtectedRoute><SubscribeSuccessPage /></ProtectedRoute>} />

@@ -14,6 +14,7 @@ import compression from 'compression'
 import { authRouter } from './routes/auth'
 import { googleAuthRouter } from './routes/google-auth'
 import { appleAuthRouter } from './routes/apple-auth'
+import { statusesRouter } from './routes/statuses'
 import { usersRouter } from './routes/users'
 import { notesRouter } from './routes/notes'
 import { aiRouter } from './routes/ai'
@@ -56,6 +57,7 @@ app.use(express.json({ limit: '1mb' }))
 app.use('/auth', authRouter)
 app.use('/auth', googleAuthRouter)
 app.use('/auth', appleAuthRouter)
+app.use('/statuses', statusesRouter)
 app.use('/users', usersRouter)
 app.use('/notes', notesRouter)
 app.use('/ai', aiRouter)

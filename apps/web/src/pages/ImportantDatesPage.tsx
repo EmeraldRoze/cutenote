@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
+import TabBar from '../components/TabBar'
 
 interface ImportantDate {
   id: string
@@ -99,7 +100,7 @@ export default function ImportantDatesPage() {
   })
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--cream)' }}>
+    <div style={{ minHeight: '100vh', paddingBottom: '110px' }}>
       <nav style={{
         background: 'var(--white)',
         borderBottom: '1px solid var(--lavender-pale)',
@@ -246,6 +247,7 @@ export default function ImportantDatesPage() {
           </div>
         ))}
       </div>
+      <TabBar />
     </div>
   )
 }

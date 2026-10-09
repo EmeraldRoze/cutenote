@@ -52,6 +52,8 @@ model User {
   passesReceived   PassItForward[] @relation("Recipient")
   notifications    Notification[]
   passwordResets   PasswordReset[]
+  statuses         Status[]
+  hearts           Heart[]
   invitesSent      Invite[]
 }
 
@@ -307,4 +309,29 @@ enum NotificationType {
   BADGE_EARNED
   PASS_IT_FORWARD_RECEIVED
   NEW_FOLLOWER
+}
+
+// ─── STATUSES & HEARTS (Home feed, Oct 2026 redesign) ───────────────────────
+
+model Status {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emoji     String?
+  text      String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Heart {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetType String   // NOTE | STATUS
+  targetId   String
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, targetType, targetId])
+  @@index([targetType, targetId])
 }
