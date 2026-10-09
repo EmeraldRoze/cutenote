@@ -40,6 +40,12 @@ Build 1.0(2) approved in beta review Oct 8. https://testflight.apple.com/join/BR
 - Beta app description + feedback email set; review contact copied from Dreambound
 - If build 2 is also rejected: Emerald must sign into appstoreconnect.apple.com so the Resolution Center message can be read — do that BEFORE further guessing
 
+## Domain consolidation (Oct 8, FIREFLY) — status
+- Stripe webhook repointed to https://qutenote.com/stripe/webhook (verified 400-on-unsigned, enabled)
+- GitHub repo renamed EmeraldRoze/cutenote -> EmeraldRoze/qutenote (via gh CLI; .env GITHUB_TOKEN cannot admin). DO spec repointed (2 components), deploy from renamed repo VERIFIED ACTIVE. Local remote updated
+- PENDING: cutenote.club -> qutenote.com 301 redirect. CLOUDFLARE_API_TOKEN lacks Rulesets/Page Rules perms (DNS-only). Needs Emerald logged into dash.cloudflare.com, then add redirect rule on zone 66b0f84e84a1f965d2e73b8d393f791f
+- CORS keeps both domains during transition (fine). Google OAuth prod redirect already qutenote.com
+
 ## Next steps
 1. Confirm beta review approved; link goes live automatically — tell Emerald
 2. Round 1 on her phone: Apple sign-in and Google sign-in are UNPROVEN on real device — test first
