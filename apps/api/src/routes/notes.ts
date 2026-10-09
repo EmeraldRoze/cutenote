@@ -119,7 +119,7 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
       toneUsed: toneUsed as any,
       fontChoice: fontChoice as any,
       cardDesignType: cardDesignType as any,
-      cardDesignId: null,
+      cardDesignId: cardDesignId ?? null,
       cardImageUrl: cardImageUrl ?? null,
       stripeChargeId: overageChargeId,
       status: 'PENDING',

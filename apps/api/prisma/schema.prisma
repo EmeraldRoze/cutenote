@@ -55,6 +55,7 @@ model User {
   statuses         Status[]
   hearts           Heart[]
   deviceTokens     DeviceToken[]
+  uploads          Upload[]
   invitesSent      Invite[]
 }
 
@@ -350,6 +351,17 @@ model DeviceToken {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   token     String   @unique
   platform  String   @default("ios")
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Upload {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mime      String   @default("image/jpeg")
+  data      Bytes
   createdAt DateTime @default(now())
 
   @@index([userId])

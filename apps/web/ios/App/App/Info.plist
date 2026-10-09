@@ -79,5 +79,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>QuteNote uses your photos so you can put one on the front of a postcard.</string>
 </dict>
 </plist>

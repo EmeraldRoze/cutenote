@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { api } from '../../lib/api'
 import { PROMPTS, OCCASIONS } from '../../lib/prompts'
+import { ARTISTS, CARD_LOOKUP } from '../../lib/cards'
+import { uploadPhoto } from '../../lib/uploadPhoto'
 import QEmoji from '../../components/QEmoji'
 import StepRecipient from './StepRecipient'
 
@@ -17,12 +19,6 @@ export interface NoteData {
   fontChoice: string
 }
 
-const ARTIST_DESIGNS = [
-  { id: 'design-1', artist: 'Luna Park', title: 'Bloom', gradient: 'linear-gradient(135deg, #D9C9F1, #EEE6FA)', art: 'flower' },
-  { id: 'design-2', artist: 'Doodle Co.', title: 'Confetti', gradient: 'linear-gradient(135deg, #EEE6FA, #D9C9F1)', art: 'popper' },
-  { id: 'design-3', artist: 'Inkwell', title: 'Stargazer', gradient: 'linear-gradient(135deg, #5A32D6, #A78BC7)', art: 'star' },
-]
-
 const PENS = [
   { value: 'CAVEAT', label: 'Caveat', family: "'Caveat', cursive" },
   { value: 'DANCING_SCRIPT', label: 'Dancing', family: "'Dancing Script', cursive" },
@@ -30,8 +26,6 @@ const PENS = [
   { value: 'PATRICK_HAND', label: 'Patrick', family: "'Patrick Hand', cursive" },
 ]
 const PEN_FAMILY: Record<string, string> = Object.fromEntries(PENS.map(p => [p.value, p.family]))
-
-const CARD_ART: Record<string, string> = { 'design-1': 'flower', 'design-2': 'popper', 'design-3': 'star' }
 
 const uv = '#5A32D6'
 
@@ -51,6 +45,8 @@ export default function SendFlow() {
   const [note, setNote] = useState<Partial<NoteData>>({ occasionType: 'JUST_BECAUSE', fontChoice: 'CAVEAT', toneUsed: 'HEARTFELT' })
   const [pickingRecipient, setPickingRecipient] = useState(false)
   const [sentNoteId, setSentNoteId] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState('')
 
   const toName = params.get('toName') ?? undefined
 
@@ -106,48 +102,98 @@ export default function SendFlow() {
               <span style={{ color: uv, fontWeight: 700, fontSize: '13px' }}>{note.recipientId ? 'CHANGE' : 'CHOOSE'}</span>
             </button>
 
-            <p style={{ ...label, marginBottom: '12px' }}>Artist picks</p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '24px' }}>
-              {ARTIST_DESIGNS.map((d) => {
-                const selected = note.cardDesignId === d.id
-                return (
-                  <button
-                    key={d.id}
-                    onClick={() => update({ cardDesignType: 'ARTIST', cardDesignId: d.id, cardImageUrl: undefined })}
-                    style={{
-                      aspectRatio: '3/4', borderRadius: '6px', overflow: 'hidden', padding: 0, cursor: 'pointer',
-                      border: selected ? `1.5px solid ${uv}` : '1px solid var(--stone)',
-                      boxShadow: selected ? '0 4px 14px rgba(90,50,214,0.2)' : 'none',
-                    }}
-                  >
-                    <div style={{ width: '100%', height: '100%', background: d.gradient, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                      <QEmoji name={d.art} size={36} />
-                      <span style={{ fontFamily: 'var(--font-display)', fontSize: '10px', color: 'var(--ink)', textTransform: 'none', letterSpacing: 0, fontWeight: 400 }}>{d.title}</span>
-                    </div>
-                  </button>
-                )
-              })}
-            </div>
-
+            {/* Upload-your-own tile */}
             <label style={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px',
-              padding: '26px', borderRadius: '6px', cursor: 'pointer', marginBottom: '28px',
-              border: `1.5px dashed var(--lavender-soft)`, background: note.cardImageUrl ? 'var(--lavender-pale)' : 'transparent',
+              padding: '20px', borderRadius: '6px', cursor: 'pointer', marginBottom: '24px',
+              border: note.cardImageUrl ? `1.5px solid ${uv}` : `1.5px dashed var(--lavender-soft)`,
+              background: note.cardImageUrl ? `url(${note.cardImageUrl}) center/cover` : 'transparent',
             }}>
-              <QEmoji name="camera" size={30} />
-              <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>
-                {note.cardImageUrl ? 'Photo picked. Tap to swap it.' : 'Upload a picture'}
+              {!note.cardImageUrl && <QEmoji name="camera" size={30} />}
+              <span style={{
+                fontSize: '13px', fontFamily: 'var(--font-body)', fontWeight: note.cardImageUrl ? 700 : 400,
+                color: note.cardImageUrl ? '#fff' : 'var(--ink-mid)',
+                textShadow: note.cardImageUrl ? '0 1px 6px rgba(43,34,56,0.6)' : 'none',
+              }}>
+                {uploading ? 'Uploading your photo…' : note.cardImageUrl ? 'Your photo is on the front. Tap to swap it.' : 'Upload a picture — put your own photo on the front'}
               </span>
               <input type="file" accept="image/*" style={{ display: 'none' }}
-                onChange={(e) => {
+                onChange={async (e) => {
                   const file = e.target.files?.[0]
-                  if (file) update({ cardDesignType: 'USER_UPLOAD', cardImageUrl: URL.createObjectURL(file), cardDesignId: undefined })
+                  if (!file) return
+                  setUploading(true); setUploadError('')
+                  try {
+                    const url = await uploadPhoto(file)
+                    update({ cardDesignType: 'USER_UPLOAD', cardImageUrl: url, cardDesignId: undefined })
+                  } catch {
+                    setUploadError("That photo didn't upload. Try again, or pick a different one.")
+                  } finally {
+                    setUploading(false)
+                    e.target.value = ''
+                  }
                 }} />
             </label>
+            {uploadError && (
+              <p style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: '#B3261E', margin: '-14px 0 18px' }}>{uploadError}</p>
+            )}
+
+            {/* Featured artists */}
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <p style={label}>October's featured artists</p>
+              <span style={{ fontSize: '11px', fontFamily: 'var(--font-body)', fontWeight: 700, color: 'var(--lime-ink, #5a7a00)', background: '#F2FBDA', padding: '3px 10px', borderRadius: '999px' }}>New lineup Nov 1</span>
+            </div>
+            <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)', margin: '0 0 16px' }}>
+              Five artists this month. Three cards each.
+            </p>
+
+            {ARTISTS.map((a) => (
+              <div key={a.name} style={{ marginBottom: '22px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                  <span style={{
+                    width: '32px', height: '32px', borderRadius: '16px', background: a.chip,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', color: 'var(--ink)',
+                  }}>{a.initials}</span>
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: '14px', color: 'var(--ink)' }}>{a.name}</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--ink-mid)' }}>{a.style}</div>
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                  {a.cards.map((c) => {
+                    const selected = note.cardDesignId === c.id
+                    return (
+                      <button
+                        key={c.id}
+                        onClick={() => update({ cardDesignType: 'ARTIST', cardDesignId: c.id, cardImageUrl: undefined })}
+                        style={{
+                          aspectRatio: '3/4', borderRadius: '6px', overflow: 'hidden', padding: 0, cursor: 'pointer',
+                          border: selected ? `2px solid ${uv}` : '1px solid var(--stone)',
+                          boxShadow: selected ? '0 4px 14px rgba(90,50,214,0.25)' : 'none',
+                        }}
+                      >
+                        <div style={{ width: '100%', height: '100%', background: c.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '6px' }}>
+                          <img src={`/site/${c.art}.png`} alt="" style={{ width: '60%', maxHeight: '58%', objectFit: 'contain' }} />
+                          <span style={{ fontFamily: 'var(--font-body)', fontSize: '9px', color: 'var(--ink)', textTransform: 'none', letterSpacing: 0, fontWeight: 700, lineHeight: 1.2 }}>{c.title}</span>
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+
+            {(note.cardDesignId || note.cardImageUrl) && (
+              <p style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)', margin: '0 0 12px' }}>
+                Selected: <strong style={{ color: 'var(--ink)' }}>
+                  {note.cardImageUrl ? 'Your photo' : `${CARD_LOOKUP[note.cardDesignId!]?.title} by ${CARD_LOOKUP[note.cardDesignId!]?.artist}`}
+                </strong>
+              </p>
+            )}
 
             <button
-              style={{ ...primaryBtn, opacity: note.recipientId && (note.cardDesignId || note.cardImageUrl) ? 1 : 0.45 }}
-              disabled={!note.recipientId || !(note.cardDesignId || note.cardImageUrl)}
+              style={{ ...primaryBtn, opacity: note.recipientId && (note.cardDesignId || note.cardImageUrl) && !uploading ? 1 : 0.45 }}
+              disabled={!note.recipientId || !(note.cardDesignId || note.cardImageUrl) || uploading}
               onClick={() => setStep('write')}
             >
               Write your note →
@@ -162,7 +208,7 @@ export default function SendFlow() {
 
         {/* ── STEP 3: READY TO SEND ─────────────────────────────── */}
         {step === 'review' && (
-          <ReviewStep note={note as NoteData} editingNoteId={sentNoteId} onSent={(id) => { setSentNoteId(id); setStep('sent') }} onEdit={() => setStep('write')} />
+          <ReviewStep note={note as NoteData} editingNoteId={sentNoteId} onSent={(id) => { setSentNoteId(id); setStep('sent') }} onEdit={() => setStep('write')} onEditCard={() => setStep('card')} />
         )}
 
         {/* ── IT'S ON ITS WAY ───────────────────────────────────── */}
@@ -343,14 +389,14 @@ function WriteStep({ note, update, onNext }: {
   )
 }
 
-/* ── Review step: postcard preview + send ── */
-function ReviewStep({ note, onSent, onEdit, editingNoteId }: { note: NoteData; onSent: (id: string | null) => void; onEdit: () => void; editingNoteId: string | null }) {
+/* ── Review step: front and back side by side, both tappable to edit ── */
+function ReviewStep({ note, onSent, onEdit, onEditCard, editingNoteId }: { note: NoteData; onSent: (id: string | null) => void; onEdit: () => void; onEditCard: () => void; editingNoteId: string | null }) {
   const navigate = useNavigate()
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
   const [needsSub, setNeedsSub] = useState(false)
 
-  const design = ARTIST_DESIGNS.find((d) => d.id === note.cardDesignId)
+  const design = note.cardDesignId ? CARD_LOOKUP[note.cardDesignId] : undefined
 
   async function handleSend() {
     setSending(true)
@@ -388,32 +434,41 @@ function ReviewStep({ note, onSent, onEdit, editingNoteId }: { note: NoteData; o
         One last look before it hits the mail.
       </p>
 
-      {/* Postcard preview */}
-      <div style={{
-        borderRadius: '6px', overflow: 'hidden', border: '1px solid var(--stone)',
-        boxShadow: '0 8px 24px rgba(43,34,56,0.12)', marginBottom: '20px', background: '#fff',
-      }}>
-        <div style={{
-          height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: note.cardImageUrl ? `url(${note.cardImageUrl}) center/cover` : design?.gradient ?? 'var(--lavender-pale)',
+      {/* Front and back, side by side — tap either one to change it */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '8px' }}>
+        <button onClick={onEditCard} style={{
+          padding: 0, borderRadius: '6px', overflow: 'hidden', cursor: 'pointer',
+          border: '1px solid var(--stone)', boxShadow: '0 6px 18px rgba(43,34,56,0.1)',
+          aspectRatio: '2/3', background: note.cardImageUrl
+            ? `url(${note.cardImageUrl}) center/cover`
+            : design?.bg ?? 'var(--lavender-pale)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          {!note.cardImageUrl && <QEmoji name={CARD_ART[note.cardDesignId ?? ''] ?? 'envelope'} size={48} />}
-        </div>
-        <div style={{
-          padding: '16px', minHeight: '110px', position: 'relative',
-          backgroundImage: 'repeating-linear-gradient(transparent, transparent 23px, var(--cream-ruled) 23px, var(--cream-ruled) 24px)',
+          {!note.cardImageUrl && design && (
+            <img src={`/site/${design.art}.png`} alt="" style={{ width: '70%', maxHeight: '60%', objectFit: 'contain' }} />
+          )}
+        </button>
+        <button onClick={onEdit} style={{
+          padding: '12px', borderRadius: '6px', cursor: 'pointer', textAlign: 'left',
+          border: '1px solid var(--stone)', boxShadow: '0 6px 18px rgba(43,34,56,0.1)',
+          aspectRatio: '2/3', overflow: 'hidden', position: 'relative', background: '#fff',
+          backgroundImage: 'repeating-linear-gradient(transparent, transparent 21px, var(--cream-ruled) 21px, var(--cream-ruled) 22px)',
         }}>
-          <p style={{ fontFamily: PEN_FAMILY[note.fontChoice], fontSize: '18px', lineHeight: '24px', color: 'var(--ink)', whiteSpace: 'pre-wrap' }}>
+          <p style={{ fontFamily: PEN_FAMILY[note.fontChoice], fontSize: '16px', lineHeight: '22px', color: 'var(--ink)', whiteSpace: 'pre-wrap', textTransform: 'none', letterSpacing: 0, fontWeight: 400 }}>
             {note.noteText}
           </p>
           <span style={{
-            position: 'absolute', top: '10px', right: '10px', width: '38px', height: '46px',
+            position: 'absolute', top: '8px', right: '8px', width: '30px', height: '38px',
             border: `1.5px dashed var(--lavender-soft)`, borderRadius: '4px', background: 'var(--lavender-pale)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <QEmoji name="heart" size={20} />
+            <QEmoji name="heart" size={16} />
           </span>
-        </div>
+        </button>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '18px' }}>
+        <p style={{ fontSize: '11px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)', textAlign: 'center' }}>The front · tap to change</p>
+        <p style={{ fontSize: '11px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)', textAlign: 'center' }}>Your note · tap to edit</p>
       </div>
 
       <p style={{ fontSize: '14px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)', marginBottom: '20px' }}>

@@ -51,7 +51,24 @@ export async function submitNoteToLob(noteId: string): Promise<void> {
   if (senderAddress?.encryptedLine2) fromAddress.address_line2 = senderAddress.encryptedLine2
 
   const safeText = note.noteText.replace(/</g, '&lt;').replace(/>/g, '&gt;')
-  const frontHtml = `<html><body style="margin:0;background:linear-gradient(135deg,#D9C9F1,#EEE6FA);width:6in;height:4in;display:flex;align-items:center;justify-content:center;"><p style="font-family:Georgia,serif;font-size:48px;color:#5A32D6;text-align:center;">💌</p></body></html>`
+
+  // Front of the card: the sender's photo full-bleed, or the chosen artist
+  // artwork centered on its tint. Art files live on the public site.
+  const SITE = process.env.WEB_URL ?? 'https://qutenote.com'
+  const CARD_FRONTS: Record<string, { art: string; bg: string }> = {
+    'lp-1': { art: 'flower', bg: '#EEE6FA' }, 'lp-2': { art: 'clover', bg: '#F2FBDA' }, 'lp-3': { art: 'heart-torn', bg: '#FBF8F4' },
+    'tm-1': { art: 'waves', bg: '#FBF8F4' }, 'tm-2': { art: 'rainbow', bg: '#EEE6FA' }, 'tm-3': { art: 'finger', bg: '#F2FBDA' },
+    'id-1': { art: 'coffee', bg: '#FBF8F4' }, 'id-2': { art: 'cake', bg: '#EEE6FA' }, 'id-3': { art: 'gift', bg: '#F2FBDA' },
+    'km-1': { art: 'moon', bg: '#E4D9F7' }, 'km-2': { art: 'star-gold', bg: '#EEE6FA' }, 'km-3': { art: 'sun', bg: '#FBF8F4' },
+    'ra-1': { art: 'envelope-heart', bg: '#EEE6FA' }, 'ra-2': { art: 'heart-lime', bg: '#FBF8F4' }, 'ra-3': { art: 'popper', bg: '#F2FBDA' },
+    'design-1': { art: 'flower', bg: '#EEE6FA' }, 'design-2': { art: 'popper', bg: '#F2FBDA' }, 'design-3': { art: 'star-gold', bg: '#EEE6FA' },
+  }
+  const front = note.cardDesignId ? CARD_FRONTS[note.cardDesignId] : undefined
+  const frontHtml = note.cardImageUrl
+    ? `<html><body style="margin:0;width:6in;height:4in;"><img src="${note.cardImageUrl}" style="width:6in;height:4in;object-fit:cover;display:block;" /></body></html>`
+    : front
+      ? `<html><body style="margin:0;background:${front.bg};width:6in;height:4in;display:flex;align-items:center;justify-content:center;"><img src="${SITE}/site/${front.art}.png" style="width:2.6in;height:2.6in;object-fit:contain;" /></body></html>`
+      : `<html><body style="margin:0;background:linear-gradient(135deg,#D9C9F1,#EEE6FA);width:6in;height:4in;display:flex;align-items:center;justify-content:center;"><p style="font-family:Georgia,serif;font-size:48px;color:#5A32D6;text-align:center;">💌</p></body></html>`
   const backHtml = `<html><body style="margin:0;padding:40px;font-family:Georgia,serif;width:6in;height:4in;background:#FBF8F4;"><p style="font-size:22px;color:#2B2238;line-height:1.6;font-style:italic;">${safeText}</p><p style="margin-top:20px;font-size:14px;color:#766E82;">With love, ${note.sender.displayName}</p></body></html>`
 
   try {

@@ -5,6 +5,7 @@ import { api } from '../lib/api'
 import QEmoji from '../components/QEmoji'
 import TabBar from '../components/TabBar'
 import { HappeningsRow, STATUS_EMOJI } from '../components/Happenings'
+import { CARD_LOOKUP } from '../lib/cards'
 
 // Profile — App Screens board layout in the Oct 2026 system:
 // membership card, stats, privacy, handwriting teaser, stamp book, postcards.
@@ -47,8 +48,7 @@ const STAMPS: Record<string, { label: string; art: string; bg: string }> = {
   THOUGHTFUL_FRIEND: { label: 'Thoughtful friend', art: 'flower', bg: 'var(--lavender-pale)' },
   HOLIDAY_SPIRIT: { label: 'Holiday spirit', art: 'star', bg: '#FDF3DC' },
 }
-const CARD_BG: Record<string, string> = { 'design-1': '#EAF2FB', 'design-2': 'var(--lavender-pale)', 'design-3': '#EDF5E4' }
-const CARD_ART: Record<string, string> = { 'design-1': 'flower', 'design-2': 'popper', 'design-3': 'star' }
+
 const OCCASION_ART: Record<string, string> = {
   BIRTHDAY: 'cake', ANNIVERSARY: 'hearteyes', CONGRATULATIONS: 'popper', HOLIDAY: 'star',
   CONSOLATION: 'rainbow', JUST_BECAUSE: 'envelope', INVITATION: 'plane', CUSTOM: 'envelope',
@@ -300,9 +300,11 @@ export default function ProfilePage() {
                     <div key={n.id} style={{
                       height: '96px', borderRadius: '8px', border: '4px solid #fff',
                       boxShadow: '0 2px 8px rgba(43,34,56,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      background: n.cardImageUrl ? `url(${n.cardImageUrl}) center/cover` : CARD_BG[n.cardDesignId ?? ''] ?? 'var(--lavender-pale)',
+                      background: n.cardImageUrl ? `url(${n.cardImageUrl}) center/cover` : CARD_LOOKUP[n.cardDesignId ?? '']?.bg ?? 'var(--lavender-pale)',
                     }}>
-                      {!n.cardImageUrl && <QEmoji name={CARD_ART[n.cardDesignId ?? ''] ?? OCCASION_ART[n.occasionType] ?? 'envelope'} size={48} />}
+                      {!n.cardImageUrl && (CARD_LOOKUP[n.cardDesignId ?? '']
+                        ? <img src={`/site/${CARD_LOOKUP[n.cardDesignId ?? ''].art}.png`} alt="" style={{ width: '55%', maxHeight: '60%', objectFit: 'contain' }} />
+                        : <QEmoji name={OCCASION_ART[n.occasionType] ?? 'envelope'} size={48} />)}
                     </div>
                   ))}
                 </div>
