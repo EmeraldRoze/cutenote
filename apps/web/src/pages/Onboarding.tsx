@@ -4,6 +4,7 @@ import { api } from '../lib/api'
 import { useAuth } from '../context/AuthContext'
 import QEmoji from '../components/QEmoji'
 import { inviteByText } from '../lib/inviteText'
+import { enableReminders } from '../lib/push'
 
 // Onboarding — App Screens board 00–04 in the Oct 2026 system.
 
@@ -202,8 +203,14 @@ export function OnboardingBirthdays() {
 /* ── 3. Turn on reminders ── */
 export function OnboardingReminders() {
   const navigate = useNavigate()
-  function finish(on: boolean) {
-    localStorage.setItem('qn_reminders', on ? '1' : '0')
+  const [busy, setBusy] = useState(false)
+  async function finish(on: boolean) {
+    if (on) {
+      setBusy(true)
+      await enableReminders()
+    } else {
+      localStorage.setItem('qn_reminders', '0')
+    }
     navigate('/home')
   }
   return (
@@ -226,7 +233,7 @@ export function OnboardingReminders() {
         </div>
       </div>
 
-      <button style={primaryBtn} onClick={() => finish(true)}>Turn on reminders</button>
+      <button style={{ ...primaryBtn, opacity: busy ? 0.7 : 1 }} disabled={busy} onClick={() => finish(true)}>{busy ? 'One sec…' : 'Turn on reminders'}</button>
       <button style={ghostBtn} onClick={() => finish(false)}>Not now</button>
     </Shell>
   )

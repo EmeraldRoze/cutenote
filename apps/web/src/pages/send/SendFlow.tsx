@@ -50,6 +50,7 @@ export default function SendFlow() {
   const [step, setStep] = useState<'card' | 'write' | 'review' | 'sent'>('card')
   const [note, setNote] = useState<Partial<NoteData>>({ occasionType: 'JUST_BECAUSE', fontChoice: 'CAVEAT', toneUsed: 'HEARTFELT' })
   const [pickingRecipient, setPickingRecipient] = useState(false)
+  const [sentNoteId, setSentNoteId] = useState<string | null>(null)
 
   const toName = params.get('toName') ?? undefined
 
@@ -161,7 +162,7 @@ export default function SendFlow() {
 
         {/* ── STEP 3: READY TO SEND ─────────────────────────────── */}
         {step === 'review' && (
-          <ReviewStep note={note as NoteData} onSent={() => setStep('sent')} onEdit={() => setStep('write')} />
+          <ReviewStep note={note as NoteData} editingNoteId={sentNoteId} onSent={(id) => { setSentNoteId(id); setStep('sent') }} onEdit={() => setStep('write')} />
         )}
 
         {/* ── IT'S ON ITS WAY ───────────────────────────────────── */}
@@ -172,10 +173,19 @@ export default function SendFlow() {
             <p style={{ fontSize: '15px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)', marginBottom: '8px' }}>
               {note.recipientName?.split(' ')[0]} gets a real postcard in 3–5 business days.
             </p>
-            <p style={{ fontSize: '16px', fontFamily: 'var(--font-body)', fontStyle: 'italic', color: uv, marginBottom: '36px' }}>
+            <p style={{ fontSize: '16px', fontFamily: 'var(--font-body)', fontStyle: 'italic', color: uv, marginBottom: '10px' }}>
               Go make their day.
             </p>
-            <button style={primaryBtn} onClick={() => { setNote({ occasionType: 'JUST_BECAUSE', fontChoice: 'CAVEAT', toneUsed: 'HEARTFELT' }); setStep('card') }}>
+            <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-muted)', marginBottom: '26px' }}>
+              Changed your mind about a word? You can edit this note for the next 2 hours.
+            </p>
+            <button
+              style={{ ...primaryBtn, background: '#fff', color: uv, border: `1.5px solid ${uv}`, marginBottom: '12px' }}
+              onClick={() => setStep('write')}
+            >
+              Edit this note
+            </button>
+            <button style={primaryBtn} onClick={() => { setNote({ occasionType: 'JUST_BECAUSE', fontChoice: 'CAVEAT', toneUsed: 'HEARTFELT' }); setSentNoteId(null); setStep('card') }}>
               Send another
             </button>
             <button
@@ -334,7 +344,7 @@ function WriteStep({ note, update, onNext }: {
 }
 
 /* ── Review step: postcard preview + send ── */
-function ReviewStep({ note, onSent, onEdit }: { note: NoteData; onSent: () => void; onEdit: () => void }) {
+function ReviewStep({ note, onSent, onEdit, editingNoteId }: { note: NoteData; onSent: (id: string | null) => void; onEdit: () => void; editingNoteId: string | null }) {
   const navigate = useNavigate()
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
@@ -346,17 +356,22 @@ function ReviewStep({ note, onSent, onEdit }: { note: NoteData; onSent: () => vo
     setSending(true)
     setError('')
     try {
-      await api.post('/notes', {
-        recipientId: note.recipientId,
-        occasionType: note.occasionType,
-        noteText: note.noteText,
-        toneUsed: note.toneUsed,
-        fontChoice: note.fontChoice,
-        cardDesignType: note.cardDesignType,
-        cardDesignId: note.cardDesignId,
-        cardImageUrl: note.cardImageUrl,
-      })
-      onSent()
+      if (editingNoteId) {
+        await api.patch(`/notes/${editingNoteId}`, { noteText: note.noteText, fontChoice: note.fontChoice })
+        onSent(editingNoteId)
+      } else {
+        const r = await api.post('/notes', {
+          recipientId: note.recipientId,
+          occasionType: note.occasionType,
+          noteText: note.noteText,
+          toneUsed: note.toneUsed,
+          fontChoice: note.fontChoice,
+          cardDesignType: note.cardDesignType,
+          cardDesignId: note.cardDesignId,
+          cardImageUrl: note.cardImageUrl,
+        })
+        onSent(r.data.data.id ?? null)
+      }
     } catch (err: any) {
       const msg = err.response?.data?.error ?? ''
       if (err.response?.status === 402 || err.response?.status === 403 || /subscri/i.test(msg)) setNeedsSub(true)
@@ -420,7 +435,7 @@ function ReviewStep({ note, onSent, onEdit }: { note: NoteData; onSent: () => vo
         </>
       ) : (
         <button style={{ ...primaryBtn, opacity: sending ? 0.7 : 1 }} disabled={sending} onClick={handleSend}>
-          {sending ? 'Sending…' : 'Send it'}
+          {sending ? 'Sending…' : editingNoteId ? 'Save changes' : 'Send it'}
         </button>
       )}
       <button onClick={onEdit} style={{ ...primaryBtn, background: 'var(--lavender-light)', color: 'var(--ink)', marginTop: '12px' }}>

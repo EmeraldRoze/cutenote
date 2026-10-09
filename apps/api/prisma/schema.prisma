@@ -54,6 +54,7 @@ model User {
   passwordResets   PasswordReset[]
   statuses         Status[]
   hearts           Heart[]
+  deviceTokens     DeviceToken[]
   invitesSent      Invite[]
 }
 
@@ -341,4 +342,15 @@ model EarlySignup {
   email     String   @unique
   source    String?
   createdAt DateTime @default(now())
+}
+
+model DeviceToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  platform  String   @default("ios")
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }

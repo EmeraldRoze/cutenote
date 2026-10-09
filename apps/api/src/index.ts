@@ -16,6 +16,8 @@ import { googleAuthRouter } from './routes/google-auth'
 import { appleAuthRouter } from './routes/apple-auth'
 import { statusesRouter } from './routes/statuses'
 import { earlyAccessRouter } from './routes/early-access'
+import { devicesRouter } from './routes/devices'
+import { startScheduler } from './lib/scheduler'
 import { usersRouter } from './routes/users'
 import { notesRouter } from './routes/notes'
 import { aiRouter } from './routes/ai'
@@ -60,6 +62,7 @@ app.use('/auth', googleAuthRouter)
 app.use('/auth', appleAuthRouter)
 app.use('/statuses', statusesRouter)
 app.use('/early-access', earlyAccessRouter)
+app.use('/devices', devicesRouter)
 app.use('/users', usersRouter)
 app.use('/notes', notesRouter)
 app.use('/ai', aiRouter)
@@ -83,6 +86,7 @@ app.use((_req, res) => {
   res.status(404).json({ error: 'Not found.' })
 })
 
+startScheduler()
 app.listen(PORT, () => {
   console.log(`QuteNote API running on http://localhost:${PORT}`)
 })

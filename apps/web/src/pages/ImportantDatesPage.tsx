@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import TabBar from '../components/TabBar'
 import QEmoji from '../components/QEmoji'
+import { enableReminders, remindersEnabled } from '../lib/push'
+import { isNativeApp } from '../lib/native'
 
 interface ImportantDate {
   id: string
@@ -123,6 +125,17 @@ export default function ImportantDatesPage() {
       </nav>
 
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '32px 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+        {isNativeApp && !remindersEnabled() && (
+          <button onClick={() => enableReminders().then(() => window.location.reload())} style={{
+            width: '100%', marginBottom: '14px', padding: '12px 16px', borderRadius: '12px',
+            border: '1.5px dashed var(--lavender-soft)', background: 'var(--lavender-pale)', cursor: 'pointer',
+            fontFamily: 'var(--font-body)', fontSize: '13px', color: '#5A32D6', fontWeight: 700,
+            textTransform: 'uppercase', letterSpacing: '0.1em',
+          }}>
+            Turn on reminders — we'll buzz you 7 days before
+          </button>
+        )}
 
         {/* Add button */}
         <button

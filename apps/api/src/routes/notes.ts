@@ -4,6 +4,7 @@ import Stripe from 'stripe'
 import { prisma } from '../lib/prisma'
 import { requireAuth } from '../middleware/auth'
 import type { AuthRequest } from '../middleware/auth'
+import { EDIT_WINDOW_MS } from '../lib/submitNote'
 // @ts-ignore — lob package has no types
 import Lob from 'lob'
 
@@ -125,59 +126,33 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
     },
   })
 
-  // Send postcard via Lob
-  try {
-    const toAddress: any = {
-      name: recipient.displayName,
-      address_line1: recipientAddress.encryptedLine1,
-      address_city: recipientAddress.encryptedCity,
-      address_state: recipientAddress.encryptedState,
-      address_zip: recipientAddress.encryptedZip,
-      address_country: recipientAddress.encryptedCountry ?? 'US',
-    }
-    if (recipientAddress.encryptedLine2) toAddress.address_line2 = recipientAddress.encryptedLine2
-
-    const fromAddress: any = senderAddress ? {
-      name: sender.displayName,
-      address_line1: senderAddress.encryptedLine1,
-      address_city: senderAddress.encryptedCity,
-      address_state: senderAddress.encryptedState,
-      address_zip: senderAddress.encryptedZip,
-      address_country: senderAddress.encryptedCountry ?? 'US',
-    } : {
-      name: 'QuteNote',
-      address_line1: '123 Main St',
-      address_city: 'Austin',
-      address_state: 'TX',
-      address_zip: '78701',
-      address_country: 'US',
-    }
-    if (senderAddress?.encryptedLine2) fromAddress.address_line2 = senderAddress.encryptedLine2
-
-    // Simple postcard HTML — front is a colored card, back has the message
-    const frontHtml = `<html><body style="margin:0;background:linear-gradient(135deg,#9B8EC4,#C4BAE0);width:6in;height:4in;display:flex;align-items:center;justify-content:center;"><p style="font-family:Georgia,serif;font-size:48px;color:white;text-align:center;">💌</p></body></html>`
-    const backHtml = `<html><body style="margin:0;padding:40px;font-family:Georgia,serif;width:6in;height:4in;background:#fffef9;"><p style="font-size:22px;color:#2C2540;line-height:1.6;font-style:italic;">${noteText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p><p style="margin-top:20px;font-size:14px;color:#9590AA;">With love, ${sender.displayName}</p></body></html>`
-
-    const postcard = await lob.postcards.create({
-      description: `QuteNote from ${sender.displayName}`,
-      to: toAddress,
-      from: fromAddress,
-      front: frontHtml,
-      back: backHtml,
-      size: '6x4',
-    })
-
-    // Update note with Lob postcard ID and mark as sent
-    await prisma.note.update({
-      where: { id: note.id },
-      data: { status: 'SENT', lobNoteId: postcard.id },
-    })
-  } catch (lobErr: any) {
-    // Don't fail the whole request — note is saved, just log the Lob error
-    console.error('Lob postcard error:', lobErr?.message ?? lobErr)
-  }
+  // The note waits in PENDING for 2 hours — the sender can still edit it.
+  // The scheduler submits it to Lob when the window closes.
 
   return res.status(201).json({ data: note })
+})
+
+// PATCH /notes/:id — edit a note during its 2-hour window
+const editSchema = z.object({
+  noteText: z.string().min(5).max(300).optional(),
+  fontChoice: z.string().optional(),
+})
+notesRouter.patch('/:id', requireAuth, async (req: AuthRequest, res) => {
+  const parsed = editSchema.safeParse(req.body)
+  if (!parsed.success) return res.status(400).json({ error: 'Invalid edit.' })
+  const note = await prisma.note.findUnique({ where: { id: req.params.id } })
+  if (!note || note.senderId !== req.userId) return res.status(404).json({ error: 'Note not found.' })
+  if (note.status !== 'PENDING' || Date.now() - +note.createdAt > EDIT_WINDOW_MS) {
+    return res.status(400).json({ error: 'This note already went to print.' })
+  }
+  const updated = await prisma.note.update({
+    where: { id: note.id },
+    data: {
+      ...(parsed.data.noteText ? { noteText: parsed.data.noteText } : {}),
+      ...(parsed.data.fontChoice ? { fontChoice: parsed.data.fontChoice as any } : {}),
+    },
+  })
+  return res.json({ data: updated })
 })
 
 // GET /notes/sent — notes the current user sent
