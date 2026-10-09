@@ -48,6 +48,8 @@ export default function ImportantDatesPage() {
   const [day, setDay] = useState(1)
   const [saving, setSaving] = useState(false)
   const [customLabel, setCustomLabel] = useState('')
+  const [annual, setAnnual] = useState(true)
+  const [formError, setFormError] = useState('')
   const [friends, setFriends] = useState<{ id: string; displayName: string }[]>([])
 
   useEffect(() => {
@@ -58,22 +60,36 @@ export default function ImportantDatesPage() {
   }, [])
 
   async function handleAdd() {
-    if (!name.trim()) return
+    if (!name.trim()) {
+      setFormError("Add who it's for — a name or nickname up top.")
+      return
+    }
+    if (label === 'Other' && !customLabel.trim()) {
+      setFormError("Tell us what the date is for, or pick one of the types.")
+      return
+    }
+    setFormError('')
     setSaving(true)
     try {
+      // Annual dates have no year; one-time dates remember which year is next.
+      const now = new Date()
+      const nextYear = new Date(now.getFullYear(), month - 1, day) < now ? now.getFullYear() + 1 : now.getFullYear()
       const res = await api.post('/important-dates', {
         connectionName: name.trim(),
-        label: label === 'Other' && customLabel.trim() ? customLabel.trim() : label,
+        label: label === 'Other' ? customLabel.trim() : label,
         month,
         day,
+        year: annual ? null : nextYear,
       })
       setDates((prev) => [...prev, res.data.data])
       setName('')
+      setCustomLabel('')
       setMonth(1)
       setDay(1)
+      setAnnual(true)
       setShowForm(false)
-    } catch {
-      // error
+    } catch (e: any) {
+      setFormError(e?.response?.data?.error ?? "That didn't save. Check your connection and try again.")
     } finally {
       setSaving(false)
     }
@@ -249,20 +265,35 @@ export default function ImportantDatesPage() {
               </div>
             </div>
 
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '14px', cursor: 'pointer', fontSize: '13px', color: 'var(--ink)', fontFamily: 'var(--font-body)' }}>
+              <input
+                type="checkbox"
+                checked={annual}
+                onChange={(e) => setAnnual(e.target.checked)}
+                style={{ width: '16px', height: '16px', accentColor: '#5A32D6' }}
+              />
+              Every year — remind me annually
+            </label>
+
             <button
               onClick={handleAdd}
-              disabled={saving || !name.trim()}
+              disabled={saving}
               style={{
                 marginTop: '16px', width: '100%', padding: '12px', fontSize: '14px', fontWeight: 500,
                 borderRadius: '50px', border: 'none',
-                cursor: saving || !name.trim() ? 'default' : 'pointer',
-                background: !name.trim() ? 'var(--lavender-pale)' : 'var(--lavender)',
-                color: !name.trim() ? 'var(--ink-muted)' : '#fff',
+                cursor: saving ? 'default' : 'pointer',
+                background: 'var(--lavender)', color: '#fff',
+                opacity: saving ? 0.7 : 1,
                 fontFamily: 'var(--font-body)',
               }}
             >
               {saving ? 'Saving...' : 'Save Date'}
             </button>
+            {formError && (
+              <p style={{ marginTop: '10px', fontSize: '12px', color: '#B3261E', textAlign: 'center' }}>
+                {formError}
+              </p>
+            )}
           </div>
         )}
 

@@ -15,7 +15,10 @@ async function birthdayReminders(): Promise<void> {
   const day = target.getUTCDate()
   const weekday = target.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' })
 
-  const dates = await prisma.importantDate.findMany({ where: { month, day } })
+  // year == null means annual; a set year means one-time, only that year
+  const dates = await prisma.importantDate.findMany({
+    where: { month, day, OR: [{ year: null }, { year: target.getUTCFullYear() }] },
+  })
   if (dates.length === 0) return
 
   for (const d of dates) {
