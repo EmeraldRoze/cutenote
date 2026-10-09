@@ -26,7 +26,10 @@ Written: 2026-10-06 (replaces stale April 10 handoff)
 3. xcodebuild -project ios/App/App.xcodeproj -scheme App -sdk iphoneos -destination 'generic/platform=iOS' -archivePath <path>.xcarchive CODE_SIGNING_ALLOWED=NO archive
 4. xcodebuild -exportArchive -archivePath <path>.xcarchive -exportOptionsPlist scripts/ios/exportOptions.plist -exportPath <dir> -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_Y5NXGFNCFV.p8 -authenticationKeyID Y5NXGFNCFV -authenticationKeyIssuerID a8f9ba85-917d-49e9-888e-e128d4ef6822
 
-## TestFlight status (Oct 9 late): BUILD 7 APPROVED — current
+## TestFlight status (Oct 9): BUILD 8 IN REVIEW — current
+Build 1.0(8): App Screens Round A (Profile w/ membership+stamp book+postcards, Your QTs, Invite w/ real referral credit). Web+API deployed. Round B queued: onboarding 0-4, handwriting 15-17, group cards 18-20, claim flow 21-25, send-flow board refinements.
+
+## Earlier (Oct 9): BUILD 7 APPROVED
 Build 1.0(7): new Home (Happenings statuses, lime nudge, hearts feed, tab bar w/ SEND stamp) + 3-step send flow. Status/Heart tables live on prod DB (additive, verified). API deployed, /statuses endpoints verified live (demo account posted a test status). Build 7 APPROVED same hour. Old send-flow Step files (StepOccasion/StepFont/StepWrite/StepCard/StepReview) now unused — deleting needs FIREFLY. Next product rounds from guide: 2-hour edit window, stamp book, handwriting capture, group cards, onboarding.
 
 ## Earlier (Oct 9): BUILD 6 APPROVED
