@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import QEmoji from '../components/QEmoji'
 
 export default function SubscribeSuccessPage() {
   const navigate = useNavigate()
@@ -15,7 +16,7 @@ export default function SubscribeSuccessPage() {
     <div style={{ minHeight: '100vh', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ maxWidth: '400px', padding: '40px 20px', textAlign: 'center' }}>
 
-        <div style={{ fontSize: '56px', marginBottom: '20px' }}>💌</div>
+        <div style={{ marginBottom: '20px' }}><QEmoji name="envelope" size={60} /></div>
 
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '32px', fontWeight: 500, color: 'var(--ink)', marginBottom: '12px' }}>
           You're subscribed!

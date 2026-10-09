@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import QEmoji from '../components/QEmoji'
 
 const css = `
   :root {
@@ -689,7 +690,7 @@ export default function LandingPage() {
           <p className="hero-body">Connect with friends, get reminded of important dates, and send messages that arrive as physical postcards at the click of a button.</p>
           <form className="hero-form" onSubmit={e => { e.preventDefault(); handleJoin(heroEmail) }}>
             <input type="email" className="hero-input" placeholder="your@email.com" value={heroEmail} onChange={e => setHeroEmail(e.target.value)} />
-            <button type="submit" className="btn-primary">Join now &#128140;</button>
+            <button type="submit" className="btn-primary">Join now <QEmoji name="envelope" size={18} style={{ marginLeft: '4px' }} /></button>
           </form>
           <p className="hero-note">Free to join. First postcard on us.</p>
         </div>

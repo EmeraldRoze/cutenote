@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { api } from '../lib/api'
+import QEmoji from '../components/QEmoji'
 
 interface InviteInfo {
   id: string
@@ -83,7 +84,7 @@ export default function CollectAddressPage() {
     return (
       <div style={{ minHeight: '100vh', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ maxWidth: '400px', padding: '40px 20px', textAlign: 'center' }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>💌</div>
+          <div style={{ marginBottom: '16px' }}><QEmoji name="envelope" size={52} /></div>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 500, color: 'var(--ink)', marginBottom: '8px' }}>
             You're all set!
           </h2>
@@ -117,7 +118,7 @@ export default function CollectAddressPage() {
           border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card)',
           padding: '28px 24px', textAlign: 'center', marginBottom: '16px',
         }}>
-          <div style={{ fontSize: '40px', marginBottom: '12px' }}>💌</div>
+          <div style={{ marginBottom: '12px' }}><QEmoji name="envelope" size={44} /></div>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 500, color: 'var(--ink)', marginBottom: '8px' }}>
             {invite?.sender.displayName} wants to send you something!
           </h2>

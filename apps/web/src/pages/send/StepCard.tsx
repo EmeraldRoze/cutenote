@@ -1,11 +1,12 @@
 import { useRef } from 'react'
 import type { NoteData } from './SendFlow'
+import QEmoji from '../../components/QEmoji'
 
 // Placeholder artist designs — will be replaced with real DB data in Phase 5
 const ARTIST_DESIGNS = [
-  { id: 'design-1', artist: 'Luna Park', title: 'Bloom', gradient: 'linear-gradient(135deg, #C4BAE0, #F5C2C7)', emoji: '🌸' },
-  { id: 'design-2', artist: 'Doodle Co.', title: 'Confetti', gradient: 'linear-gradient(135deg, #fde68a, #fca5a5)', emoji: '🎊' },
-  { id: 'design-3', artist: 'Inkwell', title: 'Stargazer', gradient: 'linear-gradient(135deg, #9B8EC4, #3D3470)', emoji: '🌟' },
+  { id: 'design-1', artist: 'Luna Park', title: 'Bloom', gradient: 'linear-gradient(135deg, #C4BAE0, #F5C2C7)', emoji: 'flower' },
+  { id: 'design-2', artist: 'Doodle Co.', title: 'Confetti', gradient: 'linear-gradient(135deg, #fde68a, #fca5a5)', emoji: 'popper' },
+  { id: 'design-3', artist: 'Inkwell', title: 'Stargazer', gradient: 'linear-gradient(135deg, #9B8EC4, #3D3470)', emoji: 'star' },
 ]
 
 export default function StepCard({
@@ -58,7 +59,7 @@ export default function StepCard({
               width: '100%', height: '100%', background: d.gradient,
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px',
             }}>
-              <span style={{ fontSize: '32px' }}>{d.emoji}</span>
+              <span style={{ fontSize: '32px' }}><QEmoji name={d.emoji} size={36} /></span>
               <span style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(255,255,255,0.9)' }}>{d.title}</span>
             </div>
           </button>
@@ -80,7 +81,7 @@ export default function StepCard({
         onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--lavender)'; e.currentTarget.style.background = 'var(--lavender-pale)' }}
         onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--lavender-light)'; e.currentTarget.style.background = 'none' }}
       >
-        <span style={{ fontSize: '28px' }}>📷</span>
+        <span style={{ fontSize: '28px' }}><QEmoji name="camera" size={32} /></span>
         <span style={{ fontSize: '13px', color: 'var(--ink-muted)' }}>Tap to upload a photo</span>
       </button>
       <input

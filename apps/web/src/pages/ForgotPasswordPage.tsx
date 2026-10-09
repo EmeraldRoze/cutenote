@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
+import QEmoji from '../components/QEmoji'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -41,7 +42,7 @@ export default function ForgotPasswordPage() {
         }}>
           {sent ? (
             <>
-              <div style={{ textAlign: 'center', marginBottom: '16px', fontSize: '40px' }}>📬</div>
+              <div style={{ textAlign: 'center', marginBottom: '16px' }}><QEmoji name="envelope" size={44} /></div>
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 500, color: 'var(--ink)', marginBottom: '12px', textAlign: 'center' }}>
                 Check your email
               </h2>

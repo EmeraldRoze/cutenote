@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../lib/api'
+import QEmoji from '../components/QEmoji'
 
 interface Badge {
   badgeType: string
@@ -36,12 +37,12 @@ interface Qutie {
   avatarUrl: string | null
 }
 
-const BADGE_LABELS: Record<string, { label: string; icon: string }> = {
+const BADGE_LABELS: Record<string, { label: string; icon: string; art?: string }> = {
   FIRST_NOTE: { label: 'First Note', icon: '✉' },
-  BIRTHDAY_HERO: { label: 'Birthday Hero', icon: '🎂' },
+  BIRTHDAY_HERO: { label: 'Birthday Hero', icon: '🎂', art: 'cake' },
   ON_A_ROLL: { label: 'On a Roll', icon: '🔥' },
   KINDNESS_MACHINE: { label: 'Kindness Machine', icon: '💛' },
-  PASS_IT_FORWARD: { label: 'Pass It Forward', icon: '🎁' },
+  PASS_IT_FORWARD: { label: 'Pass It Forward', icon: '🎁', art: 'gift' },
   CONNECTED: { label: 'Connected', icon: '🤝' },
   THOUGHTFUL_FRIEND: { label: 'Thoughtful Friend', icon: '💭' },
   HOLIDAY_SPIRIT: { label: 'Holiday Spirit', icon: '🎄' },
@@ -325,7 +326,7 @@ export default function ProfilePage() {
             <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ink)', marginBottom: '12px' }}>Badges</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
               {profile.badges.map((b) => {
-                const info = BADGE_LABELS[b.badgeType] ?? { label: b.badgeType, icon: '⭐' }
+                const info = BADGE_LABELS[b.badgeType] ?? { label: b.badgeType, icon: '⭐', art: 'star' }
                 return (
                   <div key={b.badgeType} style={{
                     padding: '8px 14px', borderRadius: '50px',
@@ -333,7 +334,7 @@ export default function ProfilePage() {
                     fontSize: '12px', fontWeight: 500, color: 'var(--lavender-dark)',
                     display: 'flex', alignItems: 'center', gap: '4px',
                   }}>
-                    <span>{info.icon}</span>
+                    <span>{info.art ? <QEmoji name={info.art} size={14} /> : info.icon}</span>
                     <span>{info.label}</span>
                   </div>
                 )

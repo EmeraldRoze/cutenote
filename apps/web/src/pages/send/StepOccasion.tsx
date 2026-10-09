@@ -1,14 +1,15 @@
 import type { NoteData } from './SendFlow'
+import QEmoji from '../../components/QEmoji'
 
 const OCCASIONS = [
-  { value: 'BIRTHDAY', emoji: '🎂', label: 'Birthday' },
-  { value: 'ANNIVERSARY', emoji: '💑', label: 'Anniversary' },
-  { value: 'CONGRATULATIONS', emoji: '🎉', label: 'Big Life Moments' },
-  { value: 'HOLIDAY', emoji: '✨', label: 'Holiday' },
-  { value: 'CONSOLATION', emoji: '🤗', label: 'Hard Times' },
-  { value: 'JUST_BECAUSE', emoji: '💌', label: 'Just because' },
-  { value: 'INVITATION', emoji: '📬', label: 'Invitation' },
-  { value: 'CUSTOM', emoji: '✏️', label: 'Something else' },
+  { value: 'BIRTHDAY', emoji: '🎂', art: 'cake', label: 'Birthday' },
+  { value: 'ANNIVERSARY', emoji: '💑', art: 'hearteyes', label: 'Anniversary' },
+  { value: 'CONGRATULATIONS', emoji: '🎉', art: 'popper', label: 'Big Life Moments' },
+  { value: 'HOLIDAY', emoji: '✨', art: 'star', label: 'Holiday' },
+  { value: 'CONSOLATION', emoji: '🤗', art: 'rainbow', label: 'Hard Times' },
+  { value: 'JUST_BECAUSE', emoji: '💌', art: 'envelope', label: 'Just because' },
+  { value: 'INVITATION', emoji: '📬', art: 'plane', label: 'Invitation' },
+  { value: 'CUSTOM', emoji: '✏️', art: undefined as string | undefined, label: 'Something else' },
 ]
 
 export default function StepOccasion({
@@ -46,7 +47,7 @@ export default function StepOccasion({
               e.currentTarget.style.background = 'var(--white)'
             }}
           >
-            <span style={{ fontSize: '28px', display: 'block', marginBottom: '8px' }}>{o.emoji}</span>
+            <span style={{ fontSize: '28px', display: 'block', marginBottom: '8px' }}>{o.art ? <QEmoji name={o.art} size={32} /> : o.emoji}</span>
             <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ink)' }}>{o.label}</span>
           </button>
         ))}

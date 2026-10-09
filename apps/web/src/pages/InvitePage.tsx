@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
+import QEmoji from '../components/QEmoji'
 
 export default function InvitePage() {
   const navigate = useNavigate()
@@ -49,7 +50,7 @@ export default function InvitePage() {
     return (
       <div style={{ minHeight: '100vh', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ maxWidth: '400px', padding: '40px 20px', textAlign: 'center' }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>💌</div>
+          <div style={{ marginBottom: '16px' }}><QEmoji name="envelope" size={52} /></div>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 500, color: 'var(--ink)', marginBottom: '8px' }}>
             Text sent!
           </h2>

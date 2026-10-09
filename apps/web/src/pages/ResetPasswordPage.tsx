@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { api } from '../lib/api'
+import QEmoji from '../components/QEmoji'
 
 export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams()
@@ -68,7 +69,7 @@ export default function ResetPasswordPage() {
         }}>
           {done ? (
             <>
-              <div style={{ textAlign: 'center', marginBottom: '16px', fontSize: '40px' }}>🎉</div>
+              <div style={{ textAlign: 'center', marginBottom: '16px' }}><QEmoji name="popper" size={44} /></div>
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 500, color: 'var(--ink)', marginBottom: '12px', textAlign: 'center' }}>
                 Password updated!
               </h2>

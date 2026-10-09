@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { api } from '../../lib/api'
 import type { NoteData } from './SendFlow'
+import QEmoji from '../../components/QEmoji'
 import { useNavigate } from 'react-router-dom'
 
 const FONT_FAMILIES: Record<string, string> = {
@@ -11,14 +12,24 @@ const FONT_FAMILIES: Record<string, string> = {
 }
 
 const OCCASION_LABELS: Record<string, string> = {
-  BIRTHDAY: '🎂 Birthday',
-  ANNIVERSARY: '💑 Anniversary',
-  CONGRATULATIONS: '🎉 Congrats',
-  HOLIDAY: '✨ Holiday',
-  CONSOLATION: '🤗 Thinking of you',
-  JUST_BECAUSE: '💌 Just because',
-  INVITATION: '📬 Invitation',
-  CUSTOM: '✏️ Custom',
+  BIRTHDAY: 'Birthday',
+  ANNIVERSARY: 'Anniversary',
+  CONGRATULATIONS: 'Congrats',
+  HOLIDAY: 'Holiday',
+  CONSOLATION: 'Thinking of you',
+  JUST_BECAUSE: 'Just because',
+  INVITATION: 'Invitation',
+  CUSTOM: 'Custom',
+}
+// Torn-paper art for each occasion (CUSTOM has no matching artwork, falls back to pencil emoji)
+const OCCASION_ART: Record<string, string> = {
+  BIRTHDAY: 'cake',
+  ANNIVERSARY: 'hearteyes',
+  CONGRATULATIONS: 'popper',
+  HOLIDAY: 'star',
+  CONSOLATION: 'rainbow',
+  JUST_BECAUSE: 'envelope',
+  INVITATION: 'plane',
 }
 
 const CARD_GRADIENTS: Record<string, string> = {
@@ -26,10 +37,10 @@ const CARD_GRADIENTS: Record<string, string> = {
   'design-2': 'linear-gradient(135deg, #fde68a, #fca5a5)',
   'design-3': 'linear-gradient(135deg, #9B8EC4, #3D3470)',
 }
-const CARD_EMOJI: Record<string, string> = {
-  'design-1': '🌸',
-  'design-2': '🎊',
-  'design-3': '🌟',
+const CARD_ART: Record<string, string> = {
+  'design-1': 'flower',
+  'design-2': 'popper',
+  'design-3': 'star',
 }
 
 export default function StepReview({
@@ -46,7 +57,7 @@ export default function StepReview({
 
   const fontFamily = FONT_FAMILIES[note.fontChoice] ?? FONT_FAMILIES['CAVEAT']
   const cardGradient = note.cardDesignId ? CARD_GRADIENTS[note.cardDesignId] : 'linear-gradient(135deg, #C4BAE0, #F5C2C7)'
-  const cardEmoji = note.cardDesignId ? CARD_EMOJI[note.cardDesignId] : '💌'
+  const cardArt = (note.cardDesignId && CARD_ART[note.cardDesignId]) || 'envelope'
 
   async function handleSend() {
     setSending(true)
@@ -90,7 +101,7 @@ export default function StepReview({
         alignItems: 'center', justifyContent: 'center', marginBottom: '16px',
         boxShadow: 'var(--shadow-card)', position: 'relative', overflow: 'hidden',
       }}>
-        <span style={{ fontSize: '48px', marginBottom: '8px' }}>{cardEmoji}</span>
+        <span style={{ fontSize: '48px', marginBottom: '8px' }}><QEmoji name={cardArt} size={52} /></span>
         {note.cardImageUrl && (
           <img
             src={note.cardImageUrl}
@@ -119,7 +130,7 @@ export default function StepReview({
           display: 'flex', justifyContent: 'space-between',
           fontSize: '12px', color: 'var(--ink-muted)',
         }}>
-          <span>{OCCASION_LABELS[note.occasionType] ?? note.occasionType}</span>
+          <span>{OCCASION_ART[note.occasionType] ? <QEmoji name={OCCASION_ART[note.occasionType]} size={15} style={{ marginRight: '4px' }} /> : '✏️ '}{OCCASION_LABELS[note.occasionType] ?? note.occasionType}</span>
           <span>To: {note.recipientName}</span>
         </div>
       </div>
@@ -171,7 +182,7 @@ export default function StepReview({
           fontFamily: 'var(--font-body)', transition: 'background 0.15s',
         }}
       >
-        {sending ? 'Sending...' : '💌 Send this note'}
+        {sending ? 'Sending...' : <><QEmoji name="envelope" size={18} style={{ marginRight: '6px' }} />Send this note</>}
       </button>}
 
       {!needsSub && <p style={{ fontSize: '12px', color: 'var(--ink-muted)', textAlign: 'center', marginTop: '12px' }}>

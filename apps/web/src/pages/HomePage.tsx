@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
+import QEmoji from '../components/QEmoji'
 
 interface FeedItem {
   id: string
@@ -293,7 +294,7 @@ export default function HomePage() {
                   <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {feed.map((item) => (
                       <li key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: 'var(--ink)' }}>
-                        <span style={{ fontSize: '16px' }}>💌</span>
+                        <span style={{ fontSize: '16px' }}><QEmoji name="envelope" size={18} /></span>
                         <span>
                           <strong>{item.sender.displayName}</strong> sent a note to <strong>{item.recipient.displayName}</strong>
                         </span>
