@@ -85,6 +85,8 @@ Typecheck web:       cd apps/web && npx tsc --noEmit
 
 2026-10-09 — WEBSITE HOMEPAGE rebuilt from "QuteNote Website – Homepage · desktop.html" (a self-unpacking bundle export — real markup lives in the __bundler/template script island, images base64 in __bundler/manifest; extraction script pattern in scratchpad). Faithful JSX port into LandingPage.tsx: ink wordmark (public/site/logo-ink.png), hero postcard collage w/ lime IN 7 DAYS, steps, Why Be Qute, featured-artists polaroids, ultraviolet bleachers section, details/summary FAQ, rotated join postcard, burger mobile menu. 17 named artworks in public/site/. Judgment calls: artist placeholders filled with Luna Park/Doodle Co./Inkwell/QuteNote Studio (she should supply real names), step-04 truncated copy restored from her copy doc. Deployed + verified live.
 
+2026-10-09 — Site-bundle round (Emerald delegated the calls): og/meta tags + og-image live; EarlySignup table + POST /early-access (rate-limited, upsert) on prod; homepage forms now save to the list inline ("You're on the list" + Create your profile button); homepage prerendered into dist/index.html at deploy (apps/web build:deploy = vite build + SSR entry + prerender.mjs inject; DO web build command updated to build:deploy; plain `npm run build` stays clean for iOS so the app never flashes the landing). All verified live (endpoint 201, "muffin butt" present in raw homepage HTML). Early-access signups live in the EarlySignup table — build an admin view later. One marker row: firefly-verify@qutenote.com
+
 ## What I am working on right now
 iOS app conversion (Emerald's priority as of Oct 6). Capacitor wrapper works in simulator. Remaining Phase 5 web items (CN Score, badges, connection birthdays) are parked until the iOS app ships.
 
