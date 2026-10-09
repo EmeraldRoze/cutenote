@@ -101,6 +101,8 @@ iOS app conversion (Emerald's priority as of Oct 6). Capacitor wrapper works in 
 - Stripe Invoice type doesn't expose .charge — cast via `any` with fallback
 - ~/Documents is synced by iCloud with "optimize storage" — after months idle it evicts big files (node_modules) and commands fail with ETIMEDOUT reads. Fix: `brctl download <folder>` and wait. Consider pinning the project folder "always keep downloaded"
 - First app launch in a fresh simulator can show a white screen for several seconds — relaunch/wait before assuming a crash
+- Renaming the project folder gives Xcode a NEW DerivedData path — always resolve the freshest App.app with `ls -dt ~/Library/Developer/Xcode/DerivedData/App-*/.../App.app | head -1` or the simulator installs stale builds
+- Xcode may skip recopying the Capacitor public folder on incremental builds — if web changes don't show in simulator, delete the built App.app and rebuild
 
 ## Files changed in most recent session (2026-04-20)
 - apps/web/src/pages/LandingPage.tsx (new — full landing page)
