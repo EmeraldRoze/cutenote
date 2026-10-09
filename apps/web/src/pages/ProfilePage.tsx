@@ -57,7 +57,7 @@ const OCCASION_ART: Record<string, string> = {
 export default function ProfilePage() {
   const { username } = useParams()
   const navigate = useNavigate()
-  const { user, refreshUser } = useAuth()
+  const { user, refreshUser, logout } = useAuth()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState<'sent' | 'received'>('sent')
@@ -148,9 +148,14 @@ export default function ProfilePage() {
           {isMe && (
             <button onClick={() => setPickingAvatar(true)} aria-label="Pick your profile emoji" style={{
               marginTop: '-26px', marginLeft: '72px', width: '30px', height: '30px', borderRadius: '15px',
-              border: '2px solid #fff', background: uv, color: '#fff', fontSize: '16px', lineHeight: 1,
+              border: '2px solid #fff', background: uv, padding: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', boxShadow: '0 2px 8px rgba(43,34,56,0.2)',
-            }}>+</button>
+            }}>
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+                <path d="M7 2v10M2 7h10" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
           )}
           <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', marginTop: '10px', letterSpacing: '-0.01em' }}>{profile.displayName}</div>
           <div style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)' }}>@{profile.username}</div>
@@ -245,7 +250,7 @@ export default function ProfilePage() {
 
           {/* Stamp book */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%', margin: '26px 0 4px' }}>
-            <div style={sectionTitle}>Stamp book</div>
+            <div style={sectionTitle}>Stamp Book</div>
             <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>{earned.length} collected</div>
           </div>
           <div style={{ width: '100%', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', marginBottom: '14px' }}>
@@ -274,7 +279,7 @@ export default function ProfilePage() {
           {isMe && (
             <>
               <div id="postcards" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', margin: '26px 0 12px' }}>
-                <div style={sectionTitle}>Your postcards</div>
+                <div style={sectionTitle}>Your Postcards</div>
                 <span style={{ display: 'flex', padding: '3px', borderRadius: '10px', background: 'var(--lavender-pale)' }}>
                   <button onClick={() => setTab('sent')} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: tab === 'sent' ? '#fff' : 'transparent', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Sent</button>
                   <button onClick={() => setTab('received')} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: tab === 'received' ? '#fff' : 'transparent', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Received</button>
@@ -303,6 +308,20 @@ export default function ProfilePage() {
                 </div>
               )}
             </>
+          )}
+
+          {isMe && (
+            <button
+              onClick={() => { logout(); navigate('/') }}
+              style={{
+                display: 'block', margin: '28px auto 8px', padding: '12px 24px', borderRadius: '999px',
+                border: '1px solid var(--stone)', background: 'none', cursor: 'pointer',
+                fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700,
+                letterSpacing: '0.1em', color: 'var(--ink-muted)',
+              }}
+            >
+              Log out
+            </button>
           )}
         </div>
       </div>
