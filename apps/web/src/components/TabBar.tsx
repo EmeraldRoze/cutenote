@@ -17,9 +17,9 @@ export default function TabBar() {
   const { pathname } = useLocation()
   const { user } = useAuth()
 
-  const tabs = [
+  const tabs: { label: string; path: string; icon?: React.ReactNode; emojiIcon?: string }[] = [
     { label: 'Home', path: '/home', icon: <Icon d="M4 11l8-7 8 7v9h-5v-6H9v6H4z" /> },
-    { label: 'QTs', path: '/connections', icon: <Icon d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20c0-3-1.8-5.2-4.5-5.8" extra={<circle cx="9" cy="8" r="3.5" />} /> },
+    { label: 'QTs', path: '/connections', emojiIcon: '/emoji/bff.png' },
     { label: 'Dates', path: '/dates', icon: <Icon d="M4 10h16M9 3v4M15 3v4" extra={<rect x="4" y="5" width="16" height="15" rx="2" />} /> },
     { label: 'Profile', path: `/profile/${user?.username ?? ''}`, icon: <Icon d="M4.5 20c.8-3.8 3.8-6 7.5-6s6.7 2.2 7.5 6" extra={<circle cx="12" cy="8.5" r="4" />} /> },
   ]
@@ -34,7 +34,13 @@ export default function TabBar() {
         fontSize: '11px', fontWeight: 700, fontFamily: 'var(--font-body)',
         textTransform: 'none', letterSpacing: 0,
       }}>
-        {t.icon}{t.label}
+        {t.emojiIcon
+          ? <img src={t.emojiIcon} alt="" style={{
+              height: '22px', width: 'auto',
+              filter: active ? 'none' : 'grayscale(1) opacity(0.6)',
+            }} />
+          : t.icon}
+        {t.label}
       </button>
     )
   }

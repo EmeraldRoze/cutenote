@@ -99,7 +99,7 @@ export default function ConnectionsPage() {
     <div style={{ minHeight: '100vh', paddingBottom: '110px' }}>
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '28px 24px 0' }}>
 
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)' }}>Your QTs</h1>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '10px' }}>Your QTs <QEmoji name="bff" size={34} /></h1>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', margin: '6px 0 14px' }}>The people worth showing up for.</p>
 
         {/* Invite teaser */}
