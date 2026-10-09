@@ -169,13 +169,31 @@ export default function HomePage() {
         )}
 
         {/* Feed */}
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: '16px', margin: '26px 0 2px', fontWeight: 400, letterSpacing: '-0.01em' }}>Your QTs, lately</div>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', margin: '26px 0 2px' }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: '16px', fontWeight: 400, letterSpacing: '-0.01em' }}>Your QTs, lately</div>
+          <button onClick={() => navigate('/invite')} style={{
+            padding: '7px 14px', borderRadius: '999px', border: 'none', cursor: 'pointer',
+            background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700,
+            fontSize: '11px', letterSpacing: '0.1em',
+          }}>
+            + Invite friends
+          </button>
+        </div>
         <div style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>Statuses and public sends. Messages are never shown.</div>
 
         {feed.length === 0 && (
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-muted)', padding: '28px 0' }}>
-            Quiet in here. Add some QTs and the good stuff follows.
-          </p>
+          <div style={{ padding: '28px 0', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '14px' }}>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-muted)' }}>
+              Quiet in here. Add some QTs and the good stuff follows.
+            </p>
+            <button onClick={() => navigate('/invite')} style={{
+              padding: '12px 20px', borderRadius: '999px', border: 'none', cursor: 'pointer',
+              background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700,
+              fontSize: '12px', letterSpacing: '0.1em',
+            }}>
+              Invite friends by text
+            </button>
+          </div>
         )}
 
         {feed.map((item) => (

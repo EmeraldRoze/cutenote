@@ -27,10 +27,19 @@ invitesRouter.post('/', requireAuth, async (req: AuthRequest, res: Response) => 
 
   const sender = await prisma.user.findUnique({
     where: { id: req.userId },
-    select: { displayName: true },
+    select: { displayName: true, username: true },
   })
 
-  const token = crypto.randomBytes(16).toString('hex')
+  // Personalized, text-friendly token: emeraldroze-4f2a. Collision odds are
+  // tiny per user; retry logic below covers the rest.
+  let token = ''
+  for (let i = 0; i < 5; i++) {
+    token = `${sender?.username ?? 'friend'}-${crypto.randomBytes(2).toString('hex')}`
+    const clash = await prisma.invite.findUnique({ where: { token } })
+    if (!clash) break
+    token = ''
+  }
+  if (!token) token = `${sender?.username ?? 'friend'}-${crypto.randomBytes(8).toString('hex')}`
 
   const invite = await prisma.invite.create({
     data: {
@@ -41,7 +50,7 @@ invitesRouter.post('/', requireAuth, async (req: AuthRequest, res: Response) => 
     },
   })
 
-  const link = `${WEB_URL}/collect-address/${token}`
+  const link = `${WEB_URL}/i/${token}`
 
   // No phone given: the sender texts the link themselves from their own Messages app
   if (!phone) {

@@ -104,7 +104,7 @@ export default function InvitePage() {
           <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>Your text will look like this</div>
           <div style={{ alignSelf: 'flex-end', maxWidth: '300px', borderRadius: '18px', overflow: 'hidden', background: 'var(--lavender-pale)', border: '1px solid var(--lavender-light)' }}>
             <div style={{ padding: '10px 14px', fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.4 }}>
-              I saved you a free postcard on QuteNote. Send one to someone you love.
+              I saved you a free postcard on QuteNote 💌 Claim it with my personal link:
             </div>
             <div style={{ background: '#fff', borderTop: '1px solid var(--lavender-light)' }}>
               <div style={{ height: '72px', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -112,7 +112,7 @@ export default function InvitePage() {
               </div>
               <div style={{ padding: '10px 14px' }}>
                 <div style={{ fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700 }}>{firstName} saved you a free card</div>
-                <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)' }}>qutenote.com</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)' }}>qutenote.com/i/{user?.username ?? 'you'}-…</div>
               </div>
             </div>
           </div>
@@ -148,7 +148,14 @@ export default function InvitePage() {
                 fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase',
                 letterSpacing: '0.12em', cursor: 'pointer',
               }}>Invite by text</button>
-              <button onClick={() => { navigator.clipboard?.writeText('https://qutenote.com'); setCopied(true); setTimeout(() => setCopied(false), 2000) }} style={{
+              <button onClick={async () => {
+                try {
+                  const r = await api.post('/invites', {})
+                  await navigator.clipboard?.writeText(r.data.data.link)
+                  setCopied(true); setTimeout(() => setCopied(false), 2000)
+                  api.get('/invites').then((res) => setInvites(res.data.data)).catch(() => {})
+                } catch { /* clipboard or network said no — button just stays */ }
+              }} style={{
                 height: '52px', padding: '0 16px', borderRadius: '10px', border: '1px solid var(--stone)', background: '#fff',
                 color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
                 textTransform: 'uppercase', letterSpacing: '0.12em', cursor: 'pointer',

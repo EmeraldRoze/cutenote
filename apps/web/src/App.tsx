@@ -60,6 +60,7 @@ function AppRoutes() {
       <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
       <Route path="/invite" element={<ProtectedRoute><InvitePage /></ProtectedRoute>} />
       <Route path="/collect-address/:token" element={<CollectAddressPage />} />
+      <Route path="/i/:token" element={<CollectAddressPage />} />
     </Routes>
   )
 }
