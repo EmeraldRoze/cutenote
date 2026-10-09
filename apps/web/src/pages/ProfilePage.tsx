@@ -9,7 +9,6 @@ import TabBar from '../components/TabBar'
 // membership card, stats, privacy, handwriting teaser, stamp book, postcards.
 
 const uv = '#5A32D6'
-const label: React.CSSProperties = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase', color: 'var(--ink-mid)' }
 const sectionTitle: React.CSSProperties = { fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)' }
 
 interface Badge { badgeType: string; earnedAt: string }
