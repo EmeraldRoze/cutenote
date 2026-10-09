@@ -99,7 +99,27 @@ googleAuthRouter.get('/google/callback', async (req: Request, res: Response) => 
 
     const jwt = signToken(user.id)
     if (req.query.state === 'native') {
-      return res.redirect(`qutenote://auth/success?token=${jwt}`)
+      // iOS often blocks automatic redirects into an app, so show a page
+      // that tries automatically AND gives the user a button to tap
+      const appLink = `qutenote://auth/success?token=${jwt}`
+      return res.send(`<!doctype html>
+<html><head><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuteNote</title>
+<style>
+  body { font-family: -apple-system, sans-serif; background: #FBF8F4; color: #2E2440;
+         display: flex; flex-direction: column; align-items: center; justify-content: center;
+         min-height: 90vh; text-align: center; padding: 24px; }
+  h1 { font-size: 22px; margin-bottom: 8px; }
+  p { color: #5C5070; font-size: 15px; margin-bottom: 28px; }
+  a.btn { background: #9B8EC4; color: #fff; text-decoration: none; font-size: 17px;
+          padding: 14px 36px; border-radius: 50px; font-weight: 500; }
+</style></head>
+<body>
+  <h1>You're signed in! 💌</h1>
+  <p>Tap below to hop back into QuteNote.</p>
+  <a class="btn" href="${appLink}">Open QuteNote</a>
+  <script>setTimeout(function(){ window.location.href = ${JSON.stringify(appLink)} }, 400)</script>
+</body></html>`)
     }
     res.redirect(`${WEB_URL}/auth/google/success?token=${jwt}`)
   } catch (err: any) {
