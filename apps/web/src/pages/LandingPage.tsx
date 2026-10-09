@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { api } from '../lib/api'
 
 // QuteNote marketing homepage — faithful port of the Oct 2026 website redesign
 // (QuteNote Website – Homepage · desktop.html). Artwork lives in /public/site.
@@ -39,6 +40,51 @@ const btnText: React.CSSProperties = {
   letterSpacing: '0.12em', textTransform: 'uppercase',
 }
 
+function SignupForm({ source, buttonLabel }: { source: string; buttonLabel: string }) {
+  const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [phase, setPhase] = useState<'idle' | 'busy' | 'done' | 'error'>('idle')
+  const [error, setError] = useState('')
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email.trim()) return
+    setPhase('busy')
+    setError('')
+    try {
+      await api.post('/early-access', { email: email.trim(), source })
+      setPhase('done')
+    } catch (err: any) {
+      setError(err.response?.data?.error ?? 'That did not go through. One more try.')
+      setPhase('error')
+    }
+  }
+
+  if (phase === 'done') {
+    return (
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '14px', width: '100%', maxWidth: '520px', minHeight: '56px' }}>
+        <span style={{ fontFamily: mono, fontWeight: 700, fontSize: '16px', color: INK, display: 'flex', alignItems: 'center', gap: '10px' }}>
+          You're on the list.<PostmarkHeart size={26} />
+        </span>
+        <button onClick={() => navigate('/signup', { state: { email } })} style={{ ...btnText, height: '46px', padding: '0 18px', border: `1.5px solid ${UV}`, borderRadius: '12px', background: '#fff', color: UV, cursor: 'pointer' }}>
+          Create your profile →
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <form onSubmit={submit} style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', width: '100%', maxWidth: '520px' }}>
+      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Your email address" aria-label="Your email address"
+        style={{ flex: '1 1 240px', minWidth: 0, height: '56px', boxSizing: 'border-box', padding: '0 18px', borderRadius: '12px', border: `1.5px solid ${phase === 'error' ? '#E04E6B' : LILAC}`, background: '#fff', fontFamily: mono, fontSize: '16px', color: INK, outline: 'none' }} />
+      <button type="submit" disabled={phase === 'busy'} style={{ ...btnText, flex: '0 0 auto', height: '56px', padding: '0 22px', border: 'none', borderRadius: '12px', background: UV, color: '#fff', display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', opacity: phase === 'busy' ? 0.7 : 1 }}>
+        {phase === 'busy' ? 'One sec…' : buttonLabel}<PostmarkHeart />
+      </button>
+      {phase === 'error' && <span style={{ width: '100%', fontFamily: mono, fontSize: '13px', color: '#E04E6B' }}>{error}</span>}
+    </form>
+  )
+}
+
 function PostmarkHeart({ size = 30 }: { size?: number }) {
   const h = Math.round(size * 2 / 3)
   return (
@@ -56,12 +102,6 @@ function Art({ name, size, style }: { name: string; size: number; style?: React.
 export default function LandingPage() {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
-  const [heroEmail, setHeroEmail] = useState('')
-  const [ctaEmail, setCtaEmail] = useState('')
-
-  function join(email: string) {
-    navigate('/signup', { state: { email } })
-  }
 
   const navLink: React.CSSProperties = { fontFamily: mono, fontSize: '15px', color: INK, textDecoration: 'none' }
   const mobileLink: React.CSSProperties = { fontFamily: mono, fontSize: '17px', color: INK, textDecoration: 'none', padding: '14px 0', borderBottom: `1px solid ${LILAC}` }
@@ -125,13 +165,7 @@ export default function LandingPage() {
               <p style={{ margin: 0, fontFamily: mono, fontSize: '17px', lineHeight: 1.65, color: INK_MID, maxWidth: '540px' }}>
                 QuteNote helps you turn what you're feeling into a real postcard, delivered to someone's actual mailbox. We'll handle the logistics, you just bring the feeling.
               </p>
-              <form onSubmit={(e) => { e.preventDefault(); join(heroEmail) }} style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', width: '100%', maxWidth: '520px' }}>
-                <input type="email" value={heroEmail} onChange={(e) => setHeroEmail(e.target.value)} placeholder="Your email address" aria-label="Your email address"
-                  style={{ flex: '1 1 240px', minWidth: 0, height: '56px', boxSizing: 'border-box', padding: '0 18px', borderRadius: '12px', border: `1.5px solid ${LILAC}`, background: '#fff', fontFamily: mono, fontSize: '16px', color: INK, outline: 'none' }} />
-                <button type="submit" style={{ ...btnText, flex: '0 0 auto', height: '56px', padding: '0 22px', border: 'none', borderRadius: '12px', background: UV, color: '#fff', display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
-                  I'm in<PostmarkHeart />
-                </button>
-              </form>
+              <SignupForm source="homepage-hero" buttonLabel="I'm in" />
               <span style={{ fontFamily: mono, fontSize: '14px', color: INK_MID }}>Free to join. Your first postcard is on us.</span>
             </div>
 
@@ -342,13 +376,7 @@ export default function LandingPage() {
               <h2 style={h2Style}>Someone came to mind, didn't they?</h2>
               <p style={{ margin: 0, fontFamily: mono, fontStyle: 'italic', fontSize: 'clamp(19px, 1.8vw, 23px)', color: UV }}>Go make their day.</p>
               <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '8px' }}>
-                <form onSubmit={(e) => { e.preventDefault(); join(ctaEmail) }} style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', width: '100%', maxWidth: '520px' }}>
-                  <input type="email" value={ctaEmail} onChange={(e) => setCtaEmail(e.target.value)} placeholder="Your email address" aria-label="Your email address"
-                    style={{ flex: '1 1 240px', minWidth: 0, height: '56px', boxSizing: 'border-box', padding: '0 18px', borderRadius: '12px', border: `1.5px solid ${LILAC}`, background: '#fff', fontFamily: mono, fontSize: '16px', color: INK, outline: 'none' }} />
-                  <button type="submit" style={{ ...btnText, flex: '0 0 auto', height: '56px', padding: '0 22px', border: 'none', borderRadius: '12px', background: UV, color: '#fff', display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
-                    Send something real<PostmarkHeart />
-                  </button>
-                </form>
+                <SignupForm source="homepage-cta" buttonLabel="Send something real" />
               </div>
               <span style={{ fontFamily: mono, fontSize: '14px', color: INK_MID }}>Your first postcard is on us. No spam, ever.</span>
             </div>

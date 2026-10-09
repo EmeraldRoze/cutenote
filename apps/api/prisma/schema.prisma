@@ -335,3 +335,10 @@ model Heart {
   @@unique([userId, targetType, targetId])
   @@index([targetType, targetId])
 }
+
+model EarlySignup {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  source    String?
+  createdAt DateTime @default(now())
+}
