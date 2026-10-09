@@ -5,3 +5,5 @@ node_modules/
 # API build output
 apps/api/dist
 *.tsbuildinfo
+
+.DS_Store
