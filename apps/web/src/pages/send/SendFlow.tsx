@@ -450,6 +450,7 @@ function ReviewStep({ note, onSent, onEdit, onEditCard, editingNoteId }: { note:
         </button>
         <button onClick={onEdit} style={{
           padding: '12px', borderRadius: '6px', cursor: 'pointer', textAlign: 'left',
+          display: 'flex', alignItems: 'flex-start',
           border: '1px solid var(--stone)', boxShadow: '0 6px 18px rgba(43,34,56,0.1)',
           aspectRatio: '2/3', overflow: 'hidden', position: 'relative', background: '#fff',
           backgroundImage: 'repeating-linear-gradient(transparent, transparent 21px, var(--cream-ruled) 21px, var(--cream-ruled) 22px)',
